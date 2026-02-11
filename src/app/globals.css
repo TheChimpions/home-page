@@ -1,26 +1,163 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@font-face {
+  font-family: "Pixel Operator";
+  src: url("/fonts/PixelOperator8.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@font-face {
+  font-family: "Pixel Operator";
+  src: url("/fonts/PixelOperator8-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@font-face {
+  font-family: "Alagard";
+  src: url("/fonts/alagard.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  /* Breakpoints */
+  --breakpoint-3xl: 100rem;
+  --breakpoint-4xl: 1900px;
+  --breakpoint-xss: 390px;
+  --breakpoint-xs: 429px;
+
+  /* Fonts */
+  --font-sans:
+    "Pixel Operator", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Arial, sans-serif;
+  --font-title:
+    "Alagard", "Pixel Operator", ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Arial, sans-serif;
+
+  /* Aqua Marine */
+  --color-aqua-marine-50: #e6fff8;
+  --color-aqua-marine-100: #b9feeb;
+  --color-aqua-marine-200: #8dfcde;
+  --color-aqua-marine-300: #63f8d0;
+  --color-aqua-marine-400: #39f4c2;
+  --color-aqua-marine-500: #11eeb4;
+  --color-aqua-marine-600: #10c190;
+  --color-aqua-marine-700: #0e956d;
+  --color-aqua-marine-800: #0b6a4c;
+  --color-aqua-marine-900: #08402d;
+  --color-aqua-marine-950: #031710;
+
+  /* Gold */
+  --color-gold-50: #fff8e6;
+  --color-gold-100: #feebb9;
+  --color-gold-200: #fcde8d;
+  --color-gold-300: #f8d063;
+  --color-gold-400: #f4c239;
+  --color-gold-500: #eeb411;
+  --color-gold-600: #c19110;
+  --color-gold-700: #95700e;
+  --color-gold-800: #6a4f0b;
+  --color-gold-900: #403008;
+  --color-gold-950: #171103;
+
+  /* Rich Black */
+  --color-rich-black-50: #595bca;
+  --color-rich-black-100: #4547c1;
+  --color-rich-black-200: #3c3dae;
+  --color-rich-black-300: #363797;
+  --color-rich-black-400: #2f3081;
+  --color-rich-black-500: #29296b;
+  --color-rich-black-600: #212255;
+  --color-rich-black-700: #1a1a40;
+  --color-rich-black-800: #12122b;
+  --color-rich-black-900: #101022;
+  --color-rich-black-950: #0d0d1a;
+
+  /* Electric Purple */
+  --color-electric-purple-50: #f8e6ff;
+  --color-electric-purple-100: #ebb9fe;
+  --color-electric-purple-200: #de8dfc;
+  --color-electric-purple-300: #d063f8;
+  --color-electric-purple-400: #c239f4;
+  --color-electric-purple-500: #b411ee;
+  --color-electric-purple-600: #9110c1;
+  --color-electric-purple-700: #700e95;
+  --color-electric-purple-800: #4f0b6a;
+  --color-electric-purple-900: #300840;
+  --color-electric-purple-950: #110317;
+
+  /* Space Cadet */
+  --color-space-cadet-50: #968cd5;
+  --color-space-cadet-100: #8175cb;
+  --color-space-cadet-200: #6d5fc0;
+  --color-space-cadet-300: #5949b5;
+  --color-space-cadet-400: #4f429c;
+  --color-space-cadet-500: #443984;
+  --color-space-cadet-600: #39306c;
+  --color-space-cadet-700: #2e2754;
+  --color-space-cadet-800: #252142;
+  --color-space-cadet-900: #1d1b31;
+  --color-space-cadet-950: #141321;
+
+  /* Ultra Violet */
+  --color-ultra-violet-50: #d1c8ea;
+  --color-ultra-violet-100: #b6a8dc;
+  --color-ultra-violet-200: #9b89cd;
+  --color-ultra-violet-300: #816bbd;
+  --color-ultra-violet-400: #6850aa;
+  --color-ultra-violet-500: #564389;
+  --color-ultra-violet-600: #43386c;
+  --color-ultra-violet-700: #322c50;
+  --color-ultra-violet-800: #221f35;
+  --color-ultra-violet-900: #12111c;
+  --color-ultra-violet-950: #020203;
+
+  /* Gray Modern */
+  --color-gray-modern-25: #fcfcfd;
+  --color-gray-modern-50: #f8fafa;
+  --color-gray-modern-100: #eef0f2;
+  --color-gray-modern-200: #e3e6eb;
+  --color-gray-modern-300: #cdd3df;
+  --color-gray-modern-400: #9aa4b2;
+  --color-gray-modern-500: #697586;
+  --color-gray-modern-600: #4b5565;
+  --color-gray-modern-700: #364552;
+  --color-gray-modern-800: #202939;
+  --color-gray-modern-900: #121926;
+  --color-gray-modern-950: #0d121c;
+}
+
+@layer base {
+  body {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: grayscale;
+    font-smooth: never;
+  }
+  html {
+    font-size: 16px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  .font-title {
+    font-family: var(--font-title);
+  }
+
+  .ecosystem-bg {
+    background-image: url("/bgs/bg-ecosystem-desktop.png");
+    background-size: cover;
+    background-position: center;
+  }
+
+  @media (min-width: 2000px) {
+    .ecosystem-bg {
+      background-image: url("/bgs/bg-ecosystem-large.png");
+    }
+  }
 }
