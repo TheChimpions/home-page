@@ -51,7 +51,7 @@ export default function Stats() {
               <span className="text-gray-modern-400 text-sm leading-4 tracking-tighter">
                 {stat.label}
               </span>
-              <span className="text-white text-[30px] font-bold leading-10">
+              <span className="text-white text-[30px] font-bold leading-10  scale-x-75 origin-left">
                 {stat.value}
               </span>
             </div>
