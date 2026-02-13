@@ -56,7 +56,20 @@ export default function Faq() {
 
           <div className="flex flex-col gap-10">
             <h2 className="text-white font-title text-[2.25rem] leading-8 sm:text-[36px] sm:leading-9.5">
-              Frequent <span className="text-gold-500">Questions</span>
+              Frequent{" "}
+              <span
+                className="animate-gradient-flow"
+                style={{
+                  background: "linear-gradient(90deg, #c19110 0%, #f8d063 25%, #c19110 50%, #f8d063 75%, #c19110 100%)",
+                  backgroundSize: "200% 100%",
+                  backgroundClip: "text",
+                  WebkitBackgroundClip: "text",
+                  color: "transparent",
+                  WebkitTextFillColor: "transparent",
+                } as React.CSSProperties}
+              >
+                Questions
+              </span>
             </h2>
 
             <div className="divide-y divide-gray-modern-800">

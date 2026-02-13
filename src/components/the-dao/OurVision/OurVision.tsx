@@ -6,18 +6,21 @@ const visionCards = [
     description:
       'Bring back the true "non-fungible" spirit of NFTs through unique, hand-crafted art.',
     iconSrc: "/assets/elevate.svg",
+    color: "#11EEB4",
   },
   {
     title: "Build on Solana",
     description:
       "Create meaningful presence through validator operations, alpha sharing, and collaboration.",
     iconSrc: "/assets/build.svg",
+    color: "#B411EE",
   },
   {
     title: "Create Real Value",
     description:
       "Generate sustainable value through strategic investments, art curation, and network effects.",
     iconSrc: "/assets/create.svg",
+    color: "#EEB411",
   },
 ];
 
@@ -49,7 +52,21 @@ export default function OurVision() {
           <div className="text-center px-4 3xl:px-0 flex flex-col gap-6">
             <p className="text-white font-title leading-11 text-[4rem] sm:leading-13">
               Art. Capital.{" "}
-              <span className="text-transparent bg-clip-text bg-linear-to-r from-[#B411EE] to-[#11EEB4]">
+              <span
+                className="animate-gradient-flow"
+                style={
+                  {
+                    background:
+                      "linear-gradient(90deg, #B411EE 0%, #11EEB4 25%, #B411EE 50%, #11EEB4 75%, #B411EE 100%)",
+                    backgroundSize: "200% 100%",
+                    backgroundClip: "text",
+                    WebkitBackgroundClip: "text",
+                    color: "transparent",
+                    WebkitTextFillColor: "transparent",
+                    display: "inline",
+                  } as React.CSSProperties
+                }
+              >
                 Integrity
               </span>
             </p>
@@ -80,7 +97,23 @@ export default function OurVision() {
 
           <div className="px-4 3xl:px-0 text-center flex flex-col gap-4">
             <h2 className="text-white font-title leading-11 text-[3rem] sm:leading-13">
-              Our <span className="text-gold-500">Vision</span>
+              Our{" "}
+              <span
+                className="animate-gradient-flow"
+                style={
+                  {
+                    background:
+                      "linear-gradient(90deg, #c19110 0%, #f8d063 25%, #c19110 50%, #f8d063 75%, #c19110 100%)",
+                    backgroundSize: "200% 100%",
+                    backgroundClip: "text",
+                    WebkitBackgroundClip: "text",
+                    color: "transparent",
+                    WebkitTextFillColor: "transparent",
+                  } as React.CSSProperties
+                }
+              >
+                Vision
+              </span>
             </h2>
             <p className=" text-white text-[0.95rem] leading-5 tracking-[-2px] sm:text-sm sm:leading-5.5 max-w-3xl mx-auto">
               To create a long-term, values-first community powered by art,
@@ -94,19 +127,26 @@ export default function OurVision() {
             {visionCards.map((card) => (
               <div
                 key={card.title}
-                className="rounded-md border border-gray-modern-800 bg-gray-modern-900/70 p-5 sm:p-6 shadow-[0_0_24px_rgba(0,0,0,0.25)]"
+                className="shooting-top group rounded-md border border-gray-modern-800 bg-gray-modern-900/70 p-5 sm:p-6 shadow-[0_0_24px_rgba(0,0,0,0.25)] transition-all duration-300 hover:bg-gray-modern-900/90 cursor-pointer"
+                style={
+                  {
+                    "--card-color": card.color,
+                  } as React.CSSProperties
+                }
               >
                 <Image
                   src={card.iconSrc}
                   alt={card.title}
                   width={60}
                   height={60}
-                  className="size-15  object-contain"
+                  className="size-15 object-contain transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6"
                 />
-                <h3 className="mt-8 text-white font-title text-[22px] leading-6 sm:text-[26px] sm:leading-7">
+                <h3
+                  className="mt-8 text-white font-title text-[22px] leading-6 sm:text-[26px] sm:leading-7 transition-colors duration-300 group-hover:[color:var(--card-color)]"
+                >
                   {card.title}
                 </h3>
-                <p className="mt-2 text-gray-modern-400 text-[0.95rem] leading-5 tracking-[-2px] sm:text-sm sm:leading-5.5">
+                <p className="mt-2 text-gray-modern-400 text-[0.95rem] leading-5 tracking-[-2px] sm:text-sm sm:leading-5.5 transition-colors duration-300 group-hover:text-gray-modern-300">
                   {card.description}
                 </p>
               </div>

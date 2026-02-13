@@ -18,7 +18,17 @@ export default function Hero() {
           <h1 className="text-[40px] xs:text-[50px] leading-11 font-title font-medium text-white mt-18 text-center px-4 ">
             Welcome to
             <br />
-            <span className="text-transparent bg-clip-text bg-linear-to-r from-[#B411EE] to-[#11EEB4]">
+            <span
+              className="animate-gradient-flow"
+              style={{
+                background: "linear-gradient(90deg, #B411EE 0%, #11EEB4 25%, #B411EE 50%, #11EEB4 75%, #B411EE 100%)",
+                backgroundSize: "200% 100%",
+                backgroundClip: "text",
+                WebkitBackgroundClip: "text",
+                color: "transparent",
+                WebkitTextFillColor: "transparent",
+              } as React.CSSProperties}
+            >
               The Chimpions
             </span>
           </h1>
@@ -58,7 +68,17 @@ export default function Hero() {
             <h1 className="text-[64px] leading-17.5 font-title font-medium text-white">
               Welcome to
               <br />
-              <span className="text-transparent bg-clip-text bg-linear-to-r from-[#B411EE] to-[#11EEB4]">
+              <span
+                className="animate-gradient-flow"
+                style={{
+                  background: "linear-gradient(90deg, #B411EE 0%, #11EEB4 25%, #B411EE 50%, #11EEB4 75%, #B411EE 100%)",
+                  backgroundSize: "200% 100%",
+                  backgroundClip: "text",
+                  WebkitBackgroundClip: "text",
+                  color: "transparent",
+                  WebkitTextFillColor: "transparent",
+                } as React.CSSProperties}
+              >
                 The Chimpions
               </span>
             </h1>

@@ -19,7 +19,19 @@ export default function AboutCollection() {
               <h2 className="text-white font-title text-[2rem] xs:text-[3rem]  sm:text-[4rem] leading-9 xs:leading-11 sm:leading-15">
                 About the
                 <br />
-                <span className="text-aqua-marine-400">NFT Collection</span>
+                <span
+                  className="animate-gradient-flow"
+                  style={{
+                    background: "linear-gradient(90deg, #10c190 0%, #8dfcde 25%, #10c190 50%, #8dfcde 75%, #10c190 100%)",
+                    backgroundSize: "200% 100%",
+                    backgroundClip: "text",
+                    WebkitBackgroundClip: "text",
+                    color: "transparent",
+                    WebkitTextFillColor: "transparent",
+                  } as React.CSSProperties}
+                >
+                  NFT Collection
+                </span>
               </h2>
               <p className=" text-gray-modern-400 text-sm leading-5.5 tracking-[-2px] scale-x-95 origin-left">
                 The Chimpions is a 1/1 animated pixel art NFT collection of 222

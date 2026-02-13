@@ -52,7 +52,20 @@ export default function Ecosystem() {
         <div className="relative px-4 pt-20 pb-20">
           <div className="text-center flex flex-col pb-12">
             <h2 className="text-white font-title text-[3rem] leading-10.5 mb-4">
-              Our <span className="text-aqua-marine-400">Ecosystem</span>
+              Our{" "}
+              <span
+                className="animate-gradient-flow"
+                style={{
+                  background: "linear-gradient(90deg, #10c190 0%, #8dfcde 25%, #10c190 50%, #8dfcde 75%, #10c190 100%)",
+                  backgroundSize: "200% 100%",
+                  backgroundClip: "text",
+                  WebkitBackgroundClip: "text",
+                  color: "transparent",
+                  WebkitTextFillColor: "transparent",
+                } as React.CSSProperties}
+              >
+                Ecosystem
+              </span>
             </h2>
             <p className="text-white text-[1.05rem] tracking-[-2px]">
               Explore what makes The Chimpions unique
@@ -123,7 +136,20 @@ export default function Ecosystem() {
         <div className="relative max-w-480 mx-auto px-4 3xl:px-24 py-20">
           <div className="text-center flex flex-col pb-20">
             <h2 className="text-white font-title text-[3rem] leading-10.5 mb-4">
-              Our <span className="text-aqua-marine-400">Ecosystem</span>
+              Our{" "}
+              <span
+                className="animate-gradient-flow"
+                style={{
+                  background: "linear-gradient(90deg, #10c190 0%, #8dfcde 25%, #10c190 50%, #8dfcde 75%, #10c190 100%)",
+                  backgroundSize: "200% 100%",
+                  backgroundClip: "text",
+                  WebkitBackgroundClip: "text",
+                  color: "transparent",
+                  WebkitTextFillColor: "transparent",
+                } as React.CSSProperties}
+              >
+                Ecosystem
+              </span>
             </h2>
             <p className="text-white text-[1.05rem] tracking-[-2px]">
               Explore what makes The Chimpions unique

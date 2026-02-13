@@ -28,7 +28,20 @@ export default function CodeOfConduct() {
             <div className="flex flex-col gap-10">
               <div className="flex flex-col gap-4">
                 <h2 className="text-white font-title text-[3rem] leading-11">
-                  Code of <span className="text-gold-500">Conduct</span>
+                  Code of{" "}
+                  <span
+                    className="animate-gradient-flow"
+                    style={{
+                      background: "linear-gradient(90deg, #c19110 0%, #f8d063 25%, #c19110 50%, #f8d063 75%, #c19110 100%)",
+                      backgroundSize: "200% 100%",
+                      backgroundClip: "text",
+                      WebkitBackgroundClip: "text",
+                      color: "transparent",
+                      WebkitTextFillColor: "transparent",
+                    } as React.CSSProperties}
+                  >
+                    Conduct
+                  </span>
                 </h2>
                 <p className=" text-white text-sm leading-5.5 tracking-[-2px]">
                   <span className="inline-block">

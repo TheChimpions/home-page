@@ -150,6 +150,46 @@
     font-family: var(--font-title);
   }
 
+  .shooting-top {
+    position: relative;
+    overflow: hidden;
+    --shooting-color: var(--card-color, #ffffff);
+  }
+
+  .shooting-top::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -40%;
+    width: 40%;
+    height: 2px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--shooting-color),
+      transparent
+    );
+    opacity: 0.95;
+    filter: drop-shadow(0 0 6px var(--shooting-color));
+    animation: shooting-top 3s linear infinite;
+    pointer-events: none;
+  }
+
+  @keyframes shooting-top {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(320%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .shooting-top::before {
+      animation: none;
+    }
+  }
+
   .ecosystem-bg {
     background-image: url("/bgs/bg-ecosystem-desktop.png");
     background-size: cover;
@@ -161,4 +201,26 @@
       background-image: url("/bgs/bg-ecosystem-large.png");
     }
   }
+
+  @keyframes gradient-flow {
+    0% {
+      background-position: 0% 50%;
+    }
+    100% {
+      background-position: 200% 50%;
+    }
+  }
+
+  .animate-gradient-flow {
+    /* Fallback color if gradient text is not supported */
+    color: #11eeb4;
+    animation: gradient-flow 3s linear infinite;
+  }
+
+  @supports (background-clip: text) or (-webkit-background-clip: text) {
+    .animate-gradient-flow {
+      color: transparent;
+    }
+  }
+
 }
