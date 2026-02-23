@@ -43,7 +43,7 @@ export default function TreehouseEditions() {
         {editions.map((edition) => (
           <article
             key={edition.id}
-            className="overflow-hidden rounded-md border border-gray-modern-800 bg-gray-modern-900/70 p-3 shadow-[0_0_18px_rgba(0,0,0,0.25)]"
+            className="overflow-hidden rounded-md border border-gray-modern-800 bg-gray-modern-900 p-3 shadow-[0_0_18px_rgba(0,0,0,0.25)]"
           >
             <div className="relative aspect-[0.81/1] overflow-hidden rounded-sm border border-gray-modern-800 bg-gray-modern-950">
               <Image

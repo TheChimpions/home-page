@@ -39,7 +39,7 @@ export default function TopHolders() {
         {holders.map((holder) => (
           <div
             key={holder.id}
-            className="group flex items-center justify-between gap-3 xs:gap-4 rounded-md border border-gray-modern-800 bg-gray-modern-900/70 p-6 shadow-[0_0_18px_rgba(0,0,0,0.25)] transition-all duration-300 hover:border-gray-modern-700 hover:bg-gray-modern-900/90 hover:shadow-[0_0_24px_rgba(0,0,0,0.4)] cursor-pointer"
+            className="group flex items-center justify-between gap-3 xs:gap-4 rounded-md border border-gray-modern-800 bg-gray-modern-900 p-6 shadow-[0_0_18px_rgba(0,0,0,0.25)] transition-all duration-300 hover:border-gray-modern-700 hover:bg-gray-modern-900/90 hover:shadow-[0_0_24px_rgba(0,0,0,0.4)] cursor-pointer"
           >
             <div className="flex items-center gap-3 xs:gap-6 min-w-0 flex-1">
               <div className="relative size-16 xs:size-22 shrink-0 rounded-full overflow-hidden border border-gray-modern-700 bg-gray-modern-800 transition-transform duration-300 group-hover:scale-110">

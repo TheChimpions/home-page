@@ -33,7 +33,7 @@ export default function CommunityStats() {
         {stats.map((stat) => (
           <div
             key={stat.label}
-            className="group rounded-md border flex flex-col gap-4 border-gray-modern-800 bg-gray-modern-900/70 px-5 py-6 text-center shadow-[0_0_18px_rgba(0,0,0,0.25)] transition-all duration-300 hover:scale-105 hover:border-gray-modern-700 hover:bg-gray-modern-900/90 hover:shadow-[0_0_24px_rgba(0,0,0,0.4)] cursor-pointer"
+            className="group rounded-md border flex flex-col gap-4 border-gray-modern-800 bg-gray-modern-900 px-5 py-6 text-center shadow-[0_0_18px_rgba(0,0,0,0.25)] transition-all duration-300 hover:scale-105 hover:border-gray-modern-700 hover:bg-gray-modern-900/90 hover:shadow-[0_0_24px_rgba(0,0,0,0.4)] cursor-pointer"
           >
             <div className="flex justify-center">
               <Image

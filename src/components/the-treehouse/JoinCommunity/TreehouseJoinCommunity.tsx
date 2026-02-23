@@ -1,6 +1,6 @@
 export default function TreehouseJoinCommunity() {
   return (
-    <section className="relative overflow-hidden rounded-md border border-gray-modern-800 bg-gray-modern-900/70 px-6 py-6 sm:px-8 sm:py-8 shadow-[0_0_24px_rgba(0,0,0,0.35)]">
+    <section className="relative overflow-hidden rounded-md border border-gray-modern-800 bg-gray-modern-900 px-6 py-6 sm:px-8 sm:py-8 shadow-[0_0_24px_rgba(0,0,0,0.35)]">
       <div
         aria-hidden="true"
         className="absolute left-0 top-0 h-full w-1"

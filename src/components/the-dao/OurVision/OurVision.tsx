@@ -127,7 +127,7 @@ export default function OurVision() {
             {visionCards.map((card) => (
               <div
                 key={card.title}
-                className="shooting-top group rounded-md border border-gray-modern-800 bg-gray-modern-900/70 p-5 sm:p-6 shadow-[0_0_24px_rgba(0,0,0,0.25)] transition-all duration-300 hover:bg-gray-modern-900/90 cursor-pointer"
+                className="shooting-top group rounded-md border border-gray-modern-800 bg-gray-modern-900 p-5 sm:p-6 shadow-[0_0_24px_rgba(0,0,0,0.25)] transition-all duration-300 hover:bg-gray-modern-900/90 cursor-pointer"
                 style={
                   {
                     "--card-color": card.color,
