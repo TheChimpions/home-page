@@ -20,7 +20,7 @@ export default function JoinCta() {
               <h3 className="text-white font-title text-[2.5rem] leading-7.5">
                 Want to be part of it?
               </h3>
-              <p className="mt-4 text-white text-sm leading-5 tracking-[-2px] max-w-lg">
+              <p className="mt-4 text-white text-xl leading-5 max-w-lg">
                 Join The Chimpions - buy an NFT, stake to our validator, or just
                 vibe in the Treehouse.
               </p>
@@ -31,7 +31,7 @@ export default function JoinCta() {
                 href="https://tensor.trade"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group h-18 flex w-full lg:max-w-60 items-center justify-center gap-3 rounded-sm border border-gray-modern-800 bg-gray-modern-900/50 px-4 py-3 text-sm font-sans text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"
+                className="group h-18 flex w-full font-bold lg:max-w-60 items-center justify-center gap-3 rounded-sm border border-gray-modern-800 bg-gray-modern-900/50 px-4 py-3 text-2xl font-sans text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"
               >
                 <span>Tensor</span>
                 <Image
@@ -46,7 +46,7 @@ export default function JoinCta() {
                 href="https://magiceden.io"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group h-18 flex w-full lg:max-w-60 items-center justify-center gap-3 rounded-sm border border-gray-modern-800 bg-gray-modern-900/50 px-4 py-3 text-sm font-sans text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"
+                className="group h-18 flex w-full font-bold lg:max-w-60 items-center justify-center gap-3 rounded-sm border border-gray-modern-800 bg-gray-modern-900/50 px-4 py-3 text-2xl font-sans text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"
               >
                 <span>Magic Eden</span>
                 <Image

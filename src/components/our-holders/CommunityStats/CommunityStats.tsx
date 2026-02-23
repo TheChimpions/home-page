@@ -44,10 +44,10 @@ export default function CommunityStats() {
                 className="size-10 transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6"
               />
             </div>
-            <p className="text-white text-[20px] font-bold leading-6 transition-colors duration-300 group-hover:text-aqua-marine-400">
+            <p className="text-white text-[2.25rem] font-medium font-title leading-6 transition-colors duration-300 group-hover:text-aqua-marine-400">
               {stat.value}
             </p>
-            <p className="text-gray-modern-400 text-[11px] tracking-[-1px] transition-colors duration-300 group-hover:text-gray-modern-300">
+            <p className="text-gray-modern-400 text-xl transition-colors duration-300 group-hover:text-gray-modern-300">
               {stat.label}
             </p>
           </div>

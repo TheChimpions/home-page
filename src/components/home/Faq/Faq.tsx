@@ -59,14 +59,17 @@ export default function Faq() {
               Frequent{" "}
               <span
                 className="animate-gradient-flow"
-                style={{
-                  background: "linear-gradient(90deg, #c19110 0%, #f8d063 25%, #c19110 50%, #f8d063 75%, #c19110 100%)",
-                  backgroundSize: "200% 100%",
-                  backgroundClip: "text",
-                  WebkitBackgroundClip: "text",
-                  color: "transparent",
-                  WebkitTextFillColor: "transparent",
-                } as React.CSSProperties}
+                style={
+                  {
+                    background:
+                      "linear-gradient(90deg, #c19110 0%, #f8d063 25%, #c19110 50%, #f8d063 75%, #c19110 100%)",
+                    backgroundSize: "200% 100%",
+                    backgroundClip: "text",
+                    WebkitBackgroundClip: "text",
+                    color: "transparent",
+                    WebkitTextFillColor: "transparent",
+                  } as React.CSSProperties
+                }
               >
                 Questions
               </span>
@@ -86,7 +89,7 @@ export default function Faq() {
                       className="flex w-full justify-between items-center gap-6 text-left cursor-pointer"
                       aria-expanded={isOpen}
                     >
-                      <span className="text-gray-modern-25 text-xs sm:text-sm font-sans font-semibold tracking-[0.02em] transition-colors group-hover:text-gold-500">
+                      <span className="text-gray-modern-25 text-xl font-sans font-semibold transition-colors group-hover:text-gold-500">
                         {item.question}
                       </span>
                       <Image
@@ -107,7 +110,7 @@ export default function Faq() {
                       }`}
                     >
                       <div className="overflow-hidden">
-                        <p className="mt-2 text-gray-modern-400 text-xs sm:text-sm leading-5 max-w-xl">
+                        <p className="mt-2 text-gray-modern-400 text-xl leading-4.5 max-w-xl">
                           {item.answer}
                         </p>
                       </div>

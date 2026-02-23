@@ -50,7 +50,7 @@ export default function CustomSelect({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full appearance-none rounded-sm border border-gray-modern-800 bg-gray-modern-950 pl-10 pr-10 py-4 text-xs text-white text-left outline-none focus:border-gray-modern-600 transition-colors"
+        className="w-full cursor-pointer appearance-none rounded-sm border border-gray-modern-800 bg-gray-modern-950 pl-10 pr-10 py-4 text-xl text-white text-left outline-none focus:border-gray-modern-600 transition-colors"
       >
         {selectedOption}
       </button>
@@ -73,7 +73,7 @@ export default function CustomSelect({
                 onChange(index === 0 ? "" : option);
                 setIsOpen(false);
               }}
-              className="w-full px-4 py-3 text-xs text-white text-left hover:bg-gray-modern-800 transition-colors"
+              className="w-full cursor-pointer px-4 py-3 text-xl text-white text-left hover:bg-gray-modern-800 transition-colors"
             >
               {option}
             </button>

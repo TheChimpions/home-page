@@ -61,7 +61,7 @@ export default function MobileMenu({
       />
 
       <div
-        className={`fixed inset-y-0 left-0 w-full max-w-[100vw] bg-gray-modern-900 z-[60] 4xl:hidden shadow-xl transition-transform duration-300 ${
+        className={`fixed inset-y-0 left-0 w-full max-w-[100vw] bg-gray-modern-900 z-60 4xl:hidden shadow-xl transition-transform duration-300 ${
           isVisible ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -100,7 +100,7 @@ export default function MobileMenu({
                     <Link
                       href={item.href}
                       onClick={onClose}
-                      className={`flex items-center gap-1 scale-x-95 origin-left text-[18px] leading-7 font-sans tracking-[-1px] transition-colors ${
+                      className={`flex items-center gap-1 scale-x-95 origin-left text-[18px] leading-7 font-sans transition-colors ${
                         isActive
                           ? "text-gold-500  font-bold"
                           : "text-gray-modern-400 hover:text-gold-400"
@@ -128,7 +128,7 @@ export default function MobileMenu({
               href="https://tensor.trade"
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex w-full lg:w-auto items-center justify-center gap-2 h-12 border border-gray-modern-700 bg-gray-modern-900/50 px-6 py-3 text-xs font-sans text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"
+              className="group flex w-full font-bold lg:w-auto items-center justify-center gap-2 h-12 border border-gray-modern-700 bg-gray-modern-900/50 px-6 py-3 text-xs font-sans text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"
             >
               <span className="font-bold">Tensor</span>
               <Image
@@ -143,7 +143,7 @@ export default function MobileMenu({
               href="https://magiceden.io"
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex w-full lg:w-auto items-center justify-center gap-2 h-12 border border-gray-modern-700 bg-gray-modern-900/50 px-6 py-3 text-xs font-sans text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"
+              className="group flex w-full font-bold lg:w-auto items-center justify-center gap-2 h-12 border border-gray-modern-700 bg-gray-modern-900/50 px-6 py-3 text-xs font-sans text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"
             >
               <span className="font-bold">Magic Eden</span>
               <Image

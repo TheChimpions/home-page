@@ -55,19 +55,22 @@ export default function Ecosystem() {
               Our{" "}
               <span
                 className="animate-gradient-flow"
-                style={{
-                  background: "linear-gradient(90deg, #10c190 0%, #8dfcde 25%, #10c190 50%, #8dfcde 75%, #10c190 100%)",
-                  backgroundSize: "200% 100%",
-                  backgroundClip: "text",
-                  WebkitBackgroundClip: "text",
-                  color: "transparent",
-                  WebkitTextFillColor: "transparent",
-                } as React.CSSProperties}
+                style={
+                  {
+                    background:
+                      "linear-gradient(90deg, #10c190 0%, #8dfcde 25%, #10c190 50%, #8dfcde 75%, #10c190 100%)",
+                    backgroundSize: "200% 100%",
+                    backgroundClip: "text",
+                    WebkitBackgroundClip: "text",
+                    color: "transparent",
+                    WebkitTextFillColor: "transparent",
+                  } as React.CSSProperties
+                }
               >
                 Ecosystem
               </span>
             </h2>
-            <p className="text-white text-[1.05rem] tracking-[-2px]">
+            <p className="text-white text-xl leading-[1.2rem]">
               Explore what makes The Chimpions unique
             </p>
           </div>
@@ -90,10 +93,10 @@ export default function Ecosystem() {
                         className="size-15 object-contain"
                       />
                     </div>
-                    <h3 className="mt-4 text-white font-title font-bold text-[34px] tracking-[2px]">
+                    <h3 className="mt-4 text-white font-bold text-[3rem] ">
                       {item.title}
                     </h3>
-                    <p className="mt-2 text-gray-modern-400 text-base leading-5 tracking-[-2px]">
+                    <p className="mt-2 text-gray-modern-400 text-2xl leading-[1.2rem]">
                       {item.description}
                     </p>
                   </div>
@@ -139,19 +142,22 @@ export default function Ecosystem() {
               Our{" "}
               <span
                 className="animate-gradient-flow"
-                style={{
-                  background: "linear-gradient(90deg, #10c190 0%, #8dfcde 25%, #10c190 50%, #8dfcde 75%, #10c190 100%)",
-                  backgroundSize: "200% 100%",
-                  backgroundClip: "text",
-                  WebkitBackgroundClip: "text",
-                  color: "transparent",
-                  WebkitTextFillColor: "transparent",
-                } as React.CSSProperties}
+                style={
+                  {
+                    background:
+                      "linear-gradient(90deg, #10c190 0%, #8dfcde 25%, #10c190 50%, #8dfcde 75%, #10c190 100%)",
+                    backgroundSize: "200% 100%",
+                    backgroundClip: "text",
+                    WebkitBackgroundClip: "text",
+                    color: "transparent",
+                    WebkitTextFillColor: "transparent",
+                  } as React.CSSProperties
+                }
               >
                 Ecosystem
               </span>
             </h2>
-            <p className="text-white text-[1.05rem] tracking-[-2px]">
+            <p className="text-white text-xl leading-[1.2rem]">
               Explore what makes The Chimpions unique
             </p>
           </div>
@@ -174,10 +180,10 @@ export default function Ecosystem() {
                         className="size-15 object-contain"
                       />
                     </div>
-                    <h3 className="mt-4 text-white font-title font-bold text-[34px] tracking-[2px]">
+                    <h3 className="mt-4 text-white font-bold text-[3rem]">
                       {item.title}
                     </h3>
-                    <p className="mt-2 text-gray-modern-400 text-base leading-5 tracking-[-2px]">
+                    <p className="mt-2 text-gray-modern-400 text-2xl leading-[1.2rem]">
                       {item.description}
                     </p>
                   </div>

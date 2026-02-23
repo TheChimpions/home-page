@@ -16,7 +16,7 @@ export default function JoinCommunity() {
             <h3 className="text-white font-title text-[2rem] leading-7 sm:text-[2.5rem]">
               Ready to join the community?
             </h3>
-            <p className=" text-white text-sm leading-5.5 tracking-[-2px] max-w-xl">
+            <p className=" text-white text-xl leading-5  max-w-xl">
               Become a Chimpion holder and gain access to our exclusive
               community, governance rights, and unique opportunities.
             </p>
@@ -27,36 +27,40 @@ export default function JoinCommunity() {
               href="https://tensor.trade"
               target="_blank"
               rel="noopener noreferrer"
-              className="group h-18 flex w-full lg:max-w-auto items-center justify-center gap-3 rounded-sm border border-gray-modern-800 bg-gray-modern-900/50 px-4 py-3 text-sm font-sans text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"
+              className="group h-18 flex w-full font-bold  lg:max-w-auto items-center justify-between gap-3 rounded-sm border border-gray-modern-800 bg-gray-modern-900/50 px-4 py-3 text-2xl font-sans text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"
             >
               <span>
                 <span className="hidden xs:inline-block">Buy on </span> Tensor
               </span>
-              <Image
-                src="/logo/tensor.svg"
-                alt="Tensor"
-                width={35}
-                height={16}
-                className="brightness-0 invert group-hover:brightness-0 group-hover:invert-0 transition-all hidden xs:block"
-              />
+              <span className="hidden xs:flex w-9 justify-end shrink-0">
+                <Image
+                  src="/logo/tensor.svg"
+                  alt="Tensor"
+                  width={35}
+                  height={16}
+                  className="brightness-0 invert group-hover:brightness-0 group-hover:invert-0 transition-all"
+                />
+              </span>
             </a>
             <a
               href="https://magiceden.io"
               target="_blank"
               rel="noopener noreferrer"
-              className="group h-18 flex w-full lg:max-w-auto items-center justify-center gap-3 rounded-sm border border-gray-modern-800 bg-gray-modern-900/50 px-4 py-3 text-sm font-sans text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"
+              className="group h-18 flex w-full font-bold lg:max-w-auto items-center justify-between gap-3 rounded-sm border border-gray-modern-800 bg-gray-modern-900/50 px-4 py-3 text-2xl font-sans text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"
             >
               <span>
-                <span className="hidden xs:inline-block">Buy on </span> Magic
+                <span className="hidden xs:inline-block">Buy on </span> {""}
                 Eden
               </span>
-              <Image
-                src="/logo/magic-eden.svg"
-                alt="Magic Eden"
-                width={25}
-                height={16}
-                className="brightness-0 invert group-hover:brightness-0 group-hover:invert-0 transition-all hidden xs:flex"
-              />
+              <span className="hidden xs:flex w-9 justify-end shrink-0">
+                <Image
+                  src="/logo/magic-eden.svg"
+                  alt="Magic Eden"
+                  width={25}
+                  height={16}
+                  className="brightness-0 invert group-hover:brightness-0 group-hover:invert-0 transition-all"
+                />
+              </span>
             </a>
           </div>
         </div>

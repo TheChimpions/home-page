@@ -21,33 +21,36 @@ export default function AboutCollection() {
                 <br />
                 <span
                   className="animate-gradient-flow"
-                  style={{
-                    background: "linear-gradient(90deg, #10c190 0%, #8dfcde 25%, #10c190 50%, #8dfcde 75%, #10c190 100%)",
-                    backgroundSize: "200% 100%",
-                    backgroundClip: "text",
-                    WebkitBackgroundClip: "text",
-                    color: "transparent",
-                    WebkitTextFillColor: "transparent",
-                  } as React.CSSProperties}
+                  style={
+                    {
+                      background:
+                        "linear-gradient(90deg, #10c190 0%, #8dfcde 25%, #10c190 50%, #8dfcde 75%, #10c190 100%)",
+                      backgroundSize: "200% 100%",
+                      backgroundClip: "text",
+                      WebkitBackgroundClip: "text",
+                      color: "transparent",
+                      WebkitTextFillColor: "transparent",
+                    } as React.CSSProperties
+                  }
                 >
                   NFT Collection
                 </span>
               </h2>
-              <p className=" text-gray-modern-400 text-sm leading-5.5 tracking-[-2px] scale-x-95 origin-left">
+              <p className=" text-gray-modern-400 text-xl leading-5.5">
                 The Chimpions is a 1/1 animated pixel art NFT collection of 222
                 hand-drawn pieces. No generative layers - every Chimpion is
                 unique. Launched in January 2022 (WL only, 0.22 SOL mint).
               </p>
 
               <div className="flex flex-col gap-6">
-                <p className="text-white text-sm font-bold tracking-[-1px]">
+                <p className="text-white text-xl font-bold">
                   Holding a Chimpion gives you access to:
                 </p>
                 <ul className="flex flex-col gap-3">
                   {perks.map((perk) => (
                     <li key={perk} className="flex items-center gap-3">
                       <span className=" size-1.5 rounded-xs bg-gold-500 shrink-0" />
-                      <span className="text-gray-modern-25 text-sm leading-5 tracking-[-2px]">
+                      <span className="text-gray-modern-25 text-base leading-5">
                         {perk}
                       </span>
                     </li>
@@ -60,7 +63,7 @@ export default function AboutCollection() {
                   href="https://tensor.trade"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group flex w-full h-12 lg:w-auto items-center rounded-sm justify-center gap-3  border border-gray-modern-700 bg-gray-modern-900/50 px-6 py-3 text-sm font-sans text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"
+                  className="group flex w-full font-bold  h-12 lg:w-auto items-center rounded-sm justify-center gap-3  border border-gray-modern-700 bg-gray-modern-900/50 px-6 py-3 text-xl font-sans text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"
                 >
                   <span className="font-bold">
                     <span className="hidden xs:inline-block">View on</span> {""}
@@ -80,7 +83,7 @@ export default function AboutCollection() {
                   href="https://magiceden.io"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group flex w-full h-12 lg:w-auto items-center rounded-sm justify-center gap-3  border border-gray-modern-700 bg-gray-modern-900/50 px-6 py-3 text-sm font-sans text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"
+                  className="group flex w-full font-bold h-12 lg:w-auto items-center rounded-sm justify-center gap-3  border border-gray-modern-700 bg-gray-modern-900/50 px-6 py-3 text-xl font-sans text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"
                 >
                   <span className="font-bold">
                     <span className="hidden xs:inline-block">View on </span>{" "}

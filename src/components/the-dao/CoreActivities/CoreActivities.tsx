@@ -60,10 +60,10 @@ export default function CoreActivities() {
                   className="size-10"
                 />
               </div>
-              <h3 className="mt-4 text-white font-title text-[1.6rem] leading-7">
+              <h3 className="mt-4 text-white text-[2rem] font-bold leading-7">
                 {activity.title}
               </h3>
-              <p className="mt-2 text-gray-modern-400 text-[12px] leading-5 font-bold scale-x-75 origin-center tracking-[-1px]">
+              <p className="mt-2 text-gray-modern-400 text-xl leading-5 font-bold">
                 {activity.description}
               </p>
             </div>

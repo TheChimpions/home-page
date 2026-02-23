@@ -56,7 +56,7 @@ export default function Header() {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`text-sm font-sans transition-colors hover:text-gold-500 whitespace-nowrap flex items-center gap-1 tracking-[-1px] ${
+                    className={`text-xl font-sans transition-colors hover:text-gold-500 whitespace-nowrap flex items-center gap-1  ${
                       isActive
                         ? "text-gold-500 font-bold"
                         : "text-gray-modern-400"
@@ -82,7 +82,7 @@ export default function Header() {
                 href="https://tensor.trade"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group px-3 flex flex-row gap-2 lg:px-4 h-10 items-center border border-gray-modern-700 text-white text-xs lg:text-sm font-sans  hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950 transition-colors"
+                className="group text-xl font-bold px-3 flex flex-row gap-2 lg:px-4 h-10 items-center border border-gray-modern-700 text-white font-sans  hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950 transition-colors"
               >
                 <span>Tensor</span>
                 <Image
@@ -97,7 +97,7 @@ export default function Header() {
                 href="https://magiceden.io"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group px-3 flex flex-row gap-2 lg:px-4 h-10 items-center border border-gray-modern-700 text-white text-xs lg:text-sm font-sans  hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950 transition-colors"
+                className="group text-xl font-bold px-3 flex flex-row gap-2 lg:px-4 h-10 items-center border border-gray-modern-700 text-white font-sans  hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950 transition-colors"
               >
                 <span>Magic Eden</span>
                 <Image

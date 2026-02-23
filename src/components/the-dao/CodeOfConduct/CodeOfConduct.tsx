@@ -31,19 +31,22 @@ export default function CodeOfConduct() {
                   Code of{" "}
                   <span
                     className="animate-gradient-flow"
-                    style={{
-                      background: "linear-gradient(90deg, #c19110 0%, #f8d063 25%, #c19110 50%, #f8d063 75%, #c19110 100%)",
-                      backgroundSize: "200% 100%",
-                      backgroundClip: "text",
-                      WebkitBackgroundClip: "text",
-                      color: "transparent",
-                      WebkitTextFillColor: "transparent",
-                    } as React.CSSProperties}
+                    style={
+                      {
+                        background:
+                          "linear-gradient(90deg, #c19110 0%, #f8d063 25%, #c19110 50%, #f8d063 75%, #c19110 100%)",
+                        backgroundSize: "200% 100%",
+                        backgroundClip: "text",
+                        WebkitBackgroundClip: "text",
+                        color: "transparent",
+                        WebkitTextFillColor: "transparent",
+                      } as React.CSSProperties
+                    }
                   >
                     Conduct
                   </span>
                 </h2>
-                <p className=" text-white text-sm leading-5.5 tracking-[-2px]">
+                <p className=" text-white text-xl leading-5">
                   <span className="inline-block">
                     By joining The Chimpions community, you agree to follow the
                     values and guidelines set by the CHIAO.
@@ -70,7 +73,7 @@ export default function CodeOfConduct() {
                       width={60}
                       height={60}
                     />
-                    <h3 className="text-aqua-marine-400 text-[20px] leading-6 scale-x-75 origin-left font-bold">
+                    <h3 className="text-aqua-marine-400 text-[2rem] leading-6 font-bold">
                       Expected
                     </h3>
                   </div>
@@ -78,7 +81,7 @@ export default function CodeOfConduct() {
                     {expectedItems.map((item) => (
                       <li key={item} className="flex items-start gap-3">
                         <span className="mt-2 size-1.5 rounded-xs bg-gold-500 shrink-0" />
-                        <span className="text-gray-modern-25 text-[14px] scale-x-75 origin-left leading-5">
+                        <span className="text-gray-modern-25 text-base max-w-full lg:max-w-md leading-5">
                           {item}
                         </span>
                       </li>
@@ -94,7 +97,7 @@ export default function CodeOfConduct() {
                       width={60}
                       height={60}
                     />
-                    <h3 className="text-[#FF2C30] text-[20px] leading-6 scale-x-75 origin-left font-bold">
+                    <h3 className="text-[#FF2C30] text-[2rem] leading-6 font-bold">
                       Not Expected
                     </h3>
                   </div>
@@ -102,7 +105,7 @@ export default function CodeOfConduct() {
                     {notExpectedItems.map((item) => (
                       <li key={item} className="flex items-start gap-3">
                         <span className="mt-2 size-1.5 rounded-xs bg-gold-500 shrink-0" />
-                        <span className="text-gray-modern-25 text-[14px] scale-x-75 origin-left leading-5">
+                        <span className="text-gray-modern-25 text-base leading-5">
                           {item}
                         </span>
                       </li>
@@ -112,7 +115,7 @@ export default function CodeOfConduct() {
               </div>
             </div>
             <div className="mt-10 rounded-sm  bg-gray-modern-800 p-6 lg:text-center">
-              <p className="text-gray-modern-25 text-[13px] leading-5 flex flex-col lg:scale-x-75 lg:origin-center">
+              <p className="text-gray-modern-25 text-xl leading-5 flex flex-col">
                 <span className="w-full">
                   Violations may lead to disciplinary actions, reviewed and
                   voted on by the CHIAO.
@@ -126,7 +129,7 @@ export default function CodeOfConduct() {
           </div>
         </div>
 
-        <p className="mt-15 text-center text-gray-modern-25 text-[14px] leading-5 tracking-[-2px] flex flex-col ">
+        <p className="mt-15 text-center text-gray-modern-25 text-xl leading-5 flex flex-col ">
           <span>Let&apos;s keep this space clean, thoughtful, and real. </span>
           <span>Thanks for being here. 🐵❤️</span>
         </p>

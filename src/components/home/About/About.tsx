@@ -4,14 +4,14 @@ export default function About() {
   return (
     <section className="relative bg-gray-modern-950">
       <div className="max-w-480 mx-auto px-4 3xl:px-20 py-20">
-        <div className="grid grid-cols-1 lg:grid-cols-[0.9fr_1.2fr] gap-6 sm:gap-10 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-[0.9fr_0.9fr] gap-6 sm:gap-10 items-center">
           <h2 className="text-white font-title text-[55px] leading-13.75 sm:leading-16 sm:text-[4rem]">
             What is
             <br />
             The Chimpions
           </h2>
 
-          <p className="text-white text-sm leading-5.5 ">
+          <p className="text-white text-xl leading-[1.2rem] ">
             The Chimpions is more than an NFT collection—it&apos;s a movement.
             222 unique, meticulously crafted digital primates represent
             ownership in a holder-governed DAO that operates a Solana validator,

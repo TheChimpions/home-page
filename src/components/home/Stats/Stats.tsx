@@ -25,20 +25,20 @@ export default function Stats() {
                 key={index}
                 className="flex flex-col items-center text-center gap-4"
               >
-                <span className="text-gray-modern-400 text-[12px] leading-4 tracking-tighter">
+                <span className="text-gray-modern-400 text-xl">
                   {stat.label}
                 </span>
-                <span className="text-white text-[30px] font-bold leading-10">
+                <span className="text-white text-[3rem] font-bold leading-10">
                   {stat.value}
                 </span>
               </div>
             ))}
           </div>
           <div className="flex flex-col items-center text-center gap-4">
-            <span className="text-gray-modern-400 text-[12px] leading-4 tracking-tighter">
+            <span className="text-gray-modern-400 text-xl">
               {stats[4].label}
             </span>
-            <span className="text-white text-[30px] font-bold leading-10">
+            <span className="text-white text-[3rem] font-bold leading-10">
               {stats[4].value}
             </span>
           </div>
@@ -48,10 +48,8 @@ export default function Stats() {
         <div className="hidden lg:flex items-start justify-between">
           {stats.map((stat, index) => (
             <div key={index} className="flex flex-col items-start gap-4">
-              <span className="text-gray-modern-400 text-sm leading-4 tracking-tighter">
-                {stat.label}
-              </span>
-              <span className="text-white text-[30px] font-bold leading-10  scale-x-75 origin-left">
+              <span className="text-gray-modern-400 text-xl">{stat.label}</span>
+              <span className="text-white text-[3rem] font-bold leading-10">
                 {stat.value}
               </span>
             </div>

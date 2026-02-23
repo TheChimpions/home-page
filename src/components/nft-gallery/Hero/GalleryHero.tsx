@@ -43,19 +43,22 @@ export default function GalleryHero({
           <br />
           <span
             className="animate-gradient-flow"
-            style={{
-              background: "linear-gradient(90deg, #B411EE 0%, #11EEB4 25%, #B411EE 50%, #11EEB4 75%, #B411EE 100%)",
-              backgroundSize: "200% 100%",
-              backgroundClip: "text",
-              WebkitBackgroundClip: "text",
-              color: "transparent",
-              WebkitTextFillColor: "transparent",
-            } as React.CSSProperties}
+            style={
+              {
+                background:
+                  "linear-gradient(90deg, #B411EE 0%, #11EEB4 25%, #B411EE 50%, #11EEB4 75%, #B411EE 100%)",
+                backgroundSize: "200% 100%",
+                backgroundClip: "text",
+                WebkitBackgroundClip: "text",
+                color: "transparent",
+                WebkitTextFillColor: "transparent",
+              } as React.CSSProperties
+            }
           >
             Chimpianity
           </span>
         </h1>
-        <p className=" text-gray-modern-400 text-sm leading-5.5 tracking-[-2px] max-w-5xl mx-auto">
+        <p className=" text-gray-modern-400 text-xl leading-5 max-w-5xl mx-auto">
           Here before you lies the collective history of Chimpions past,
           present, and future.{" "}
           <span className="md:block">
@@ -88,7 +91,7 @@ export default function GalleryHero({
             placeholder="Search"
             value={filters.search || ""}
             onChange={handleSearchChange}
-            className="w-full rounded-sm border border-gray-modern-800 bg-gray-modern-950 p-4 text-xs text-white placeholder:text-gray-modern-500 outline-none focus:border-gray-modern-600"
+            className="w-full rounded-sm border border-gray-modern-800 bg-gray-modern-950 p-4 text-xl text-white placeholder:text-gray-modern-500 outline-none focus:border-gray-modern-600"
           />
           <Image
             src="/assets/search.svg"

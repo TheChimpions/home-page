@@ -5,8 +5,7 @@ type Member = {
   imageSrc?: string;
 };
 
-const placeholderAvatar =
-  "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><rect width='100%25' height='100%25' fill='%23313a4a'/></svg>";
+const placeholderAvatar = "/assets/placeholder.png";
 
 const councilMembers: Member[] = [
   { name: "Bill" },
@@ -39,12 +38,12 @@ export default function Governance() {
           unoptimized
           className="object-contain 5xl:object-cover  object-top"
         />
-        <div className="relative max-w-480 mx-auto px-4 3xl:px-20 pt-20 pb-20 flex flex-col gap-20">
+        <div className="relative max-w-480 mx-auto px-4 3xl:px-20 pt-20 pb-20 flex flex-col gap-10">
           <div className="text-center flex flex-col gap-4 items-center">
             <h2 className="text-white font-title text-[3rem] leading-11">
               Governance
             </h2>
-            <p className=" text-white text-sm leading-5.5 tracking-[-2px] max-w-2xl mx-auto">
+            <p className=" text-white text-xl leading-5 max-w-2xl mx-auto">
               Led by holders, operated by the community,
               <br />
               governed with transparency.
@@ -65,23 +64,21 @@ export default function Governance() {
               backgroundRepeat: "no-repeat",
             }}
           >
-            <p className="text-center text-white text-[2rem] tracking-[-1px] scale-x-75 origin-center">
-              Council
-            </p>
+            <p className="text-center text-white text-[2.5rem]">Council</p>
             {/* Layout Desktop */}
             <div className="hidden lg:flex flex-col gap-6">
-              <div className="flex justify-between gap-6">
+              <div className="grid grid-cols-5 gap-8">
                 {councilMembers.slice(0, 5).map((member) => (
                   <div
                     key={member.name}
-                    className="flex flex-col items-center gap-9 p-9"
+                    className="flex flex-col items-center gap-4"
                   >
-                    <div className="relative size-64 overflow-hidden rounded-sm border border-gray-modern-700 bg-gray-modern-800/80">
+                    <div className="relative w-full aspect-square overflow-hidden rounded-sm border border-gray-modern-700 bg-gray-modern-800/80">
                       <Image
                         src={member.imageSrc ?? placeholderAvatar}
                         alt={member.name}
                         fill
-                        sizes="256px"
+                        sizes="20vw"
                         unoptimized
                         className="object-cover"
                       />
@@ -93,18 +90,18 @@ export default function Governance() {
                 ))}
               </div>
 
-              <div className="flex justify-between gap-6 pl-24">
+              <div className="grid grid-cols-4 gap-8 px-[10%]">
                 {councilMembers.slice(5).map((member) => (
                   <div
                     key={member.name}
-                    className="flex flex-col items-center gap-9 p-9"
+                    className="flex flex-col items-center gap-4"
                   >
-                    <div className="relative size-64 overflow-hidden rounded-sm border border-gray-modern-700 bg-gray-modern-800/80">
+                    <div className="relative w-full aspect-square overflow-hidden rounded-sm border border-gray-modern-700 bg-gray-modern-800/80">
                       <Image
                         src={member.imageSrc ?? placeholderAvatar}
                         alt={member.name}
                         fill
-                        sizes="256px"
+                        sizes="20vw"
                         unoptimized
                         className="object-cover"
                       />
@@ -147,23 +144,24 @@ export default function Governance() {
           </div>
 
           <div className="text-center">
-            <p className="text-center text-white text-[2rem] tracking-[-1px] scale-x-75 origin-center">
+            <p className="text-center text-white text-[2.5rem]">
               Executive team
             </p>
 
             {/* Layout Desktop */}
-            <div className="mt-6 hidden lg:grid grid-cols-3 gap-6 w-full mx-auto">
+            <div className="mt-6 hidden lg:grid grid-cols-5 gap-8 w-full">
+              <div />
               {executiveTeam.map((member) => (
                 <div
                   key={member.name}
-                  className="flex flex-col items-center gap-9 p-9"
+                  className="flex flex-col items-center gap-4"
                 >
-                  <div className="relative size-64 overflow-hidden rounded-sm border border-gray-modern-700 bg-gray-modern-800/80">
+                  <div className="relative w-full aspect-square overflow-hidden rounded-sm border border-gray-modern-700 bg-gray-modern-800/80">
                     <Image
                       src={member.imageSrc ?? placeholderAvatar}
                       alt={member.name}
                       fill
-                      sizes="256px"
+                      sizes="20vw"
                       unoptimized
                       className="object-cover"
                     />
@@ -173,6 +171,7 @@ export default function Governance() {
                   </span>
                 </div>
               ))}
+              <div />
             </div>
 
             {/* Layout Mobile (< lg) */}

@@ -70,7 +70,7 @@ export default function OurVision() {
                 Integrity
               </span>
             </p>
-            <p className=" text-gray-modern-400 text-[0.95rem] leading-5 tracking-[-2px] sm:text-sm sm:leading-5.5 max-w-2xl mx-auto">
+            <p className=" text-gray-modern-400 text-xl leading-5 max-w-xl mx-auto">
               A holder-owned DAO building sustainable value through art, capital
               allocation, and community governance.
             </p>
@@ -115,7 +115,7 @@ export default function OurVision() {
                 Vision
               </span>
             </h2>
-            <p className=" text-white text-[0.95rem] leading-5 tracking-[-2px] sm:text-sm sm:leading-5.5 max-w-3xl mx-auto">
+            <p className=" text-white text-xl leading-5  max-w-3xl mx-auto">
               To create a long-term, values-first community powered by art,
               creativity, and integrity. The Chimpions is a safe space to grow
               as a collector, builder, or artist - with no hype cycles, no PnDs,
@@ -141,12 +141,10 @@ export default function OurVision() {
                   height={60}
                   className="size-15 object-contain transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6"
                 />
-                <h3
-                  className="mt-8 text-white font-title text-[22px] leading-6 sm:text-[26px] sm:leading-7 transition-colors duration-300 group-hover:[color:var(--card-color)]"
-                >
+                <h3 className="mt-8 text-white font-title text-[22px] leading-6 sm:text-[26px] sm:leading-7 transition-colors duration-300 group-hover:text(--card-color)]">
                   {card.title}
                 </h3>
-                <p className="mt-2 text-gray-modern-400 text-[0.95rem] leading-5 tracking-[-2px] sm:text-sm sm:leading-5.5 transition-colors duration-300 group-hover:text-gray-modern-300">
+                <p className="mt-2 text-gray-modern-400 text-xl leading-5 transition-colors duration-300 group-hover:text-gray-modern-300">
                   {card.description}
                 </p>
               </div>

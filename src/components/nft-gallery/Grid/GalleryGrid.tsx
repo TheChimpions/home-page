@@ -51,7 +51,7 @@ export default function GalleryGrid({ filters }: GalleryGridProps) {
   if (allNFTs.length === 0) {
     return (
       <div className="flex justify-center items-center py-20">
-        <div className="text-gray-modern-400 text-sm">
+        <div className="text-gray-modern-400 text-xl">
           No Chimpions found with these filters.
         </div>
       </div>
@@ -66,9 +66,7 @@ export default function GalleryGrid({ filters }: GalleryGridProps) {
             key={nft.tokenId}
             className="rounded-md border flex flex-col gap-4 border-gray-modern-600 bg-rich-black-900 p-4 shadow-[0_0_18px_rgba(0,0,0,0.25)]"
           >
-            <h3 className="text-white font-semibold text-xs tracking-[-2px]">
-              {nft.name}
-            </h3>
+            <h3 className="text-white font-semibold text-xl">{nft.name}</h3>
 
             <div className="relative w-full aspect-square overflow-hidden rounded-sm border border-gray-modern-800 bg-gray-modern-950">
               <Image
@@ -98,12 +96,12 @@ export default function GalleryGrid({ filters }: GalleryGridProps) {
                         height={20}
                         className="size-5"
                       />
-                      <span className="text-white text-[12px] tracking-[-2px]">
+                      <span className="text-white text-xl">
                         {detail.label}:
                       </span>
                     </div>
                     <span
-                      className="text-white text-[12px] tracking-[-2px] truncate max-w-50"
+                      className="text-white text-xl truncate max-w-50"
                       title={String(value || "Unknown")}
                     >
                       {String(value || "Unknown")}
@@ -122,18 +120,18 @@ export default function GalleryGrid({ filters }: GalleryGridProps) {
             type="button"
             onClick={() => fetchNextPage()}
             disabled={isFetchingNextPage}
-            className="flex cursor-pointer items-center gap-2 border border-gray-modern-700 font-semibold px-4 py-2 text-xs font-sans text-white transition-colors hover:bg-gray-modern-800 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex cursor-pointer text-xl items-center gap-2 border border-gray-modern-700 font-semibold px-4 py-2 text-xs font-sans text-white transition-colors hover:bg-gray-modern-800 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isFetchingNextPage ? (
-              <>
+              <span className="text-xl flex flex-row items-center gap-2">
                 Loading
                 <span className="animate-pulse">...</span>
-              </>
+              </span>
             ) : (
-              <>
+              <span className="text-xl flex flex-row items-center gap-2">
                 See more
-                <span className="text-lg leading-none">+</span>
-              </>
+                <span className="text-3xl leading-none">+</span>
+              </span>
             )}
           </button>
         </div>

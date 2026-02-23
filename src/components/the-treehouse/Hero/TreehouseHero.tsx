@@ -1,0 +1,30 @@
+export default function TreehouseHero() {
+  return (
+    <div className="mx-auto flex max-w-3xl flex-col items-center gap-4 text-center">
+      <h1 className="text-white font-title text-[2rem] leading-11 xs:text-[3rem] sm:leading-12">
+        The{" "}
+        <span
+          className="animate-gradient-flow"
+          style={
+            {
+              background:
+                "linear-gradient(90deg, #B411EE 0%, #11EEB4 25%, #B411EE 50%, #11EEB4 75%, #B411EE 100%)",
+              backgroundSize: "200% 100%",
+              backgroundClip: "text",
+              WebkitBackgroundClip: "text",
+              color: "transparent",
+              WebkitTextFillColor: "transparent",
+            } as React.CSSProperties
+          }
+        >
+          Treehouse
+        </span>
+      </h1>
+      <p className="max-w-3xl text-gray-modern-400 text-xl leading-5">
+        An art and research center where signal thrives. A sub-community focused
+        on art and research. It&apos;s a space to share, learn, and co-create
+        where every contributor is welcomed.
+      </p>
+    </div>
+  );
+}

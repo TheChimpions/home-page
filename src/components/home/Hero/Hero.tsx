@@ -20,20 +20,23 @@ export default function Hero() {
             <br />
             <span
               className="animate-gradient-flow"
-              style={{
-                background: "linear-gradient(90deg, #B411EE 0%, #11EEB4 25%, #B411EE 50%, #11EEB4 75%, #B411EE 100%)",
-                backgroundSize: "200% 100%",
-                backgroundClip: "text",
-                WebkitBackgroundClip: "text",
-                color: "transparent",
-                WebkitTextFillColor: "transparent",
-              } as React.CSSProperties}
+              style={
+                {
+                  background:
+                    "linear-gradient(90deg, #B411EE 0%, #11EEB4 25%, #B411EE 50%, #11EEB4 75%, #B411EE 100%)",
+                  backgroundSize: "200% 100%",
+                  backgroundClip: "text",
+                  WebkitBackgroundClip: "text",
+                  color: "transparent",
+                  WebkitTextFillColor: "transparent",
+                } as React.CSSProperties
+              }
             >
               The Chimpions
             </span>
           </h1>
 
-          <p className="text-xs text-center text-white leading-5.5 mt-6 px-4 ">
+          <p className="text-[1.25rem] text-center text-white leading-5.5 mt-6 px-4 ">
             A values-first and art-driven DAO investing in builders, art and
             Web3 culture. The modern think tank on Solana.
           </p>
@@ -70,20 +73,23 @@ export default function Hero() {
               <br />
               <span
                 className="animate-gradient-flow"
-                style={{
-                  background: "linear-gradient(90deg, #B411EE 0%, #11EEB4 25%, #B411EE 50%, #11EEB4 75%, #B411EE 100%)",
-                  backgroundSize: "200% 100%",
-                  backgroundClip: "text",
-                  WebkitBackgroundClip: "text",
-                  color: "transparent",
-                  WebkitTextFillColor: "transparent",
-                } as React.CSSProperties}
+                style={
+                  {
+                    background:
+                      "linear-gradient(90deg, #B411EE 0%, #11EEB4 25%, #B411EE 50%, #11EEB4 75%, #B411EE 100%)",
+                    backgroundSize: "200% 100%",
+                    backgroundClip: "text",
+                    WebkitBackgroundClip: "text",
+                    color: "transparent",
+                    WebkitTextFillColor: "transparent",
+                  } as React.CSSProperties
+                }
               >
                 The Chimpions
               </span>
             </h1>
 
-            <p className="text-sm text-white leading-5.5 mt-4 lg:max-w-md xl:max-w-2xl 2xl:max-w-full">
+            <p className="text-[1.25rem] text-white leading-5.5 mt-4 lg:max-w-md xl:max-w-2xl 2xl:max-w-full">
               A values-first and art-driven DAO investing in builders, art and
               Web3 culture.
               <br />

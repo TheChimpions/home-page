@@ -23,17 +23,17 @@ export default function Collection() {
               <h2 className="text-white font-title leading-11 text-[3rem] sm:leading-13">
                 The Collection
               </h2>
-              <p className="text-white text-sm leading-5.5 tracking-[-2px] max-w-xl">
+              <p className="text-white text-xl leading-5  max-w-xl">
                 222 unique Chimpions form the foundation of our DAO.
               </p>
             </div>
             <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-16 lg:gap-6">
               {collectionStats.map((stat) => (
-                <div key={stat.label} className="flex flex-col gap-6">
-                  <span className="text-gray-modern-400 text-xs leading-4 tracking-tighter">
+                <div key={stat.label} className="flex flex-col gap-4">
+                  <span className="text-gray-modern-400 text-xl leading-5 ">
                     {stat.label}
                   </span>
-                  <span className="text-white font-sans font-bold text-[3rem] leading-10 scale-x-75 origin-center lg:origin-left">
+                  <span className="text-white font-sans font-bold text-[4rem] leading-10">
                     {stat.value}
                   </span>
                 </div>

@@ -8,19 +8,22 @@ export default function OurHoldersHero() {
           Chimpion is{" "}
           <span
             className="animate-gradient-flow"
-            style={{
-              background: "linear-gradient(90deg, #B411EE 0%, #11EEB4 25%, #B411EE 50%, #11EEB4 75%, #B411EE 100%)",
-              backgroundSize: "200% 100%",
-              backgroundClip: "text",
-              WebkitBackgroundClip: "text",
-              color: "transparent",
-              WebkitTextFillColor: "transparent",
-            } as React.CSSProperties}
+            style={
+              {
+                background:
+                  "linear-gradient(90deg, #B411EE 0%, #11EEB4 25%, #B411EE 50%, #11EEB4 75%, #B411EE 100%)",
+                backgroundSize: "200% 100%",
+                backgroundClip: "text",
+                WebkitBackgroundClip: "text",
+                color: "transparent",
+                WebkitTextFillColor: "transparent",
+              } as React.CSSProperties
+            }
           >
             a great holder
           </span>
         </h1>
-        <p className=" text-gray-modern-400 text-sm leading-5.5 tracking-[-2px] max-w-2xl mx-auto">
+        <p className=" text-gray-modern-400 text-xl leading-5max-w-2xl mx-auto">
           Here&apos;s the community shaping the future of on-chain culture.
         </p>
       </div>
@@ -29,19 +32,22 @@ export default function OurHoldersHero() {
           Our{" "}
           <span
             className="animate-gradient-flow"
-            style={{
-              background: "linear-gradient(90deg, #c19110 0%, #f8d063 25%, #c19110 50%, #f8d063 75%, #c19110 100%)",
-              backgroundSize: "200% 100%",
-              backgroundClip: "text",
-              WebkitBackgroundClip: "text",
-              color: "transparent",
-              WebkitTextFillColor: "transparent",
-            } as React.CSSProperties}
+            style={
+              {
+                background:
+                  "linear-gradient(90deg, #EEB411 0%, #f8d063 25%, #EEB411 50%, #f8d063 75%, #EEB411 100%)",
+                backgroundSize: "200% 100%",
+                backgroundClip: "text",
+                WebkitBackgroundClip: "text",
+                color: "transparent",
+                WebkitTextFillColor: "transparent",
+              } as React.CSSProperties
+            }
           >
             Holders
           </span>
         </h2>
-        <p className=" text-white text-sm leading-5.5 tracking-[-2px]">
+        <p className=" text-white text-xl leading-5">
           Meet the community members who own and shape The Chimpions ecosystem
         </p>
       </div>

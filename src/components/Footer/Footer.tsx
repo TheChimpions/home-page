@@ -27,14 +27,14 @@ export default function Footer() {
             height={63}
           />
 
-          <p className="text-gray-modern-300 text-xs font-sans leading-6.5 mt-6">
+          <p className="text-gray-modern-300 text-xl font-sans leading-4.5 mt-6">
             222 unique Chimpions. One powerful DAO.
             <br />
             Built on Solana.
           </p>
 
           <div className="mt-12">
-            <h3 className="text-gray-modern-25 font-sans text-sm font-bold tracking-[0.04em] mb-4">
+            <h3 className="text-gray-modern-25 font-sans text-xl font-bold mb-4">
               The Chimpions
             </h3>
             <div className="flex flex-col items-center gap-4">
@@ -42,7 +42,7 @@ export default function Footer() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-gray-modern-50 hover:text-gold-500 text-sm font-sans transition-colors underline underline-offset-2 decoration-gray-modern-400 hover:decoration-gold-500"
+                  className="text-gray-modern-50 hover:text-gold-500 text-xl font-sans transition-colors underline underline-offset-2 decoration-gray-modern-400 hover:decoration-gold-500"
                 >
                   {link.label}
                 </Link>
@@ -51,7 +51,7 @@ export default function Footer() {
           </div>
 
           <div className="mt-12">
-            <h3 className="text-gray-modern-25 font-sans text-sm font-bold tracking-[0.04em] mb-4">
+            <h3 className="text-gray-modern-25 font-sans text-xl font-bold mb-4">
               Community
             </h3>
             <ul className="space-y-3">
@@ -60,7 +60,7 @@ export default function Footer() {
                   href="https://twitter.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-modern-50 hover:text-gold-500 text-sm font-sans transition-colors underline underline-offset-2 decoration-gray-modern-400 hover:decoration-gold-500"
+                  className="text-gray-modern-50 hover:text-gold-500 text-xl font-sans transition-colors underline underline-offset-2 decoration-gray-modern-400 hover:decoration-gold-500"
                 >
                   Twitter
                 </a>
@@ -80,7 +80,7 @@ export default function Footer() {
 
           <div className="border-t border-gray-modern-800 w-full my-10"></div>
 
-          <p className="text-gray-modern-50 text-xs font-sans font-normal">
+          <p className="text-gray-modern-50 text-base font-sans font-normal">
             © {new Date().getFullYear()} Chimpions
           </p>
 
@@ -89,7 +89,7 @@ export default function Footer() {
               href="https://tensor.trade"
               target="_blank"
               rel="noopener noreferrer"
-              className="group w-full sm:max-w-xs px-4 flex flex-row gap-2 h-10 items-center justify-center border border-gray-modern-700 text-white text-sm font-sans hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950 transition-colors"
+              className="group w-full font-bold sm:max-w-xs px-4 flex flex-row gap-2 h-10 items-center justify-center border border-gray-modern-700 text-white text-xl font-sans hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950 transition-colors"
             >
               <span>Tensor</span>
               <Image
@@ -104,7 +104,7 @@ export default function Footer() {
               href="https://magiceden.io"
               target="_blank"
               rel="noopener noreferrer"
-              className="group w-full sm:max-w-xs px-4 flex flex-row gap-2 h-10 items-center justify-center border border-gray-modern-700 text-white text-sm font-sans hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950 transition-colors"
+              className="group w-full font-bold sm:max-w-xs px-4 flex flex-row gap-2 h-10 items-center justify-center border border-gray-modern-700 text-white text-xl font-sans hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950 transition-colors"
             >
               <span>Magic Eden</span>
               <Image
@@ -132,7 +132,7 @@ export default function Footer() {
                 quality={100}
                 height={63}
               />
-              <p className="text-gray-modern-300 text-xs font-sans leading-4.5 max-w-3xl">
+              <p className="text-gray-modern-300 text-xl font-sans leading-5 max-w-3xl">
                 222 unique Chimpions. One powerful DAO.
                 <br />
                 Built on Solana.
@@ -140,15 +140,15 @@ export default function Footer() {
             </div>
 
             <div>
-              <h3 className="text-gray-modern-25 font-sans text-sm font-bold tracking-[0.04em] mb-5">
+              <h3 className="text-gray-modern-25 font-sans text-xl font-bold  mb-5">
                 The Chimpions
               </h3>
-              <div className="flex flex-wrap gap-x-6 gap-y-6 max-w-md">
+              <div className="flex flex-wrap gap-x-6 gap-y-6 max-w-xs">
                 {chimpionsLinks.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
-                    className="text-gray-modern-50 hover:text-gold-500 text-sm font-sans transition-colors underline underline-offset-2 decoration-gray-modern-400 hover:decoration-gold-500"
+                    className="text-gray-modern-50 hover:text-gold-500 text-xl font-sans transition-colors underline underline-offset-2 decoration-gray-modern-400 hover:decoration-gold-500"
                   >
                     {link.label}
                   </Link>
@@ -157,7 +157,7 @@ export default function Footer() {
             </div>
 
             <div className="lg:justify-self-end lg:text-right">
-              <h3 className="text-gray-modern-25 font-sans text-sm font-bold tracking-[0.04em] mb-5">
+              <h3 className="text-gray-modern-25 font-sans text-xl font-bold mb-5">
                 Community
               </h3>
               <ul className="space-y-3">
@@ -166,7 +166,7 @@ export default function Footer() {
                     href="https://twitter.com"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-gray-modern-50 hover:text-gold-500 text-sm font-sans transition-colors underline underline-offset-2 decoration-gray-modern-400 hover:decoration-gold-500"
+                    className="text-gray-modern-50 hover:text-gold-500 text-xl font-sans transition-colors underline underline-offset-2 decoration-gray-modern-400 hover:decoration-gold-500"
                   >
                     Twitter
                   </a>
@@ -176,7 +176,7 @@ export default function Footer() {
                     href="https://discord.com"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-gray-modern-50 hover:text-gold-500 text-sm font-sans transition-colors underline underline-offset-2 decoration-gray-modern-400 hover:decoration-gold-500"
+                    className="text-gray-modern-50 hover:text-gold-500 text-xl font-sans transition-colors underline underline-offset-2 decoration-gray-modern-400 hover:decoration-gold-500"
                   >
                     Discord
                   </a>
@@ -192,7 +192,7 @@ export default function Footer() {
 
         <div className="">
           <div className="max-w-480 mx-auto px-4 3xl:px-20 pt-0 pb-16 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-gray-modern-50 text-xs font-sans font-normal">
+            <p className="text-gray-modern-50 text-base font-sans font-normal">
               © {new Date().getFullYear()} Chimpions
             </p>
 
@@ -201,7 +201,7 @@ export default function Footer() {
                 href="https://tensor.trade"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group px-3 flex flex-row gap-2 lg:px-4 h-10 items-center border border-gray-modern-700 text-white text-xs lg:text-sm font-sans hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950 transition-colors"
+                className="group px-3 flex font-bold flex-row gap-2 lg:px-4 h-10 items-center border border-gray-modern-700 text-white text-xl  font-sans hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950 transition-colors"
               >
                 <span>Tensor</span>
                 <Image
@@ -216,7 +216,7 @@ export default function Footer() {
                 href="https://magiceden.io"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group px-3 flex flex-row gap-2 lg:px-4 h-10 items-center border border-gray-modern-700 text-white text-xs lg:text-sm font-sans hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950 transition-colors"
+                className="group px-3 flex font-bold flex-row gap-2 lg:px-4 h-10 items-center border border-gray-modern-700 text-white text-xl font-sans hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950 transition-colors"
               >
                 <span>Magic Eden</span>
                 <Image
