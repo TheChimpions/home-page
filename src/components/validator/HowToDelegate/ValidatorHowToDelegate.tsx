@@ -77,7 +77,7 @@ export default function ValidatorHowToDelegate() {
 
       <div className="relative flex flex-col gap-6 lg:gap-14">
         <div className="mx-auto grid w-full max-w-333.75 grid-cols-1 gap-6 lg:grid-cols-[287px_1fr] lg:items-start">
-          <div className="mx-auto w-full max-w-71.75 rounded-md bshadow-[0_0_18px_rgba(0,0,0,0.25)]">
+          <div className="hidden w-full max-w-71.75 rounded-md bshadow-[0_0_18px_rgba(0,0,0,0.25)] lg:block">
             <div className="overflow-hidden">
               <Image
                 src="/assets/screenshot.png"

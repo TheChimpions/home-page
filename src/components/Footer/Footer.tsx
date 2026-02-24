@@ -27,7 +27,7 @@ export default function Footer() {
             height={63}
           />
 
-          <p className="text-gray-modern-300 text-xl font-sans leading-4.5 mt-6">
+          <p className="text-gray-modern-300 text-xl font-sans leading-5 mt-6">
             222 unique Chimpions. One powerful DAO.
             <br />
             Built on Solana.

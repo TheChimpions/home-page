@@ -110,7 +110,7 @@ export default function Faq() {
                       }`}
                     >
                       <div className="overflow-hidden">
-                        <p className="mt-2 text-gray-modern-400 text-xl leading-4.5 max-w-xl">
+                        <p className="mt-2 text-gray-modern-400 text-xl leading-5 max-w-xl">
                           {item.answer}
                         </p>
                       </div>
