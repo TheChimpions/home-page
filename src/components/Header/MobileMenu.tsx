@@ -3,6 +3,7 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { LayoutList } from "lucide-react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 
@@ -16,6 +17,7 @@ interface MobileMenuProps {
   onClose: () => void;
   navigationItems: NavigationItem[];
   currentPath: string;
+  onMyListings: () => void;
 }
 
 function MobileWalletButton() {
@@ -24,7 +26,7 @@ function MobileWalletButton() {
   const mounted = useSyncExternalStore(
     () => () => {},
     () => true,
-    () => false
+    () => false,
   );
 
   if (!mounted || (!connected && !connecting)) {
@@ -45,7 +47,7 @@ function MobileWalletButton() {
     return (
       <button
         onClick={() => disconnect()}
-        className="group flex w-full items-center justify-center gap-2 h-12 border border-gray-modern-700 text-white font-bold font-sans transition-colors hover:bg-red-500/20 hover:border-red-500/50 hover:text-red-400"
+        className="group flex w-full text-base items-center justify-center gap-2 h-12 border border-gray-modern-700 text-white font-bold font-sans transition-colors hover:bg-red-500/20 hover:border-red-500/50 hover:text-red-400"
       >
         {short} · Disconnect
       </button>
@@ -55,11 +57,26 @@ function MobileWalletButton() {
   return null;
 }
 
+function MyListingsButton({ onMyListings, onClose }: { onMyListings: () => void; onClose: () => void }) {
+  const { connected } = useWallet();
+  if (!connected) return null;
+  return (
+    <button
+      onClick={() => { onClose(); onMyListings(); }}
+      className="group flex w-full items-center justify-center gap-2 h-12 border border-gray-modern-700 bg-gray-modern-900/50 px-6 text-base font-bold font-sans text-white transition-colors hover:bg-aqua-marine-500/20 hover:border-aqua-marine-500/50 hover:text-aqua-marine-400"
+    >
+      <LayoutList className="w-4 h-4 shrink-0" />
+      My Listings
+    </button>
+  );
+}
+
 export default function MobileMenu({
   isOpen,
   onClose,
   navigationItems,
   currentPath,
+  onMyListings,
 }: MobileMenuProps) {
   const [shouldRender, setShouldRender] = useState(isOpen);
   const [isVisible, setIsVisible] = useState(isOpen);
@@ -105,7 +122,7 @@ export default function MobileMenu({
         }`}
       >
         <div className="flex flex-col h-full">
-          <div className="relative flex items-center justify-center px-6 pt-6 pb-4">
+          <div className="relative flex items-center justify-center px-4 py-4">
             <button
               onClick={onClose}
               className="absolute left-6 top-6 text-white hover:text-gold-400 transition-colors"
@@ -163,12 +180,13 @@ export default function MobileMenu({
           </nav>
 
           <div className="md:hidden p-6 border-t border-gray-modern-800 space-y-3">
+            <MyListingsButton onMyListings={onMyListings} onClose={onClose} />
             <MobileWalletButton />
             <a
               href="https://tensor.trade"
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex w-full font-bold lg:w-auto items-center justify-center gap-2 h-12 border border-gray-modern-700 bg-gray-modern-900/50 px-6 py-3 text-xs font-sans text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"
+              className="group flex w-full font-bold lg:w-auto items-center justify-center gap-2 h-12 border border-gray-modern-700 bg-gray-modern-900/50 px-6 py-3 text-base font-sans text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"
             >
               <span className="font-bold">Tensor</span>
               <Image
@@ -183,7 +201,7 @@ export default function MobileMenu({
               href="https://magiceden.io"
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex w-full font-bold lg:w-auto items-center justify-center gap-2 h-12 border border-gray-modern-700 bg-gray-modern-900/50 px-6 py-3 text-xs font-sans text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"
+              className="group flex w-full font-bold lg:w-auto items-center justify-center gap-2 h-12 border border-gray-modern-700 bg-gray-modern-900/50 px-6 py-3 text-base font-sans text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"
             >
               <span className="font-bold">Magic Eden</span>
               <Image

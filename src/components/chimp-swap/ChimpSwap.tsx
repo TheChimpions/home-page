@@ -8,6 +8,7 @@ import CustomSelect from "@/components/nft-gallery/Hero/CustomSelect";
 import PostChimpModal from "./PostChimpModal";
 import SwapDetailModal from "./SwapDetailModal";
 import SwapWizardModal from "./SwapWizardModal";
+import NFTCardSkeleton from "@/components/nft-gallery/Grid/NFTCardSkeleton";
 
 const TRIBE_OPTIONS = [
   "All Tribes",
@@ -18,20 +19,6 @@ const TRIBE_OPTIONS = [
 ];
 
 const TYPE_OPTIONS = ["All Types", "1/1"];
-
-function ListingSkeleton() {
-  return (
-    <div className="flex flex-col border border-gray-modern-800 bg-gray-modern-900 animate-pulse">
-      <div className="h-8 bg-gray-modern-800 m-3 rounded" />
-      <div className="aspect-square bg-gray-modern-800" />
-      <div className="flex flex-col gap-2 px-3 py-3">
-        {[...Array(4)].map((_, i) => (
-          <div key={i} className="h-4 bg-gray-modern-800 rounded" />
-        ))}
-      </div>
-    </div>
-  );
-}
 
 export default function ChimpSwap() {
   const [listings, setListings] = useState<ChimpListing[]>([]);
@@ -127,34 +114,36 @@ export default function ChimpSwap() {
         </div>
 
         <div className="flex flex-col lg:flex-row gap-6 items-start">
-          <div className="relative z-20 w-full lg:w-64 shrink-0 flex flex-col gap-4">
-            <CustomSelect
-              value={tribe}
-              onChange={setTribe}
-              options={TRIBE_OPTIONS}
-              icon="/assets/tribe.svg"
-              placeholder="Select a Tribe"
-              containerClassName="relative w-full"
-            />
-            <CustomSelect
-              value={type}
-              onChange={setType}
-              options={TYPE_OPTIONS}
-              icon="/assets/type.svg"
-              placeholder="Select a Type"
-              containerClassName="relative w-full"
-            />
+          <div className="relative z-20 w-full lg:w-84 shrink-0 flex flex-col gap-10">
+            <div className="flex flex-col w-full gap-6">
+              <CustomSelect
+                value={tribe}
+                onChange={setTribe}
+                options={TRIBE_OPTIONS}
+                icon="/assets/tribe.svg"
+                placeholder="Select a Tribe"
+                containerClassName="relative w-full"
+              />
+              <CustomSelect
+                value={type}
+                onChange={setType}
+                options={TYPE_OPTIONS}
+                icon="/assets/type.svg"
+                placeholder="Select a Type"
+                containerClassName="relative w-full"
+              />
+            </div>
             <button
               onClick={() => setShowModal(true)}
-              className="cursor-pointer w-full h-12 bg-violet-600 hover:bg-violet-500 transition-colors text-white font-bold font-sans text-base"
+              className="cursor-pointer w-full py-2 px-4 rounded-sm  bg-electric-purple-600 hover:bg-electric-purple-500 transition-colors text-white font-bold font-sans text-xl"
             >
               Post Your Chimp
             </button>
           </div>
 
-          <div className="flex-1 grid grid-cols-2  :grid-cols-3 xl:grid-cols-4 gap-4">
+          <div className="flex-1 grid grid-cols-1 w-full sm:grid-cols-2 md:grid-cols-3 5xl:grid-cols-4 gap-6">
             {loading ? (
-              [...Array(6)].map((_, i) => <ListingSkeleton key={i} />)
+              [...Array(6)].map((_, i) => <NFTCardSkeleton key={i} />)
             ) : filtered.length > 0 ? (
               filtered.map((listing) => (
                 <ListingCard

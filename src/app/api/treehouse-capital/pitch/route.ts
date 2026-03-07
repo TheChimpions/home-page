@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { Resend } from "resend";
 
 type PitchPayload = {
   founderName: string;
@@ -146,6 +147,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const resend = new Resend(process.env.RESEND_API_KEY);
+
+    const { error } = await resend.emails.send({
+      from: "Treehouse Capital <onboarding@resend.dev>",
+      to: process.env.PITCH_TO_EMAIL!,
+      replyTo: payload.email,
+      subject: `New Pitch: ${payload.companyName} — ${payload.founderName}`,
+      html: buildPitchEmail(payload),
+    });
+
+    if (error) {
+      console.error("Resend error:", error);
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
     return NextResponse.json({ ok: true }, { status: 200 });
   } catch {
     return NextResponse.json(
@@ -153,4 +169,39 @@ export async function POST(request: NextRequest) {
       { status: 400 },
     );
   }
+}
+
+function buildPitchEmail(p: PitchPayload): string {
+  const row = (label: string, value: string) =>
+    value
+      ? `<tr><td style="padding:8px 12px;color:#9ca3af;width:160px;vertical-align:top;white-space:nowrap">${label}</td><td style="padding:8px 12px;color:#f3f4f6">${value.replace(/\n/g, "<br>")}</td></tr>`
+      : "";
+
+  return `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="background:#0d121c;margin:0;padding:32px;font-family:sans-serif">
+  <div style="max-width:600px;margin:0 auto;background:#161d2b;border:1px solid #1e2a3a;border-radius:8px;overflow:hidden">
+    <div style="background:#0e7a5f;padding:24px 32px">
+      <h1 style="margin:0;color:#fff;font-size:20px;font-weight:700">New Pitch Submission</h1>
+      <p style="margin:4px 0 0;color:#a7f3d0;font-size:14px">Treehouse Capital</p>
+    </div>
+    <div style="padding:24px 32px">
+      <table style="width:100%;border-collapse:collapse">
+        ${row("Founder", p.founderName)}
+        ${row("Email", `<a href="mailto:${p.email}" style="color:#34d399">${p.email}</a>`)}
+        ${row("Company", p.companyName)}
+        ${row("Stage", p.stage)}
+        ${row("Funding Ask", p.fundingAmount)}
+        ${row("Website", p.websiteDemo ? `<a href="${p.websiteDemo}" style="color:#34d399">${p.websiteDemo}</a>` : "")}
+        ${row("Twitter/Social", p.twitterSocial ? `<a href="${p.twitterSocial}" style="color:#34d399">${p.twitterSocial}</a>` : "")}
+      </table>
+      ${p.pitchDetails ? `<div style="margin-top:24px"><p style="color:#9ca3af;margin:0 0 8px;font-size:13px;text-transform:uppercase;letter-spacing:.05em">Pitch Details</p><p style="color:#f3f4f6;margin:0;white-space:pre-wrap">${p.pitchDetails}</p></div>` : ""}
+      ${p.whySolana ? `<div style="margin-top:24px"><p style="color:#9ca3af;margin:0 0 8px;font-size:13px;text-transform:uppercase;letter-spacing:.05em">Why Solana?</p><p style="color:#f3f4f6;margin:0;white-space:pre-wrap">${p.whySolana}</p></div>` : ""}
+      ${p.additionalInformation ? `<div style="margin-top:24px"><p style="color:#9ca3af;margin:0 0 8px;font-size:13px;text-transform:uppercase;letter-spacing:.05em">Additional Information</p><p style="color:#f3f4f6;margin:0;white-space:pre-wrap">${p.additionalInformation}</p></div>` : ""}
+    </div>
+  </div>
+</body>
+</html>`;
 }

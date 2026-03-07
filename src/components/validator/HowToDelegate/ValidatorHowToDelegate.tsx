@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { toast } from "sonner";
-import StakeTerminal from "@/components/StakeTerminal/StakeTerminal";
+import StakeTerminal from "@/components/validator/StakeTerminal/StakeTerminal";
 
 const walletSteps = [
   "Open Phantom, Backpack, Solflare, etc.",

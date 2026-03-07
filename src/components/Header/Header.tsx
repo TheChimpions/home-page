@@ -6,7 +6,13 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
-import { ChevronDown, ChevronUp, Wallet, LayoutList, Trash2 } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronUp,
+  Wallet,
+  LayoutList,
+  Trash2,
+} from "lucide-react";
 import MobileMenu from "./MobileMenu";
 import MyListingsPanel from "./MyListingsPanel";
 
@@ -99,25 +105,25 @@ function NavDropdown({
 
       {open && (
         <div className="absolute top-full left-0 pt-2 min-w-44 z-50">
-        <div className="bg-gray-modern-900 border border-gray-modern-800 rounded-md py-1 shadow-xl">
-          {group.items.map((item) => {
-            const isItemActive = currentPath === item.href;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setOpen(false)}
-                className={`flex items-center gap-1.5 px-4 py-2.5 text-lg font-sans transition-colors hover:text-gold-500 whitespace-nowrap ${
-                  isItemActive
-                    ? "text-gold-500 font-bold"
-                    : "text-gray-modern-400"
-                }`}
-              >
-                {item.label}
-              </Link>
-            );
-          })}
-        </div>
+          <div className="bg-gray-modern-900 border border-gray-modern-800 rounded-md py-1 shadow-xl">
+            {group.items.map((item) => {
+              const isItemActive = currentPath === item.href;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setOpen(false)}
+                  className={`flex items-center gap-1.5 px-4 py-2.5 text-lg font-sans transition-colors hover:text-gold-500 whitespace-nowrap ${
+                    isItemActive
+                      ? "text-gold-500 font-bold"
+                      : "text-gray-modern-400"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+          </div>
         </div>
       )}
     </div>
@@ -219,13 +225,29 @@ function WalletButton({ onMyListings }: { onMyListings: () => void }) {
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showMyListings, setShowMyListings] = useState(false);
+  const [headerVisible, setHeaderVisible] = useState(true);
+  const lastScrollY = useRef(0);
   const pathname = usePathname();
+
+  useEffect(() => {
+    const onScroll = () => {
+      const current = window.scrollY;
+      if (current < 10 || current < lastScrollY.current - 5) {
+        setHeaderVisible(true);
+      } else if (current > lastScrollY.current + 5) {
+        setHeaderVisible(false);
+      }
+      lastScrollY.current = current;
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-gray-modern-900 border-b border-gray-modern-800">
+      <header className={`sticky top-0 z-50 bg-gray-modern-900 border-b border-gray-modern-800 transition-transform duration-300 min-[1400px]:translate-y-0 ${headerVisible ? "translate-y-0" : "-translate-y-full"}`}>
         <div className="w-full min-[1400px]:py-2">
-          <div className="max-w-480 mx-auto h-20 flex items-center justify-between relative z-10 px-4 3xl:px-20">
+          <div className="max-w-480 mx-auto h-16 min-[1400px]:h-20 flex items-center justify-between relative z-10 px-4 3xl:px-20">
             <button
               onClick={() => setIsMobileMenuOpen(true)}
               className="min-[1400px]:hidden flex flex-col gap-1 w-7 h-6 justify-center"
@@ -243,7 +265,7 @@ export default function Header() {
                 alt="The Chimpions"
                 width={76}
                 height={45}
-                className="xs:h-11.25 xs:w-19 w-13.5 h-7.75"
+                className="w-auto h-8 xs:h-9"
                 priority
               />
             </Link>
@@ -262,41 +284,41 @@ export default function Header() {
                 />
               </Link>
               <nav className="flex items-center gap-8">
-              {navigation.map((entry) => {
-                if (isGroup(entry)) {
-                  return (
-                    <NavDropdown
-                      key={entry.label}
-                      group={entry}
-                      currentPath={pathname}
-                    />
-                  );
-                }
-                const isActive = pathname === entry.href;
-                return (
-                  <Link
-                    key={entry.href}
-                    href={entry.href}
-                    className={`text-lg font-sans transition-colors hover:text-gold-500 whitespace-nowrap flex items-center gap-1 ${
-                      isActive
-                        ? "text-gold-500 font-bold"
-                        : "text-gray-modern-400"
-                    }`}
-                  >
-                    {isActive && (
-                      <Image
-                        src="/assets/yellow-arrow.svg"
-                        alt=""
-                        width={20}
-                        height={20}
-                        className="w-6 h-6"
+                {navigation.map((entry) => {
+                  if (isGroup(entry)) {
+                    return (
+                      <NavDropdown
+                        key={entry.label}
+                        group={entry}
+                        currentPath={pathname}
                       />
-                    )}
-                    {entry.label}
-                  </Link>
-                );
-              })}
-            </nav>
+                    );
+                  }
+                  const isActive = pathname === entry.href;
+                  return (
+                    <Link
+                      key={entry.href}
+                      href={entry.href}
+                      className={`text-lg font-sans transition-colors hover:text-gold-500 whitespace-nowrap flex items-center gap-1 ${
+                        isActive
+                          ? "text-gold-500 font-bold"
+                          : "text-gray-modern-400"
+                      }`}
+                    >
+                      {isActive && (
+                        <Image
+                          src="/assets/yellow-arrow.svg"
+                          alt=""
+                          width={20}
+                          height={20}
+                          className="w-6 h-6"
+                        />
+                      )}
+                      {entry.label}
+                    </Link>
+                  );
+                })}
+              </nav>
             </div>
 
             <div className="hidden min-[1400px]:flex items-center gap-2 shrink-0">
@@ -343,6 +365,7 @@ export default function Header() {
         onClose={() => setIsMobileMenuOpen(false)}
         navigationItems={allNavItems}
         currentPath={pathname}
+        onMyListings={() => setShowMyListings(true)}
       />
 
       {showMyListings && (

@@ -115,12 +115,12 @@ export default function MyListingsPanel({ onClose }: MyListingsPanelProps) {
   return (
     <>
       <div
-        className="fixed inset-0 z-[90] bg-black/50"
+        className="fixed inset-0 z-90 bg-black/50"
         onClick={onClose}
         aria-hidden="true"
       />
 
-      <div className="fixed top-0 right-0 bottom-0 z-[100] w-80 bg-gray-modern-950 border-l border-gray-modern-800 flex flex-col shadow-2xl">
+      <div className="fixed top-0 right-0 bottom-0 z-100 w-80 bg-gray-modern-950 border-l border-gray-modern-800 flex flex-col shadow-2xl">
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-modern-800 shrink-0">
           <h2 className="text-white font-bold font-sans text-base">
             My Listings
@@ -146,7 +146,7 @@ export default function MyListingsPanel({ onClose }: MyListingsPanelProps) {
               Connect your wallet to see your listings.
             </p>
           ) : chimps.length === 0 ? (
-            <p className="text-gray-modern-500 text-sm text-center py-8">
+            <p className="text-gray-modern-500 text-base text-center py-8">
               No Chimpions found in this wallet.
             </p>
           ) : (

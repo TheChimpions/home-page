@@ -5,7 +5,7 @@ export default function TreehouseCapitalHero() {
     <section className="mx-auto w-full">
       <article className="overflow-hidden rounded-md border border-gray-modern-700/70 shadow-[0_0_18px_rgba(0,0,0,0.35)]">
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.05fr]">
-          <div className="relative flex h-[16.9375rem] items-center justify-center bg-[#202736] px-8 py-10 lg:px-12 lg:py-11">
+          <div className="relative flex h-67.75 items-center justify-center bg-[#202736] px-8 py-10 lg:px-12 lg:py-11">
             <Image
               src="/assets/left-capital.png"
               alt=""
@@ -23,7 +23,7 @@ export default function TreehouseCapitalHero() {
             />
           </div>
 
-          <div className="relative flex h-[16.9375rem] items-center justify-center bg-aqua-marine-500 px-8 py-10 lg:px-12 lg:py-11">
+          <div className="relative flex h-67.75 items-center justify-center bg-aqua-marine-500 px-8 py-10 lg:px-12 lg:py-11">
             <Image
               src="/assets/right-capital.png"
               alt=""

@@ -22,7 +22,7 @@ const accessCards: AccessCard[] = [
     description:
       "Hold a Together We Stand Edition 0uN one of our exclusive TUS arts pieces to gain automatic access to The Treehouse community.",
     ctaLabel: "View on Magic Eden",
-    ctaHref: "https://magiceden.io",
+    ctaHref: "https://magiceden.io/creators/the_chimpions",
     icon: "magiceden",
   },
   {

@@ -4,6 +4,7 @@ export interface ChimpListing {
   image: string;
   price: number; 
   seller: string;
+  holder?: string;
   tribe?: string;
   type?: string;
   artist?: string;

@@ -334,7 +334,7 @@ export default function TreehouseCapitalPitchForm() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="py-2 min-w-40 rounded-sm bg-aqua-marine-500 px-20 text-xl font-bold leading-none text-gray-modern-950 transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+                className="py-2 min-w-40 cursor-pointer rounded-sm bg-aqua-marine-500 px-20 text-xl font-bold leading-none text-gray-modern-950 transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isSubmitting ? "Sending..." : "Send"}
               </button>

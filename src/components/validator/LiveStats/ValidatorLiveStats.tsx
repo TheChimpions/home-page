@@ -1,15 +1,74 @@
-const liveStats = [
-  { label: "APY", value: "7.2%" },
-  { label: "Commission", value: "5%" },
-  { label: "Uptime", value: "99,8%" },
-  { label: "Delegated SOL", value: "2.1m SOL" },
-  { label: "Total Stakers", value: "1,247" },
-];
+const TRILLIUM_URL =
+  "https://api.trillium.so/validator_rewards/CHiaohVV2SQCFhiYP73iQzWT6HxnZqnAZJJqAYTeLAo";
 
-export default function ValidatorLiveStats() {
+interface TrilliumEpoch {
+  epoch: number;
+  delegator_compound_total_apy: number;
+  commission: number;
+  sw_uptime: number;
+  activated_stake: number;
+  skip_rate: number;
+}
+
+interface ValidatorStats {
+  apy: number | null;
+  commission: number | null;
+  uptime: number | null;
+  activatedStake: number | null;
+  skipRate: number | null;
+}
+
+async function fetchValidatorStats(): Promise<ValidatorStats> {
+  const data = await fetch(TRILLIUM_URL, { next: { revalidate: 3600 } })
+    .then((r) => (r.ok ? (r.json() as Promise<TrilliumEpoch[]>) : null))
+    .then((arr) => (Array.isArray(arr) && arr.length > 0 ? arr[0] : null))
+    .catch(() => null);
+
+  return {
+    apy: data?.delegator_compound_total_apy ?? null,
+    commission: data?.commission ?? null,
+    uptime: data?.sw_uptime ?? null,
+    activatedStake: data?.activated_stake ?? null,
+    skipRate: data?.skip_rate ?? null,
+  };
+}
+
+function formatStake(sol: number | null): string {
+  if (sol === null) return "—";
+  if (sol >= 1_000_000) return `${(sol / 1_000_000).toFixed(2)}M`;
+  if (sol >= 1_000) return `${(sol / 1_000).toFixed(1)}K`;
+  return sol.toLocaleString();
+}
+
+export default async function ValidatorLiveStats() {
+  const stats = await fetchValidatorStats();
+
+  const liveStats = [
+    {
+      label: "APY",
+      value: stats.apy !== null ? `${stats.apy.toFixed(2)}%` : "—",
+    },
+    {
+      label: "Commission",
+      value: stats.commission !== null ? `${stats.commission}%` : "—",
+    },
+    {
+      label: "Uptime",
+      value: stats.uptime !== null ? `${stats.uptime.toFixed(2)}%` : "—",
+    },
+    {
+      label: "Delegated SOL",
+      value: formatStake(stats.activatedStake),
+    },
+    {
+      label: "Delegators",
+      value: "28",
+    },
+  ];
+
   return (
     <section className="flex flex-col gap-8">
-      <h2 className="text-center text-white font-title text-[2.5rem] leading-11 ">
+      <h2 className="text-center text-white font-title text-[2.5rem] leading-11">
         Live Stats
       </h2>
 

@@ -8,7 +8,7 @@ export default function NFTCardSkeleton() {
       </div>
 
       <div className="flex flex-col gap-2">
-        {[1, 2, 3, 4].map((i) => (
+        {[1, 2, 3, 4, 5].map((i) => (
           <div key={i} className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="size-5 bg-gray-modern-800 rounded"></div>
