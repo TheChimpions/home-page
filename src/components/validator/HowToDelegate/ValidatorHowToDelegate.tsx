@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { toast } from "sonner";
+import StakeTerminal from "@/components/StakeTerminal/StakeTerminal";
 
 const walletSteps = [
   "Open Phantom, Backpack, Solflare, etc.",
@@ -76,7 +77,7 @@ export default function ValidatorHowToDelegate() {
       </div>
 
       <div className="relative flex flex-col gap-6 lg:gap-14">
-        <div className="mx-auto grid w-full max-w-333.75 grid-cols-1 gap-6 lg:grid-cols-[287px_1fr] lg:items-start">
+        <div className="mx-auto grid w-full grid-cols-1 gap-6 lg:grid-cols-[287px_1fr] lg:items-start">
           <div className="hidden w-full max-w-71.75 rounded-md bshadow-[0_0_18px_rgba(0,0,0,0.25)] lg:block">
             <div className="overflow-hidden">
               <Image
@@ -116,17 +117,17 @@ export default function ValidatorHowToDelegate() {
                 src="/assets/arrow-down.png"
                 alt=""
                 width={89}
-                height={384}
+                height={34}
                 unoptimized
-                className="pointer-events-none absolute left-18 top-full hidden h-96 w-auto lg:block"
+                className="pointer-events-none absolute left-18 top-full hidden h-104 w-auto lg:block"
               />
             </div>
           </article>
         </div>
 
-        <div className="mx-auto h-px w-full max-w-333.75 bg-gray-modern-800" />
+        <div className="mx-auto h-px w-full bg-gray-modern-800" />
 
-        <div className="mx-auto grid w-full max-w-333.75 grid-cols-1 gap-6 lg:grid-cols-2 lg:items-start mb-6">
+        <div className="mx-auto grid w-full grid-cols-1 gap-6 lg:grid-cols-[1fr_1.3fr] lg:items-start mb-6">
           <article className="rounded-md border border-gray-modern-800 bg-gray-modern-900 px-9 py-9 shadow-[0_0_18px_rgba(0,0,0,0.25)]">
             <div className="flex flex-col gap-6">
               <div className="flex items-start gap-4">
@@ -144,13 +145,13 @@ export default function ValidatorHowToDelegate() {
                 ChimpSol
               </p>
 
-              <ul className="flex flex-col gap-4">
+              <ul className="flex flex-col gap-6">
                 {chimpsolBenefits.map((benefit) => (
                   <li key={benefit} className="flex items-center gap-3">
-                    <span className="text-aqua-marine-500 text-[1.5rem] leading-none">
+                    <span className="text-aqua-marine-500 text-xl leading-none">
                       ✓
                     </span>
-                    <span className="text-gray-modern-100 text-[1.5rem] leading-5">
+                    <span className="text-gray-modern-100 text-xl leading-5">
                       {benefit}
                     </span>
                   </li>
@@ -159,15 +160,13 @@ export default function ValidatorHowToDelegate() {
             </div>
           </article>
 
-          <div className="flex min-h-70 items-center justify-center rounded-md border border-dashed border-gray-modern-700 bg-gray-modern-900/40 px-5 text-center lg:min-h-80">
-            <p className="text-gray-modern-500 text-xl leading-5">
-              Jupiter terminal placeholder
-            </p>
+          <div className="flex flex-col rounded-md overflow-hidden">
+            <StakeTerminal />
           </div>
         </div>
       </div>
 
-      <article className="rounded-md border border-gray-modern-800 bg-gray-modern-800/90 px-6 py-6 sm:px-6 w-full max-w-333.75 mx-auto text-center">
+      <article className="rounded-md border border-gray-modern-800 bg-gray-modern-800/90 px-6 py-6 sm:px-6 w-full mx-auto text-center">
         <div className="flex flex-col gap-6">
           <h3 className="text-center text-white font-bold text-[1.5rem] leading-5">
             Our{" "}

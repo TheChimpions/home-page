@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 
 interface NavigationItem {
   label: string;
@@ -14,6 +16,43 @@ interface MobileMenuProps {
   onClose: () => void;
   navigationItems: NavigationItem[];
   currentPath: string;
+}
+
+function MobileWalletButton() {
+  const { publicKey, connected, connecting, disconnect } = useWallet();
+  const { setVisible } = useWalletModal();
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
+
+  if (!mounted || (!connected && !connecting)) {
+    return (
+      <button
+        onClick={mounted ? () => setVisible(true) : undefined}
+        disabled={!mounted || connecting}
+        className="group flex w-full items-center justify-center gap-2 h-12 border border-aqua-marine-500 text-aqua-marine-500 font-bold font-sans transition-colors hover:bg-aqua-marine-500 hover:text-gray-modern-950 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        {connecting ? "Connecting..." : "Connect Wallet"}
+      </button>
+    );
+  }
+
+  if (connected && publicKey) {
+    const addr = publicKey.toBase58();
+    const short = `${addr.slice(0, 4)}...${addr.slice(-4)}`;
+    return (
+      <button
+        onClick={() => disconnect()}
+        className="group flex w-full items-center justify-center gap-2 h-12 border border-gray-modern-700 text-white font-bold font-sans transition-colors hover:bg-red-500/20 hover:border-red-500/50 hover:text-red-400"
+      >
+        {short} · Disconnect
+      </button>
+    );
+  }
+
+  return null;
 }
 
 export default function MobileMenu({
@@ -124,6 +163,7 @@ export default function MobileMenu({
           </nav>
 
           <div className="md:hidden p-6 border-t border-gray-modern-800 space-y-3">
+            <MobileWalletButton />
             <a
               href="https://tensor.trade"
               target="_blank"

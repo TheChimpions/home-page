@@ -9,6 +9,7 @@ interface CustomSelectProps {
   options: string[];
   icon: string;
   placeholder?: string;
+  containerClassName?: string;
 }
 
 export default function CustomSelect({
@@ -17,6 +18,7 @@ export default function CustomSelect({
   options,
   icon,
   placeholder = "Select...",
+  containerClassName,
 }: CustomSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const selectRef = useRef<HTMLDivElement>(null);
@@ -38,7 +40,7 @@ export default function CustomSelect({
   const selectedOption = value || options[0];
 
   return (
-    <div ref={selectRef} className="relative w-full xl:w-87.5">
+    <div ref={selectRef} className={containerClassName ?? "relative w-full xl:w-87.5"}>
       <Image
         src={icon}
         alt=""
