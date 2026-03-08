@@ -1,4 +1,5 @@
 import Image from "next/image";
+import FadeUp from "@/components/ui/FadeUp";
 
 const expectedItems = [
   "Strive to be excellent to all people and help whenever possible",
@@ -65,74 +66,86 @@ export default function CodeOfConduct() {
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                <div className="flex flex-col gap-4">
-                  <div className="flex flex-col items-start gap-4">
-                    <Image
-                      src="/assets/expected.svg"
-                      alt=""
-                      width={60}
-                      height={60}
-                    />
-                    <h3 className="text-aqua-marine-400 text-[2rem] leading-6 font-bold">
-                      Expected
-                    </h3>
+                <FadeUp delay={0}>
+                  <div className="flex flex-col gap-4">
+                    <div className="flex flex-col items-start gap-4">
+                      <Image
+                        src="/assets/expected.svg"
+                        alt=""
+                        width={60}
+                        height={60}
+                        className="md:size-16 size-10"
+                      />
+                      <h3 className="text-aqua-marine-400 text-[2rem] leading-6 font-bold">
+                        Expected
+                      </h3>
+                    </div>
+                    <ul className="flex flex-col gap-3">
+                      {expectedItems.map((item) => (
+                        <li key={item} className="flex items-start gap-3">
+                          <span className="mt-2 size-1.5 rounded-xs bg-gold-500 shrink-0" />
+                          <span className="text-gray-modern-25 text-xl max-w-full lg:max-w-md leading-5">
+                            {item}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                  <ul className="flex flex-col gap-3">
-                    {expectedItems.map((item) => (
-                      <li key={item} className="flex items-start gap-3">
-                        <span className="mt-2 size-1.5 rounded-xs bg-gold-500 shrink-0" />
-                        <span className="text-gray-modern-25 text-base max-w-full lg:max-w-md leading-5">
-                          {item}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                </FadeUp>
 
-                <div className="flex flex-col gap-4">
-                  <div className="flex flex-col items-start gap-4">
-                    <Image
-                      src="/assets/not-expected.svg"
-                      alt=""
-                      width={60}
-                      height={60}
-                    />
-                    <h3 className="text-[#FF2C30] text-[2rem] leading-6 font-bold">
-                      Not Expected
-                    </h3>
+                <FadeUp delay={150}>
+                  <div className="flex flex-col gap-4">
+                    <div className="flex flex-col items-start gap-4">
+                      <Image
+                        src="/assets/not-expected.svg"
+                        alt=""
+                        width={60}
+                        height={60}
+                        className="md:size-16 size-10"
+                      />
+                      <h3 className="text-[#FF2C30] text-[2rem] leading-6 font-bold">
+                        Not Expected
+                      </h3>
+                    </div>
+                    <ul className="flex flex-col gap-3">
+                      {notExpectedItems.map((item) => (
+                        <li key={item} className="flex items-start gap-3">
+                          <span className="mt-2 size-1.5 rounded-xs bg-gold-500 shrink-0" />
+                          <span className="text-gray-modern-25 text-xl leading-5">
+                            {item}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                  <ul className="flex flex-col gap-3">
-                    {notExpectedItems.map((item) => (
-                      <li key={item} className="flex items-start gap-3">
-                        <span className="mt-2 size-1.5 rounded-xs bg-gold-500 shrink-0" />
-                        <span className="text-gray-modern-25 text-base leading-5">
-                          {item}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                </FadeUp>
               </div>
             </div>
-            <div className="mt-10 rounded-sm  bg-gray-modern-800 p-6 lg:text-center">
-              <p className="text-gray-modern-25 text-xl leading-5 flex flex-col">
-                <span className="w-full">
-                  Violations may lead to disciplinary actions, reviewed and
-                  voted on by the CHIAO.
-                </span>
-                <span className="w-full">
-                  Contact a Council member for any concerns - do not escalate
-                  publicly.
-                </span>
-              </p>
-            </div>
+            <FadeUp delay={300}>
+              <div className="mt-10 rounded-sm  bg-gray-modern-800 p-6 lg:text-center">
+                <p className="text-gray-modern-25 text-xl leading-5 flex flex-col">
+                  <span className="w-full">
+                    Violations may lead to disciplinary actions, reviewed and
+                    voted on by the CHIAO.
+                  </span>
+                  <span className="w-full">
+                    Contact a Council member for any concerns - do not escalate
+                    publicly.
+                  </span>
+                </p>
+              </div>
+            </FadeUp>
           </div>
         </div>
 
-        <p className="mt-15 text-center text-gray-modern-25 text-xl leading-5 flex flex-col ">
-          <span>Let&apos;s keep this space clean, thoughtful, and real. </span>
-          <span>Thanks for being here. 🐵❤️</span>
-        </p>
+        <FadeUp delay={0}>
+          <p className="mt-15 text-center text-gray-modern-25 text-xl leading-5 flex flex-col ">
+            <span>
+              Let&apos;s keep this space clean, thoughtful, and real.{" "}
+            </span>
+            <span>Thanks for being here. 🐵❤️</span>
+          </p>
+        </FadeUp>
       </div>
     </section>
   );

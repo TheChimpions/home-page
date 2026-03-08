@@ -2,7 +2,7 @@ export default function OurHoldersHero() {
   return (
     <div className="flex flex-col gap-24 items-center justify-center text-center">
       <div className="text-center flex flex-col gap-2">
-        <h1 className="text-white font-title text-[2rem] leading-11 xs:text-[3rem] sm:leading-12">
+        <h1 className="text-white font-title leading-11 text-[40px] xs:text-[50px] sm:leading-12">
           Behind every great
           <br />
           Chimpion is{" "}
@@ -28,7 +28,7 @@ export default function OurHoldersHero() {
         </p>
       </div>
       <div className="flex flex-col gap-4">
-        <h2 className="text-white font-title text-[2rem] leading-11 xs:text-[3rem] sm:leading-12">
+        <h2 className="text-white font-title leading-11 text-[40px] xs:text-[50px] sm:leading-12">
           Our{" "}
           <span
             className="animate-gradient-flow"

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import FadeUp from "@/components/ui/FadeUp";
 
 const visionCards = [
   {
@@ -50,7 +51,7 @@ export default function OurVision() {
       <div className="relative max-w-480 mx-auto 3xl:px-20 pt-18 lg:pt-28 lg:pb-32">
         <div className="flex flex-col gap-10">
           <div className="text-center px-4 3xl:px-0 flex flex-col gap-6">
-            <p className="text-white font-title leading-11 text-[4rem] sm:leading-13">
+            <p className="text-white font-title leading-11 text-[40px] xs:text-[50px] sm:leading-13">
               Art. Capital.{" "}
               <span
                 className="animate-gradient-flow"
@@ -124,30 +125,31 @@ export default function OurVision() {
           </div>
 
           <div className="mt-10 sm:mt-12 grid grid-cols-1 lg:grid-cols-3 gap-6 p-4 3xl:p-0 bg-gray-modern-950 lg:bg-transparent pb-20 lg:pb-0">
-            {visionCards.map((card) => (
-              <div
-                key={card.title}
-                className="shooting-top group rounded-md border border-gray-modern-800 bg-gray-modern-900 p-5 sm:p-6 shadow-[0_0_24px_rgba(0,0,0,0.25)] transition-all duration-300 hover:bg-gray-modern-900/90 cursor-pointer"
-                style={
-                  {
-                    "--card-color": card.color,
-                  } as React.CSSProperties
-                }
-              >
-                <Image
-                  src={card.iconSrc}
-                  alt={card.title}
-                  width={60}
-                  height={60}
-                  className="size-15 object-contain transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6"
-                />
-                <h3 className="mt-8 text-white font-title text-[22px] leading-6 sm:text-[26px] sm:leading-7 transition-colors duration-300 group-hover:text(--card-color)]">
-                  {card.title}
-                </h3>
-                <p className="mt-2 text-gray-modern-400 text-xl leading-5 transition-colors duration-300 group-hover:text-gray-modern-300">
-                  {card.description}
-                </p>
-              </div>
+            {visionCards.map((card, i) => (
+              <FadeUp key={card.title} delay={i * 150}>
+                <div
+                  className="vision-card shooting-top group rounded-md border border-gray-modern-800 bg-gray-modern-900 p-5 sm:p-6 shadow-[0_0_24px_rgba(0,0,0,0.25)] transition-all duration-300"
+                  style={
+                    {
+                      "--card-color": card.color,
+                    } as React.CSSProperties
+                  }
+                >
+                  <Image
+                    src={card.iconSrc}
+                    alt={card.title}
+                    width={60}
+                    height={60}
+                    className="size-15 object-contain transition-all duration-300 group-hover:scale-110 group-hover:brightness-0"
+                  />
+                  <h3 className="mt-8 text-white font-title text-[22px] leading-6 sm:text-[26px] sm:leading-7 transition-colors duration-300 group-hover:text-gray-modern-950">
+                    {card.title}
+                  </h3>
+                  <p className="mt-2 text-gray-modern-400 text-xl leading-5 transition-colors duration-300 group-hover:text-gray-modern-700">
+                    {card.description}
+                  </p>
+                </div>
+              </FadeUp>
             ))}
           </div>
         </div>

@@ -179,7 +179,7 @@ export default function MobileMenu({
             </ul>
           </nav>
 
-          <div className="md:hidden p-6 border-t border-gray-modern-800 space-y-3">
+          <div className="px-6 pb-8 pt-6 space-y-3">
             <MyListingsButton onMyListings={onMyListings} onClose={onClose} />
             <MobileWalletButton />
             <a

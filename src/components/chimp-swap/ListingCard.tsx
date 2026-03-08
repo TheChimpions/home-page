@@ -38,7 +38,7 @@ export default function ListingCard({ listing, onClick, priority, hideTitle }: L
   return (
     <button
       onClick={onClick}
-      className="group rounded-md border flex flex-col gap-4 border-gray-modern-600 bg-rich-black-900 p-4 shadow-[0_0_18px_rgba(0,0,0,0.25)] text-left hover:border-gray-modern-400 transition-colors cursor-pointer w-full"
+      className="group rounded-md border flex flex-col gap-4 border-gray-modern-600 bg-rich-black-900 p-4 shadow-[0_0_18px_rgba(0,0,0,0.25)] text-left transition-all duration-300 hover:-translate-y-1 hover:border-gray-modern-400 hover:shadow-[0_0_28px_rgba(180,17,238,0.18)] cursor-pointer w-full"
     >
       {!hideTitle && (
         <h3 className="text-white font-semibold text-xl truncate">

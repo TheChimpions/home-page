@@ -1,4 +1,5 @@
 import Image from "next/image";
+import FadeUp from "@/components/ui/FadeUp";
 
 const perks = [
   "The Chimpions' private server",
@@ -15,6 +16,7 @@ export default function AboutCollection() {
       <div className="max-w-480 mx-auto px-4 3xl:px-20 pb-24 lg:pb-32">
         <div className="rounded-lg border border-gray-modern-800 bg-gray-modern-900 p-6 lg:p-10 shadow-[0_0_24px_rgba(0,0,0,0.35)]">
           <div className="grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr] gap-10 items-center">
+            <FadeUp delay={0}>
             <div className="flex flex-col gap-6">
               <h2 className="text-white font-title text-[2rem] xs:text-[3rem]  sm:text-[4rem] leading-9 xs:leading-11 sm:leading-15">
                 About the
@@ -50,7 +52,7 @@ export default function AboutCollection() {
                   {perks.map((perk) => (
                     <li key={perk} className="flex items-center gap-3">
                       <span className=" size-1.5 rounded-xs bg-gold-500 shrink-0" />
-                      <span className="text-gray-modern-25 text-base leading-5">
+                      <span className="text-gray-modern-25 text-xl leading-5">
                         {perk}
                       </span>
                     </li>
@@ -99,7 +101,9 @@ export default function AboutCollection() {
                 </a>
               </div>
             </div>
+            </FadeUp>
 
+            <FadeUp delay={150}>
             <div className="w-full">
               <div className="relative w-full aspect-[1.2/1] overflow-hidden rounded-md border border-gray-modern-800 bg-gray-modern-950">
                 <Image
@@ -110,6 +114,7 @@ export default function AboutCollection() {
                 />
               </div>
             </div>
+            </FadeUp>
           </div>
         </div>
       </div>

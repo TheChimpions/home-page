@@ -227,4 +227,139 @@
     }
   }
 
+  @keyframes star-pulse {
+    0%,
+    100% {
+      transform: scale(1);
+      filter: drop-shadow(0 0 0px transparent);
+    }
+    40% {
+      transform: scale(1.35);
+      filter: drop-shadow(0 0 6px #eeb411) drop-shadow(0 0 14px #eeb41188);
+    }
+    60% {
+      transform: scale(1.25);
+      filter: drop-shadow(0 0 4px #eeb411) drop-shadow(0 0 10px #eeb41166);
+    }
+  }
+
+  .animate-star-pulse {
+    animation: star-pulse 2.8s ease-in-out infinite;
+  }
+
+  @keyframes chimp-float {
+    0%, 100% { opacity: 0.5; transform: translate3d(0, 0px, 0); }
+    50%       { opacity: 0.8; transform: translate3d(0, -10px, 0); }
+  }
+
+  .animate-opacity-breathe {
+    animation: chimp-float 5s ease-in-out infinite;
+    will-change: transform, opacity;
+  }
+
+  .vision-card:hover {
+    background-color: var(--card-color);
+    border-color: var(--card-color);
+  }
+
+  @keyframes arrow-bounce {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    50% {
+      transform: translateX(7px);
+    }
+  }
+
+  .group:hover .arrow-bounce {
+    animation: arrow-bounce 0.7s ease-in-out infinite;
+  }
+
+  @keyframes tw-blink {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+  }
+
+  .fade-up {
+    opacity: 0;
+    transform: translateY(28px);
+    transition:
+      opacity 0.55s ease,
+      transform 0.55s ease;
+  }
+
+  .fade-up-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fade-up {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+
+  @keyframes scroll-up {
+    0% {
+      transform: translateY(0);
+    }
+    100% {
+      transform: translateY(-33.333%);
+    }
+  }
+
+  @keyframes scroll-down {
+    0% {
+      transform: translateY(-33.333%);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
+
+  .animate-scroll-up {
+    animation: scroll-up 45s linear infinite;
+    will-change: transform;
+  }
+
+  .animate-scroll-down {
+    animation: scroll-down 45s linear infinite;
+    will-change: transform;
+  }
+
+  @keyframes scroll-left {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-33.333%);
+    }
+  }
+
+  @keyframes scroll-right {
+    0% {
+      transform: translateX(-33.333%);
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
+
+  .animate-scroll-left {
+    animation: scroll-left 25s linear infinite;
+    will-change: transform;
+  }
+
+  .animate-scroll-right {
+    animation: scroll-right 90s linear infinite;
+    will-change: transform;
+  }
 }

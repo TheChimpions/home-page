@@ -1,4 +1,8 @@
+"use client";
+
 import Image from "next/image";
+import { useState, useEffect } from "react";
+import FadeUp from "@/components/ui/FadeUp";
 
 interface Edition {
   symbol: string;
@@ -7,46 +11,20 @@ interface Edition {
   description: string;
 }
 
-async function fetchEditions(): Promise<Edition[]> {
-  try {
-    const res = await fetch(
-      "https://api-mainnet.magiceden.io/organizations/the_chimpions?edge_cache=true",
-      { next: { revalidate: 3600 } },
-    );
-    if (!res.ok) return [];
+export default function TreehouseEditions() {
+  const [editions, setEditions] = useState<Edition[] | null>(null);
 
-    const data = (await res.json()) as {
-      families?: {
-        collections?: {
-          symbol: string;
-          name: string;
-          image: string;
-          description?: string;
-        }[];
-      }[];
-    };
-
-    const collections = data.families?.[0]?.collections ?? [];
-    return collections
-      .filter((c) => c.symbol !== "the_chimpions")
-      .map((c) => ({
-        symbol: c.symbol,
-        name: c.name,
-        image: c.image,
-        description: c.description ?? "",
-      }));
-  } catch {
-    return [];
-  }
-}
-
-export default async function TreehouseEditions() {
-  const editions = await fetchEditions();
+  useEffect(() => {
+    fetch("/api/editions")
+      .then((r) => r.json())
+      .then((data: Edition[]) => setEditions(data))
+      .catch(() => {});
+  }, []);
 
   return (
     <section className="relative">
       <div className="mx-auto flex max-w-4xl flex-col items-center gap-4 text-center">
-        <h2 className="text-white font-title text-[2rem] leading-11 xs:text-[3rem] sm:leading-12">
+        <h2 className="text-white font-title leading-11 text-[40px] xs:text-[50px] sm:leading-12">
           Together We Stand{" "}
           <span
             className="animate-gradient-flow"
@@ -73,66 +51,79 @@ export default async function TreehouseEditions() {
       </div>
 
       <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {editions.map((edition, index) => (
-          <a
-            key={edition.symbol}
-            href={`https://magiceden.io/marketplace/${edition.symbol}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group overflow-hidden rounded-md border border-gray-modern-800 bg-gray-modern-900 p-3 shadow-[0_0_18px_rgba(0,0,0,0.25)] transition-colors hover:border-gray-modern-600"
-          >
-            <div className="relative aspect-square overflow-hidden rounded-sm border border-gray-modern-800 bg-gray-modern-950">
-              {edition.image && (
-                <Image
-                  src={edition.image}
-                  alt={edition.name}
-                  fill
-                  unoptimized
-                  priority={index < 4}
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                  className={`object-cover transition-transform duration-300 ${edition.symbol === "tws9" ? "scale-[1.25] group-hover:scale-[1.4]" : "group-hover:scale-105"}`}
-                  style={{
-                    objectFit: "cover",
-                    objectPosition:
-                      edition.symbol === "tws9" ? "20% center" : "center",
-                  }}
-                />
-              )}
-            </div>
-            <div className="mt-4 flex flex-col gap-1">
-              <h3 className="text-white text-2xl leading-6 font-bold">
-                {edition.name}
-              </h3>
-              <p className="text-aqua-marine-400 text-base">
-                Edition {index + 1}
-              </p>
-              {edition.description && (
-                <p className="text-gray-modern-500 text-base line-clamp-2">
-                  {edition.description}
-                </p>
-              )}
-            </div>
-          </a>
-        ))}
+        {editions === null
+          ? [...Array(10)].map((_, i) => (
+              <div key={i} className="overflow-hidden rounded-md border border-gray-modern-800 bg-gray-modern-900 p-3">
+                <div className="aspect-square rounded-sm bg-gray-modern-800 animate-pulse" />
+                <div className="mt-4 flex flex-col gap-2">
+                  <div className="h-5 w-3/4 rounded bg-gray-modern-800 animate-pulse" />
+                  <div className="h-4 w-1/3 rounded bg-gray-modern-800 animate-pulse" />
+                </div>
+              </div>
+            ))
+          : editions.map((edition, index) => (
+              <FadeUp key={edition.symbol} delay={(index % 4) * 80}>
+                <a
+                  href={`https://magiceden.io/marketplace/${edition.symbol}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group overflow-hidden rounded-md border border-gray-modern-800 bg-gray-modern-900 p-3 shadow-[0_0_18px_rgba(0,0,0,0.25)] transition-all duration-300 hover:-translate-y-1 hover:border-electric-purple-600 hover:shadow-[0_0_28px_rgba(180,17,238,0.2)] block"
+                >
+                  <div className="relative aspect-square overflow-hidden rounded-sm border border-gray-modern-800 bg-gray-modern-950">
+                    {edition.image && (
+                      <Image
+                        src={edition.image}
+                        alt={edition.name}
+                        fill
+                        unoptimized
+                        priority={index < 4}
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                        className={`object-cover transition-transform duration-300 ${edition.symbol === "tws9" ? "scale-[1.25] group-hover:scale-[1.4]" : "group-hover:scale-105"}`}
+                        style={{
+                          objectFit: "cover",
+                          objectPosition:
+                            edition.symbol === "tws9" ? "20% center" : "center",
+                        }}
+                      />
+                    )}
+                  </div>
+                  <div className="mt-4 flex flex-col gap-1">
+                    <h3 className="text-white text-2xl leading-6 font-bold">
+                      {edition.name}
+                    </h3>
+                    <p className="text-aqua-marine-400 text-base">
+                      Edition {index + 1}
+                    </p>
+                    {edition.description && (
+                      <p className="text-gray-modern-500 text-base line-clamp-2">
+                        {edition.description}
+                      </p>
+                    )}
+                  </div>
+                </a>
+              </FadeUp>
+          ))}
       </div>
 
-      <div className="mt-10 flex justify-center">
-        <a
-          href="https://magiceden.io/creators/the_chimpions"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group inline-flex h-12 items-center gap-3 py-2 text-center border border-gray-modern-700 px-6 text-sm font-sans text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"
-        >
-          <span className="font-bold text-xl">View on Magic Eden</span>
-          <Image
-            src="/logo/magic-eden.svg"
-            alt="Magic Eden"
-            width={21}
-            height={16}
-            className="brightness-0 invert transition-all group-hover:brightness-0 group-hover:invert-0"
-          />
-        </a>
-      </div>
+      {editions !== null && (
+        <FadeUp delay={80} className="mt-10 flex justify-center">
+          <a
+            href="https://magiceden.io/creators/the_chimpions"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group inline-flex h-12 items-center gap-3 py-2 text-center border border-gray-modern-700 px-6 text-sm font-sans text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"
+          >
+            <span className="font-bold text-xl">View on Magic Eden</span>
+            <Image
+              src="/logo/magic-eden.svg"
+              alt="Magic Eden"
+              width={21}
+              height={16}
+              className="brightness-0 invert transition-all group-hover:brightness-0 group-hover:invert-0"
+            />
+          </a>
+        </FadeUp>
+      )}
     </section>
   );
 }

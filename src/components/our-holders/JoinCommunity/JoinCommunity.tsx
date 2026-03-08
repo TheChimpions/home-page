@@ -1,8 +1,10 @@
 import Image from "next/image";
+import FadeUp from "@/components/ui/FadeUp";
 
 export default function JoinCommunity() {
   return (
     <section className="">
+      <FadeUp>
       <div className="relative overflow-hidden rounded-md border border-gray-modern-800 bg-gray-modern-900 px-6 py-6 sm:px-8 sm:py-8 shadow-[0_0_24px_rgba(0,0,0,0.35)]">
         <div
           aria-hidden="true"
@@ -27,7 +29,7 @@ export default function JoinCommunity() {
               href="https://tensor.trade"
               target="_blank"
               rel="noopener noreferrer"
-              className="group h-18 flex w-full font-bold  lg:max-w-auto items-center justify-between gap-3 rounded-sm border border-gray-modern-800 bg-gray-modern-900/50 px-4 py-3 text-2xl font-sans text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"
+              className="group h-12 flex w-full font-bold  lg:max-w-auto items-center justify-between gap-3 rounded-sm border border-gray-modern-800 bg-gray-modern-900/50 px-4 py-3 text-xl font-sans text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"
             >
               <span>
                 <span className="hidden xs:inline-block">Buy on </span> Tensor
@@ -36,7 +38,7 @@ export default function JoinCommunity() {
                 <Image
                   src="/logo/tensor.svg"
                   alt="Tensor"
-                  width={35}
+                  width={30}
                   height={16}
                   className="brightness-0 invert group-hover:brightness-0 group-hover:invert-0 transition-all"
                 />
@@ -46,7 +48,7 @@ export default function JoinCommunity() {
               href="https://magiceden.io"
               target="_blank"
               rel="noopener noreferrer"
-              className="group h-18 flex w-full font-bold lg:max-w-auto items-center justify-between gap-3 rounded-sm border border-gray-modern-800 bg-gray-modern-900/50 px-4 py-3 text-2xl font-sans text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"
+              className="group h-12 flex w-full font-bold lg:max-w-auto items-center justify-between gap-3 rounded-sm border border-gray-modern-800 bg-gray-modern-900/50 px-4 py-3 text-xl font-sans text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"
             >
               <span>
                 <span className="hidden xs:inline-block">Buy on </span> {""}
@@ -65,6 +67,7 @@ export default function JoinCommunity() {
           </div>
         </div>
       </div>
+      </FadeUp>
     </section>
   );
 }

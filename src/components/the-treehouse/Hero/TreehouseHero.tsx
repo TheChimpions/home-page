@@ -1,7 +1,7 @@
 export default function TreehouseHero() {
   return (
     <div className="mx-auto flex max-w-3xl flex-col items-center gap-4 text-center">
-      <h1 className="text-white font-title text-[2rem] leading-11 xs:text-[3rem] sm:leading-12">
+      <h1 className="text-white font-title leading-11 text-[40px] xs:text-[50px] sm:leading-12">
         The{" "}
         <span
           className="animate-gradient-flow"
@@ -20,11 +20,15 @@ export default function TreehouseHero() {
           Treehouse
         </span>
       </h1>
-      <p className="max-w-3xl text-gray-modern-400 text-xl leading-5">
-        An art and research center where signal thrives. A sub-community focused
-        on art and research. It&apos;s a space to share, learn, and co-create
-        where every contributor is welcomed.
-      </p>
+
+      <div className="flex flex-col gap-1 text-center">
+        <p className="text-xl text-gray-modern-400 leading-5">
+          An art and research center where signal thrives.
+        </p>
+        <p className="text-xl text-gray-modern-400 leading-5">
+          A sub-community focused on art and research. It&apos;s a space to share, learn, and co-create where every contributor is welcomed.
+        </p>
+      </div>
     </div>
   );
 }

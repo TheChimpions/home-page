@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import FadeUp from "@/components/ui/FadeUp";
 
 const faqItems = [
   {
@@ -50,7 +51,7 @@ export default function Faq() {
               width={320}
               height={320}
               unoptimized
-              className="h-80 w-80 opacity-80 [image-rendering:pixelated] hidden xl:block"
+              className="h-80 w-80 [image-rendering:pixelated] hidden xl:block animate-opacity-breathe"
             />
           </div>
 
@@ -79,8 +80,8 @@ export default function Faq() {
               {faqItems.map((item, index) => {
                 const isOpen = openIndex === index;
                 return (
+                  <FadeUp key={`${item.question}-${index}`} delay={index * 80}>
                   <div
-                    key={`${item.question}-${index}`}
                     className="group py-6 cursor-pointer"
                     onClick={() => setOpenIndex(isOpen ? -1 : index)}
                   >
@@ -116,6 +117,7 @@ export default function Faq() {
                       </div>
                     </div>
                   </div>
+                  </FadeUp>
                 );
               })}
             </div>

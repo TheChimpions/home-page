@@ -19,7 +19,7 @@ export default function ValidatorHowItWorks() {
   return (
     <section className="flex flex-col gap-20">
       <div className="mx-auto max-w-3xl text-center">
-        <h2 className="text-white font-title text-[2rem] leading-11 xs:text-[3rem] sm:leading-12">
+        <h2 className="text-white font-title leading-11 text-[40px] xs:text-[50px] sm:leading-12">
           How it{" "}
           <span
             className="animate-gradient-flow"
@@ -38,10 +38,8 @@ export default function ValidatorHowItWorks() {
             works
           </span>
         </h2>
-        <p className="mt-2 text-gray-modern-400 text-xl leading-5">
-          When you delegate your SOL to The Chimpions validator, you&apos;re
-          directly helping secure the network while supporting a values-driven
-          DAO.
+        <p className="mt-4 text-gray-modern-400 text-xl leading-7">
+          When you delegate your SOL to The Chimpions validator, you&apos;re directly helping secure the network while supporting a values-driven DAO.
         </p>
       </div>
 

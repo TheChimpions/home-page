@@ -1,4 +1,5 @@
 import Image from "next/image";
+import FadeUp from "@/components/ui/FadeUp";
 
 const insideItems = [
   {
@@ -36,14 +37,14 @@ export default function TreehouseInside() {
 
       <div className="relative z-10 flex flex-col gap-12">
         <div className="mx-auto flex max-w-4xl flex-col items-center gap-4 lg:gap-10 text-center">
-          <h2 className="text-white font-title text-[2rem] leading-11 xs:text-[3rem] sm:leading-12">
+          <h2 className="text-white font-title leading-11 text-[40px] xs:text-[50px] sm:leading-12">
             Inside you will{" "}
             <span
               className="animate-gradient-flow"
               style={
                 {
                   background:
-                    "linear-gradient(90deg, #eeb411 0%, #f8d063 25%, #eeb411 50%, #f8d063 75%, #eeb411 100%)",
+                    "linear-gradient(90deg, #11EEB4 0%, #b9feeb 25%, #11EEB4 50%, #b9feeb 75%, #11EEB4 100%)",
                   backgroundSize: "200% 100%",
                   backgroundClip: "text",
                   WebkitBackgroundClip: "text",
@@ -64,8 +65,9 @@ export default function TreehouseInside() {
         </div>
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3 lg:gap-10">
-          {insideItems.map((item) => (
-            <article key={item.title} className="text-center p-6">
+          {insideItems.map((item, i) => (
+            <FadeUp key={item.title} delay={i * 150}>
+            <article className="text-center p-6">
               <div className="flex justify-center">
                 <Image
                   src={item.iconSrc}
@@ -82,6 +84,7 @@ export default function TreehouseInside() {
                 {item.description}
               </p>
             </article>
+            </FadeUp>
           ))}
         </div>
       </div>

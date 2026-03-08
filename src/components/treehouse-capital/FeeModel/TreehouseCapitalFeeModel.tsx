@@ -1,8 +1,8 @@
-const feeStats = [
-  { value: "0%", label: "Unique holders" },
-  { value: "15%", label: "Countries" },
-  { value: "0%", label: "Whales (>5% holdings)" },
-];
+import CountUpStat from "@/components/ui/CountUpStat";
+import FadeUp from "@/components/ui/FadeUp";
+import { fetchMEStats, fetchHolderStats } from "@/lib/collection-stats";
+
+const numCls = "text-[4rem] font-bold leading-12 text-white tabular-nums";
 
 const modelColumns = [
   {
@@ -49,7 +49,50 @@ const modelColumns = [
   },
 ];
 
-export default function TreehouseCapitalFeeModel() {
+export default async function TreehouseCapitalFeeModel() {
+  const [meStats, holderStats] = await Promise.all([
+    fetchMEStats(),
+    fetchHolderStats(),
+  ]);
+
+  const floorSOL =
+    meStats.floorPrice !== null ? meStats.floorPrice / 1_000_000_000 : null;
+
+  const feeStats = [
+    {
+      label: "Unique holders",
+      node:
+        holderStats.uniqueHolders !== null ? (
+          <CountUpStat end={holderStats.uniqueHolders} className={numCls} />
+        ) : (
+          <span className={numCls}>—</span>
+        ),
+    },
+    {
+      label: "Floor Price",
+      node:
+        floorSOL !== null ? (
+          <CountUpStat
+            end={floorSOL}
+            decimals={1}
+            suffix=" SOL"
+            className={numCls}
+          />
+        ) : (
+          <span className={numCls}>—</span>
+        ),
+    },
+    {
+      label: "Whales (5+ NFTs)",
+      node:
+        holderStats.whales !== null ? (
+          <CountUpStat end={holderStats.whales} className={numCls} />
+        ) : (
+          <span className={numCls}>—</span>
+        ),
+    },
+  ];
+
   return (
     <section className="mx-auto flex w-full flex-col gap-13">
       <div className="flex flex-col gap-12">
@@ -79,9 +122,7 @@ export default function TreehouseCapitalFeeModel() {
               key={stat.label}
               className="text-center flex flex-col gap-4"
             >
-              <p className="text-[4rem] font-bold leading-12 text-white">
-                {stat.value}
-              </p>
+              <div className="flex justify-center">{stat.node}</div>
               <p className="mt-1 text-xl leading-5 text-gray-modern-400">
                 {stat.label}
               </p>
@@ -93,25 +134,27 @@ export default function TreehouseCapitalFeeModel() {
         {modelColumns.map((column, columnIndex) => (
           <article
             key={columnIndex}
-            className={`rounded-md border border-gray-modern-700 p-10 shadow-[0_0_18px_rgba(0,0,0,0.25)] ${column.cardClassName}`}
+            className={`rounded-md border border-gray-modern-700 p-6 lg:p-10 shadow-[0_0_18px_rgba(0,0,0,0.25)] ${column.cardClassName}`}
           >
-            <div className="flex flex-col gap-20">
+            <div className="flex flex-col gap-10 md:gap-20">
               {column.items.map((item, itemIndex) => (
-                <div key={item.title} className="flex items-start gap-6">
-                  <div
-                    className={`flex size-13 shrink-0 items-center justify-center rounded-xs text-[2rem] font-title leading-none  ${column.numberClassName}`}
-                  >
-                    {itemIndex + 1}
+                <FadeUp key={item.title} delay={itemIndex * 150}>
+                  <div className="flex md:flex-row flex-col items-start gap-2 md:gap-6">
+                    <div
+                      className={`flex size-13 shrink-0 items-center justify-center rounded-xs text-[2rem] font-title leading-none ${column.numberClassName}`}
+                    >
+                      {itemIndex + 1}
+                    </div>
+                    <div>
+                      <h3 className="text-[2rem] leading-8 text-white font-bold">
+                        {item.title}
+                      </h3>
+                      <p className="mt-1 text-xl leading-5 text-gray-modern-400">
+                        {item.description}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-[2rem] leading-8 text-white font-bold">
-                      {item.title}
-                    </h3>
-                    <p className="mt-1 text-xl leading-5 text-gray-modern-400">
-                      {item.description}
-                    </p>
-                  </div>
-                </div>
+                </FadeUp>
               ))}
             </div>
           </article>

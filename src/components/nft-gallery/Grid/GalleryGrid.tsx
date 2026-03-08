@@ -4,6 +4,7 @@ import Image from "next/image";
 import { NFTFilters } from "@/types/nft";
 import { useNFTs } from "@/hooks/use-nfts";
 import NFTCardSkeleton from "./NFTCardSkeleton";
+import FadeUp from "@/components/ui/FadeUp";
 
 const details = [
   { label: "Tribe", value: "tribe", icon: "/assets/tribe.svg" },
@@ -61,10 +62,10 @@ export default function GalleryGrid({ filters }: GalleryGridProps) {
   return (
     <div className="">
       <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-4 gap-6">
-        {allNFTs.map((nft) => (
+        {allNFTs.map((nft, i) => (
+          <FadeUp key={nft.tokenId} delay={(i % 4) * 80}>
           <div
-            key={nft.tokenId}
-            className="rounded-md border flex flex-col gap-4 border-gray-modern-600 bg-rich-black-900 p-4 shadow-[0_0_18px_rgba(0,0,0,0.25)]"
+            className="group rounded-md border flex flex-col gap-4 border-gray-modern-600 bg-rich-black-900 p-4 shadow-[0_0_18px_rgba(0,0,0,0.25)] transition-all duration-300 hover:-translate-y-1 hover:border-gray-modern-400 hover:shadow-[0_0_28px_rgba(180,17,238,0.18)]"
           >
             <h3 className="text-white font-semibold text-xl">{nft.name}</h3>
 
@@ -74,7 +75,7 @@ export default function GalleryGrid({ filters }: GalleryGridProps) {
                 alt={nft.name}
                 fill
                 sizes="(min-width: 1024px) 220px, (min-width: 640px) 240px, 100vw"
-                className="object-cover [image-rendering:pixelated]"
+                className="object-cover [image-rendering:pixelated] transition-transform duration-500 group-hover:scale-[1.04]"
                 loading="lazy"
                 unoptimized
               />
@@ -111,6 +112,7 @@ export default function GalleryGrid({ filters }: GalleryGridProps) {
               })}
             </div>
           </div>
+          </FadeUp>
         ))}
       </div>
 

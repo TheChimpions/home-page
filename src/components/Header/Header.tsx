@@ -84,7 +84,7 @@ function NavDropdown({
     >
       <button
         onClick={() => setOpen(!open)}
-        className={`cursor-pointer text-lg font-sans transition-colors hover:text-gold-500 flex items-center gap-1 whitespace-nowrap ${
+        className={`cursor-pointer text-xl font-sans transition-colors hover:text-gold-500 flex items-center gap-1 whitespace-nowrap ${
           isActive ? "text-gold-500 font-bold" : "text-gray-modern-400"
         }`}
       >
@@ -113,7 +113,7 @@ function NavDropdown({
                   key={item.href}
                   href={item.href}
                   onClick={() => setOpen(false)}
-                  className={`flex items-center gap-1.5 px-4 py-2.5 text-lg font-sans transition-colors hover:text-gold-500 whitespace-nowrap ${
+                  className={`flex items-center gap-1.5 px-4 py-2.5 text-xl font-sans transition-colors hover:text-gold-500 whitespace-nowrap ${
                     isItemActive
                       ? "text-gold-500 font-bold"
                       : "text-gray-modern-400"
@@ -299,7 +299,7 @@ export default function Header() {
                     <Link
                       key={entry.href}
                       href={entry.href}
-                      className={`text-lg font-sans transition-colors hover:text-gold-500 whitespace-nowrap flex items-center gap-1 ${
+                      className={`text-xl font-sans transition-colors hover:text-gold-500 whitespace-nowrap flex items-center gap-1 ${
                         isActive
                           ? "text-gold-500 font-bold"
                           : "text-gray-modern-400"
@@ -326,7 +326,7 @@ export default function Header() {
                 href="https://tensor.trade"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group text-lg font-bold px-3 flex flex-row gap-2 lg:px-4 h-10 items-center border border-gray-modern-700 text-white font-sans hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950 transition-colors"
+                className="group text-xl font-bold px-3 flex flex-row gap-2 lg:px-4 h-10 items-center border border-gray-modern-700 text-white font-sans hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950 transition-colors"
               >
                 <span>Tensor</span>
                 <Image
@@ -341,7 +341,7 @@ export default function Header() {
                 href="https://magiceden.io"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group text-lg font-bold px-3 flex flex-row gap-2 lg:px-4 h-10 items-center border border-gray-modern-700 text-white font-sans hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950 transition-colors"
+                className="group text-xl font-bold px-3 flex flex-row gap-2 lg:px-4 h-10 items-center border border-gray-modern-700 text-white font-sans hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950 transition-colors"
               >
                 <span>Magic Eden</span>
                 <Image

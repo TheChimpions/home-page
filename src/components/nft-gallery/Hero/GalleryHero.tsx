@@ -38,7 +38,7 @@ export default function GalleryHero({
   return (
     <div className="text-center flex flex-col gap-8 xl:gap-24">
       <div className="flex flex-col gap-4">
-        <h1 className="text-white font-title text-[2rem] leading-11 xs:text-[3rem] sm:leading-12">
+        <h1 className="text-white font-title leading-11 text-[40px] xs:text-[50px] sm:leading-12">
           You&apos;ve entered the hallowed halls of
           <br />
           <span

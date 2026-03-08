@@ -1,5 +1,8 @@
+import FadeUp from "@/components/ui/FadeUp";
+
 export default function TreehouseJoinCommunity() {
   return (
+    <FadeUp>
     <section className="relative overflow-hidden rounded-md border border-gray-modern-800 bg-gray-modern-900 px-6 py-6 sm:px-8 sm:py-8 shadow-[0_0_24px_rgba(0,0,0,0.35)]">
       <div
         aria-hidden="true"
@@ -42,5 +45,6 @@ export default function TreehouseJoinCommunity() {
         </div>
       </div>
     </section>
+    </FadeUp>
   );
 }

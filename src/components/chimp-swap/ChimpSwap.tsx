@@ -9,6 +9,7 @@ import PostChimpModal from "./PostChimpModal";
 import SwapDetailModal from "./SwapDetailModal";
 import SwapWizardModal from "./SwapWizardModal";
 import NFTCardSkeleton from "@/components/nft-gallery/Grid/NFTCardSkeleton";
+import FadeUp from "@/components/ui/FadeUp";
 
 const TRIBE_OPTIONS = [
   "All Tribes",
@@ -82,7 +83,7 @@ export default function ChimpSwap() {
 
       <div className="relative z-10 max-w-480 mx-auto px-4 3xl:px-20 pt-16 pb-24 lg:pt-24 lg:pb-28 flex flex-col gap-10">
         <div className="text-center flex flex-col gap-4">
-          <h1 className="text-white font-title text-[2rem] leading-11 xs:text-[3rem] sm:leading-12">
+          <h1 className="text-white font-title leading-11 text-[40px] xs:text-[50px] sm:leading-12">
             <span
               className="animate-gradient-flow"
               style={
@@ -145,12 +146,13 @@ export default function ChimpSwap() {
             {loading ? (
               [...Array(6)].map((_, i) => <NFTCardSkeleton key={i} />)
             ) : filtered.length > 0 ? (
-              filtered.map((listing) => (
-                <ListingCard
-                  key={listing.mint}
-                  listing={listing}
-                  onClick={() => setSwapListing(listing)}
-                />
+              filtered.map((listing, i) => (
+                <FadeUp key={listing.mint} delay={(i % 3) * 80}>
+                  <ListingCard
+                    listing={listing}
+                    onClick={() => setSwapListing(listing)}
+                  />
+                </FadeUp>
               ))
             ) : (
               <div className="col-span-full text-gray-modern-500 text-center py-16">

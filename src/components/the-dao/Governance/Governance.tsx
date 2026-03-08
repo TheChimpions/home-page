@@ -1,4 +1,5 @@
 import Image from "next/image";
+import FadeUp from "@/components/ui/FadeUp";
 
 type Member = {
   name: string;
@@ -65,43 +66,68 @@ export default function Governance() {
             }}
           >
             <p className="text-center text-white text-[2.5rem]">Council</p>
-            {/* Layout Desktop */}
             <div className="hidden lg:flex flex-col gap-6">
               <div className="grid grid-cols-5 gap-8">
-                {councilMembers.slice(0, 5).map((member) => (
-                  <div
-                    key={member.name}
-                    className="flex flex-col items-center gap-4"
-                  >
-                    <div className="relative w-full aspect-square overflow-hidden rounded-sm border border-gray-modern-700 bg-gray-modern-800/80">
-                      <Image
-                        src={member.imageSrc ?? placeholderAvatar}
-                        alt={member.name}
-                        fill
-                        sizes="20vw"
-                        unoptimized
-                        className="object-cover"
-                      />
+                {councilMembers.slice(0, 5).map((member, i) => (
+                  <FadeUp key={member.name} delay={i * 80}>
+                    <div className="flex flex-col items-center gap-4">
+                      <div className="relative w-full aspect-square overflow-hidden rounded-sm border border-gray-modern-700 bg-gray-modern-800/80">
+                        <Image
+                          src={member.imageSrc ?? placeholderAvatar}
+                          alt={member.name}
+                          fill
+                          sizes="20vw"
+                          unoptimized
+                          className="object-cover"
+                        />
+                      </div>
+                      <span className="text-white font-medium text-[1.5rem] font-title">
+                        {member.name}
+                      </span>
                     </div>
-                    <span className="text-white font-medium text-[1.5rem] font-title">
-                      {member.name}
-                    </span>
-                  </div>
+                  </FadeUp>
                 ))}
               </div>
 
               <div className="grid grid-cols-4 gap-8 px-[10%]">
-                {councilMembers.slice(5).map((member) => (
+                {councilMembers.slice(5).map((member, i) => (
+                  <FadeUp key={member.name} delay={i * 80}>
+                    <div className="flex flex-col items-center gap-4">
+                      <div className="relative w-full aspect-square overflow-hidden rounded-sm border border-gray-modern-700 bg-gray-modern-800/80">
+                        <Image
+                          src={member.imageSrc ?? placeholderAvatar}
+                          alt={member.name}
+                          fill
+                          sizes="20vw"
+                          unoptimized
+                          className="object-cover"
+                        />
+                      </div>
+                      <span className="text-white font-medium text-[1.5rem] font-title">
+                        {member.name}
+                      </span>
+                    </div>
+                  </FadeUp>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 lg:hidden">
+              {councilMembers.map((member, index) => (
+                <FadeUp key={member.name} delay={index * 80}>
                   <div
-                    key={member.name}
-                    className="flex flex-col items-center gap-4"
+                    className={`flex flex-col items-center gap-4 ${
+                      index === councilMembers.length - 1
+                        ? "sm:col-span-2 sm:max-w-sm sm:w-full sm:mx-auto"
+                        : ""
+                    }`}
                   >
                     <div className="relative w-full aspect-square overflow-hidden rounded-sm border border-gray-modern-700 bg-gray-modern-800/80">
                       <Image
                         src={member.imageSrc ?? placeholderAvatar}
                         alt={member.name}
                         fill
-                        sizes="20vw"
+                        sizes="(min-width: 640px) 50vw, 100vw"
                         unoptimized
                         className="object-cover"
                       />
@@ -110,35 +136,7 @@ export default function Governance() {
                       {member.name}
                     </span>
                   </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Layout Mobile (< lg) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 lg:hidden">
-              {councilMembers.map((member, index) => (
-                <div
-                  key={member.name}
-                  className={`flex flex-col items-center gap-9 ${
-                    index === councilMembers.length - 1
-                      ? "sm:col-span-2 sm:justify-self-center"
-                      : ""
-                  }`}
-                >
-                  <div className="relative size-64 overflow-hidden rounded-sm border border-gray-modern-700 bg-gray-modern-800/80">
-                    <Image
-                      src={member.imageSrc ?? placeholderAvatar}
-                      alt={member.name}
-                      fill
-                      sizes="256px"
-                      unoptimized
-                      className="object-cover"
-                    />
-                  </div>
-                  <span className="text-white font-medium text-[1.5rem] font-title">
-                    {member.name}
-                  </span>
-                </div>
+                </FadeUp>
               ))}
             </div>
           </div>
@@ -148,57 +146,55 @@ export default function Governance() {
               Executive team
             </p>
 
-            {/* Layout Desktop */}
             <div className="mt-6 hidden lg:grid grid-cols-5 gap-8 w-full">
               <div />
-              {executiveTeam.map((member) => (
-                <div
-                  key={member.name}
-                  className="flex flex-col items-center gap-4"
-                >
-                  <div className="relative w-full aspect-square overflow-hidden rounded-sm border border-gray-modern-700 bg-gray-modern-800/80">
-                    <Image
-                      src={member.imageSrc ?? placeholderAvatar}
-                      alt={member.name}
-                      fill
-                      sizes="20vw"
-                      unoptimized
-                      className="object-cover"
-                    />
+              {executiveTeam.map((member, i) => (
+                <FadeUp key={member.name} delay={i * 80}>
+                  <div className="flex flex-col items-center gap-4">
+                    <div className="relative w-full aspect-square overflow-hidden rounded-sm border border-gray-modern-700 bg-gray-modern-800/80">
+                      <Image
+                        src={member.imageSrc ?? placeholderAvatar}
+                        alt={member.name}
+                        fill
+                        sizes="20vw"
+                        unoptimized
+                        className="object-cover"
+                      />
+                    </div>
+                    <span className="text-white font-medium text-[1.5rem] font-title">
+                      {member.name}
+                    </span>
                   </div>
-                  <span className="text-white font-medium text-[1.5rem] font-title">
-                    {member.name}
-                  </span>
-                </div>
+                </FadeUp>
               ))}
               <div />
             </div>
 
-            {/* Layout Mobile (< lg) */}
             <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-6 lg:hidden">
               {executiveTeam.map((member, index) => (
-                <div
-                  key={member.name}
-                  className={`flex flex-col items-center gap-9 ${
-                    index === executiveTeam.length - 1
-                      ? "sm:col-span-2 sm:justify-self-center"
-                      : ""
-                  }`}
-                >
-                  <div className="relative size-64 overflow-hidden rounded-sm border border-gray-modern-700 bg-gray-modern-800/80">
-                    <Image
-                      src={member.imageSrc ?? placeholderAvatar}
-                      alt={member.name}
-                      fill
-                      sizes="256px"
-                      unoptimized
-                      className="object-cover"
-                    />
+                <FadeUp key={member.name} delay={index * 80}>
+                  <div
+                    className={`flex flex-col items-center gap-4 ${
+                      index === executiveTeam.length - 1
+                        ? "sm:col-span-2 sm:max-w-sm sm:w-full sm:mx-auto"
+                        : ""
+                    }`}
+                  >
+                    <div className="relative w-full aspect-square overflow-hidden rounded-sm border border-gray-modern-700 bg-gray-modern-800/80">
+                      <Image
+                        src={member.imageSrc ?? placeholderAvatar}
+                        alt={member.name}
+                        fill
+                        sizes="(min-width: 640px) 50vw, 100vw"
+                        unoptimized
+                        className="object-cover"
+                      />
+                    </div>
+                    <span className="text-white font-medium text-[1.5rem] font-title">
+                      {member.name}
+                    </span>
                   </div>
-                  <span className="text-white font-medium text-[1.5rem] font-title">
-                    {member.name}
-                  </span>
-                </div>
+                </FadeUp>
               ))}
             </div>
           </div>

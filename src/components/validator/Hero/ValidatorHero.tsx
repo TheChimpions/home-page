@@ -1,7 +1,7 @@
 export default function ValidatorHero() {
   return (
     <div className="mx-auto max-w-4xl text-center">
-      <h1 className="text-white font-title text-[2.5rem] leading-10 sm:text-[3rem] sm:leading-12 ">
+      <h1 className="text-white font-title text-[2.5rem] leading-10 sm:text-[3rem] sm:leading-12">
         Stake with purpose. Secure the network.{" "}
         <span
           className="animate-gradient-flow"

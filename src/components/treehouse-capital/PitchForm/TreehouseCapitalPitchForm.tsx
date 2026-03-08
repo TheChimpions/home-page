@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { toast } from "sonner";
+import FadeUp from "@/components/ui/FadeUp";
 
 type PitchFormValues = {
   founderName: string;
@@ -296,8 +297,8 @@ export default function TreehouseCapitalPitchForm() {
             noValidate
           >
             {FIELD_ROWS.map((row, i) => (
+              <FadeUp key={i} delay={i * 80}>
               <div
-                key={i}
                 className={
                   row.length > 1
                     ? "grid grid-cols-1 gap-4 lg:grid-cols-2"
@@ -328,8 +329,10 @@ export default function TreehouseCapitalPitchForm() {
                   ),
                 )}
               </div>
+              </FadeUp>
             ))}
 
+            <FadeUp delay={FIELD_ROWS.length * 80}>
             <div className="flex justify-center">
               <button
                 type="submit"
@@ -339,6 +342,7 @@ export default function TreehouseCapitalPitchForm() {
                 {isSubmitting ? "Sending..." : "Send"}
               </button>
             </div>
+            </FadeUp>
           </form>
         </div>
       </article>

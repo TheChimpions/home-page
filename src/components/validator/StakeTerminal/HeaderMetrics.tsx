@@ -66,9 +66,9 @@ export function HeaderMetrics({
 
   return (
     <div
-      className={`gap-4 xs:gap-0 flex xs:flex-row flex-col items-center xs:justify-between ${className}`}
+      className={`gap-4 sm:gap-0 flex sm:flex-row flex-col items-center sm:justify-between ${className}`}
     >
-      <div className="flex flex-col xs:w-1/2 w-full items-start sm:border-r xs:border-gray-modern-700 xs:px-4">
+      <div className="flex flex-col sm:w-1/2 w-full items-start sm:border-r sm:border-gray-modern-700 sm:px-4">
         <div className="text-xl text-gray-modern-400 font-normal mb-1">
           ChimpSol APY
         </div>
@@ -81,7 +81,7 @@ export function HeaderMetrics({
         </div>
       </div>
 
-      <div className="flex flex-col items-start xs:items-end sm:items-start xs:w-1/2 w-full pr-4 sm:pr-0 sm:pl-8">
+      <div className="flex flex-col items-start sm:items-start sm:w-1/2 w-full pr-4 sm:pr-0 sm:pl-8">
         <div className="text-xl text-gray-modern-400 font-normal mb-1">
           Est. rewards per year
         </div>

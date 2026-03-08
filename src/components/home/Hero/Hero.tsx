@@ -1,9 +1,19 @@
 import Image from "next/image";
+import Typewriter from "@/components/ui/Typewriter";
+import HeroCarousel from "./HeroCarousel";
+import HeroCarouselHorizontal from "./HeroCarouselHorizontal";
+
+const line1 = "A values-first and art-driven DAO investing in builders, art and Web3 culture.";
+const line2 = "The modern think tank on Solana.";
+const speed = 38;
+const initialDelay = 150;
+const line2Delay = initialDelay + line1.length * speed + 150;
+
+const pCls = "text-[1.25rem] text-white leading-5.5";
 
 export default function Hero() {
   return (
     <>
-      {/* Mobile */}
       <section className="lg:hidden relative overflow-hidden bg-gray-modern-950">
         <Image
           src="/assets/texture_bottom-mobile.png"
@@ -36,26 +46,27 @@ export default function Hero() {
             </span>
           </h1>
 
-          <p className="text-[1.25rem] text-center text-white leading-5.5 mt-6 px-4 ">
-            A values-first and art-driven DAO investing in builders, art and
-            Web3 culture. The modern think tank on Solana.
-          </p>
+          <div className="mt-6 px-4 text-center flex flex-col gap-1">
+            <p className={`${pCls} relative`}>
+              <span className="invisible select-none" aria-hidden>{line1}</span>
+              <span className="absolute inset-0">
+                <Typewriter text={line1} delay={initialDelay} speed={speed} snapCursorOnDone />
+              </span>
+            </p>
+            <p className={`${pCls} relative`}>
+              <span className="invisible select-none" aria-hidden>{line2}</span>
+              <span className="absolute inset-0">
+                <Typewriter text={line2} delay={line2Delay} speed={speed} hideCursorUntilStart />
+              </span>
+            </p>
+          </div>
 
-          <div className="mt-12 w-full -mx-6">
-            <Image
-              src="/assets/chimps-mobile.png"
-              alt="The Chimpions"
-              width={400}
-              height={300}
-              priority
-              unoptimized
-              className="w-full h-auto [image-rendering:pixelated]"
-            />
+          <div className="mt-12 w-full">
+            <HeroCarouselHorizontal />
           </div>
         </div>
       </section>
 
-      {/* Desktop */}
       <section className="hidden lg:block relative h-175 overflow-hidden bg-[#0B0F1A]">
         <Image
           src="/bgs/hero-bg.png"
@@ -89,24 +100,24 @@ export default function Hero() {
               </span>
             </h1>
 
-            <p className="text-[1.25rem] text-white leading-5.5 mt-4 lg:max-w-md xl:max-w-2xl 2xl:max-w-full">
-              A values-first and art-driven DAO investing in builders, art and
-              Web3 culture.
-              <br />
-              The modern think tank on Solana.
-            </p>
+            <div className="mt-4 flex flex-col gap-1 lg:max-w-md xl:max-w-2xl 2xl:max-w-full">
+              <p className={`${pCls} relative`}>
+                <span className="invisible select-none" aria-hidden>{line1}</span>
+                <span className="absolute inset-0">
+                  <Typewriter text={line1} delay={initialDelay} speed={speed} snapCursorOnDone />
+                </span>
+              </p>
+              <p className={`${pCls} relative`}>
+                <span className="invisible select-none" aria-hidden>{line2}</span>
+                <span className="absolute inset-0">
+                  <Typewriter text={line2} delay={line2Delay} speed={speed} hideCursorUntilStart />
+                </span>
+              </p>
+            </div>
           </div>
 
-          <div className="absolute right-0 3xl:right-13.75 -bottom-7.5 z-10">
-            <Image
-              src="/bgs/chimps.png"
-              alt="The Chimpions NFTs"
-              width={386}
-              height={700}
-              priority
-              unoptimized
-              className="h-185 w-auto [image-rendering:pixelated]"
-            />
+          <div className="absolute right-0 3xl:right-13.75 -bottom-7.5 z-10 h-185">
+            <HeroCarousel />
           </div>
         </div>
       </section>

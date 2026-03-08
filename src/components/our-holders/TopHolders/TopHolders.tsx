@@ -1,4 +1,5 @@
 import Image from "next/image";
+import FadeUp from "@/components/ui/FadeUp";
 
 const holders = Array.from({ length: 5 }, (_, index) => ({
   id: index,
@@ -36,9 +37,9 @@ export default function TopHolders() {
       </div>
 
       <div className="flex flex-col gap-6">
-        {holders.map((holder) => (
+        {holders.map((holder, i) => (
+          <FadeUp key={holder.id} delay={i * 80}>
           <div
-            key={holder.id}
             className="group flex items-center justify-between gap-3 xs:gap-4 rounded-md border border-gray-modern-800 bg-gray-modern-900 p-6 shadow-[0_0_18px_rgba(0,0,0,0.25)] transition-all duration-300 hover:border-gray-modern-700 hover:bg-gray-modern-900/90 hover:shadow-[0_0_24px_rgba(0,0,0,0.4)] cursor-pointer"
           >
             <div className="flex items-center gap-3 xs:gap-6 min-w-0 flex-1">
@@ -79,6 +80,7 @@ export default function TopHolders() {
               <span className="whitespace-nowrap text-xl">{holder.count}</span>
             </div>
           </div>
+          </FadeUp>
         ))}
       </div>
     </section>

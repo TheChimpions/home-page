@@ -122,7 +122,9 @@ function ChimpCard({
       <div
         className={`relative w-full overflow-hidden rounded-sm border border-gray-modern-800 bg-gray-modern-950 ${compact ? "h-44" : "aspect-square"}`}
       >
-        {!imageLoaded && <div className="absolute inset-0 bg-gray-modern-800 animate-pulse" />}
+        {!imageLoaded && (
+          <div className="absolute inset-0 bg-gray-modern-800 animate-pulse" />
+        )}
         {chimp.image && (
           <Image
             src={chimp.image}
@@ -256,7 +258,7 @@ export default function PostChimpModal({ onClose }: PostChimpModalProps) {
       />
 
       <div className="flex min-h-screen justify-center py-8 px-4">
-        <div className="relative z-10 w-full max-w-4xl my-auto bg-gray-modern-950 border border-gray-modern-800 shadow-2xl flex flex-col gap-8 p-4 sm:p-10 md:h-[95vh] md:min-h-130">
+        <div className="relative z-10 w-full max-w-4xl my-auto bg-gray-modern-950 border border-gray-modern-800 shadow-2xl flex flex-col gap-8 p-4 sm:p-10">
           <button
             onClick={onClose}
             className="absolute top-4 right-4 text-gray-modern-500 hover:text-white transition-colors cursor-pointer"
@@ -276,9 +278,9 @@ export default function PostChimpModal({ onClose }: PostChimpModalProps) {
             <StepIndicator current={step} />
           </div>
 
-          <div className="flex flex-col md:flex-1 md:min-h-0">
+          <div className="flex flex-col">
             {step === 1 && (
-              <div className="flex flex-col items-center gap-6 md:flex-1 md:justify-center md:gap-10 text-center">
+              <div className="flex flex-col items-center gap-6 text-center">
                 <div className="w-20 h-20 rounded-full bg-electric-purple-900 border border-electric-purple-600 flex items-center justify-center">
                   <Wallet className="w-9 h-9 text-electric-purple-400" />
                 </div>
@@ -302,7 +304,7 @@ export default function PostChimpModal({ onClose }: PostChimpModalProps) {
             )}
 
             {step === 2 && (
-              <div className="flex flex-col gap-6 md:flex-1 md:justify-center md:gap-10">
+              <div className="flex flex-col gap-6">
                 <div className="text-center">
                   <h3 className="text-white font-bold text-xl">
                     Select a Chimpion to Post
@@ -315,11 +317,17 @@ export default function PostChimpModal({ onClose }: PostChimpModalProps) {
                 {loadingChimps ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                     {[...Array(3)].map((_, i) => (
-                      <div key={i} className="rounded-md border border-gray-modern-700 bg-rich-black-900 p-4 flex flex-col gap-4 animate-pulse">
+                      <div
+                        key={i}
+                        className="rounded-md border border-gray-modern-700 bg-rich-black-900 p-4 flex flex-col gap-4 animate-pulse"
+                      >
                         <div className="h-5 bg-gray-modern-700 rounded w-2/3" />
                         <div className="aspect-square bg-gray-modern-700 rounded-sm" />
                         {[...Array(4)].map((_, j) => (
-                          <div key={j} className="h-5 bg-gray-modern-700 rounded" />
+                          <div
+                            key={j}
+                            className="h-5 bg-gray-modern-700 rounded"
+                          />
                         ))}
                       </div>
                     ))}
@@ -365,7 +373,7 @@ export default function PostChimpModal({ onClose }: PostChimpModalProps) {
             )}
 
             {step === 3 && selected && (
-              <div className="flex flex-col gap-6 md:flex-1 md:justify-center md:gap-10">
+              <div className="flex flex-col gap-6">
                 <div className="text-center">
                   <h3 className="text-white font-bold text-xl">
                     Confirm Listing
@@ -413,7 +421,7 @@ export default function PostChimpModal({ onClose }: PostChimpModalProps) {
             )}
 
             {step === 4 && selected && (
-              <div className="flex flex-col items-center gap-6 md:flex-1 md:justify-center md:gap-10">
+              <div className="flex flex-col items-center gap-6">
                 <div className="flex flex-col items-center text-center gap-3">
                   <Image
                     src="/assets/complete.svg"

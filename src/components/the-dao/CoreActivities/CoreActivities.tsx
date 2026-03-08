@@ -1,4 +1,5 @@
 import Image from "next/image";
+import FadeUp from "@/components/ui/FadeUp";
 
 const activities = [
   {
@@ -49,15 +50,17 @@ export default function CoreActivities() {
         </div>
 
         <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-10 sm:gap-y-12 lg:gap-y-14">
-          {activities.map((activity) => (
-            <div key={activity.title} className="text-center">
+          {activities.map((activity, i) => (
+            <FadeUp key={activity.title} delay={i * 100}>
+            <div className="text-center">
               <div className="flex justify-center">
                 <Image
                   src="/assets/plus.svg"
                   alt=""
                   width={40}
                   height={40}
-                  className="size-10"
+                  className="size-10 animate-star-pulse"
+                  style={{ animationDelay: `${i * 0.45}s` }}
                 />
               </div>
               <h3 className="mt-4 text-white text-[2rem] font-bold leading-7">
@@ -67,6 +70,7 @@ export default function CoreActivities() {
                 {activity.description}
               </p>
             </div>
+            </FadeUp>
           ))}
         </div>
       </div>

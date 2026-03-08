@@ -15,7 +15,6 @@ const chimpionsLinks = [
 export default function Footer() {
   return (
     <>
-      {/* Mobile */}
       <footer className="lg:hidden bg-gray-modern-900 border-t border-gray-modern-800">
         <div className="px-4 py-16 flex flex-col items-center text-center">
           <Image
@@ -57,7 +56,7 @@ export default function Footer() {
             <ul className="space-y-3">
               <li>
                 <a
-                  href="https://twitter.com"
+                  href="https://x.com/TheChimpions"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-gray-modern-50 hover:text-gold-500 text-xl font-sans transition-colors underline underline-offset-2 decoration-gray-modern-400 hover:decoration-gold-500"
@@ -67,10 +66,10 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="https://discord.com"
+                  href="https://discord.com/invite/thechimpions"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-modern-50 hover:text-gold-500 text-sm font-sans transition-colors underline underline-offset-2 decoration-gray-modern-400 hover:decoration-gold-500"
+                  className="text-gray-modern-50 hover:text-gold-500 text-xl font-sans transition-colors underline underline-offset-2 decoration-gray-modern-400 hover:decoration-gold-500"
                 >
                   Discord
                 </a>
@@ -119,7 +118,6 @@ export default function Footer() {
         </div>
       </footer>
 
-      {/* Desktop */}
       <footer className="hidden lg:block bg-gray-modern-900 border-t border-gray-modern-800">
         <div className="max-w-480 mx-auto px-4 3xl:px-20 pb-0 pt-16">
           <div className="grid grid-cols-1 lg:grid-cols-[2.5fr_1fr_0.6fr] gap-12">

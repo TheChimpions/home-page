@@ -261,7 +261,7 @@ export default function SwapWizardModal({
       />
 
       <div className="flex min-h-screen justify-center py-8 px-4">
-        <div className="relative z-10 w-full max-w-4xl my-auto bg-gray-modern-950 border border-gray-modern-800 shadow-2xl flex flex-col gap-8 p-4 sm:p-10 md:h-[95vh] md:min-h-130">
+        <div className="relative z-10 w-full max-w-4xl my-auto bg-gray-modern-950 border border-gray-modern-800 shadow-2xl flex flex-col gap-8 p-4 sm:p-10">
           <button
             onClick={onClose}
             className="absolute top-4 right-4 text-gray-modern-500 hover:text-white transition-colors cursor-pointer"
@@ -278,9 +278,9 @@ export default function SwapWizardModal({
             <StepIndicator current={step} />
           </div>
 
-          <div className="flex flex-col md:flex-1 md:min-h-0">
+          <div className="flex flex-col">
             {step === 1 && (
-              <div className="flex flex-col items-center gap-6 md:flex-1 md:justify-center md:gap-10 text-center">
+              <div className="flex flex-col items-center gap-6 text-center">
                 <div>
                   <Image
                     src="/assets/wallet.png"
@@ -310,7 +310,7 @@ export default function SwapWizardModal({
             )}
 
             {step === 2 && (
-              <div className="flex flex-col gap-6 md:flex-1 md:justify-center md:gap-10">
+              <div className="flex flex-col gap-6">
                 <div className="text-center">
                   <h3 className="text-white font-bold text-lg">
                     Select your Chimpion to Swap
@@ -369,7 +369,7 @@ export default function SwapWizardModal({
             )}
 
             {step === 3 && selected && (
-              <div className="flex flex-col gap-6 md:flex-1 md:justify-center md:gap-10">
+              <div className="flex flex-col gap-6">
                 <div className="text-center">
                   <h3 className="text-white font-bold text-lg">Confirm Swap</h3>
                   <p className="text-gray-modern-400 text-base">
@@ -445,7 +445,7 @@ export default function SwapWizardModal({
             )}
 
             {step === 4 && (
-              <div className="flex flex-col items-center gap-6 md:flex-1 md:justify-center md:gap-10 text-center">
+              <div className="flex flex-col items-center gap-6 text-center">
                 <Image
                   src="/assets/complete.svg"
                   alt="Success Icon"

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import FadeUp from "@/components/ui/FadeUp";
 
 const strategyCards = [
   {
@@ -45,28 +46,28 @@ export default function TreehouseCapitalStrategy() {
       </h2>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {strategyCards.map((card) => (
+        {strategyCards.map((card, i) => (
+          <FadeUp key={card.title} delay={i * 150}>
           <article
-            key={card.title}
-            className="flex min-h-58 flex-col justify-between gap-4 rounded-md border border-[#c8d3c5] bg-[#d6dfd3] p-6 shadow-[0_0_18px_rgba(0,0,0,0.25)]"
+            className="group flex min-h-58 flex-col justify-between gap-4 rounded-md border border-[#c8d3c5] bg-[#d6dfd3] p-6 shadow-[0_0_18px_rgba(0,0,0,0.25)] transition-colors duration-300 hover:bg-[#212F49] hover:border-[#212F49]"
           >
             <Image
               src={card.iconSrc}
               alt=""
               width={60}
               height={60}
-              className="size-15"
-              style={{ filter: "brightness(0) saturate(0%) opacity(0.8)" }}
+              className="size-15 brightness-0 saturate-0 opacity-80 transition-all duration-300 group-hover:invert group-hover:opacity-100"
             />
             <div className="flex flex-col">
-              <h3 className="text-2xl leading-7 text-[#212F49] font-bold">
+              <h3 className="text-2xl leading-7 text-[#212F49] font-bold transition-colors duration-300 group-hover:text-[#d6dfd3]">
                 {card.title}
               </h3>
-              <p className="min-h-10 text-base leading-5 text-[#215E85]">
+              <p className="min-h-10 text-base leading-5 text-[#215E85] transition-colors duration-300 group-hover:text-[#d6dfd3]/70">
                 {card.description}
               </p>
             </div>
           </article>
+          </FadeUp>
         ))}
       </div>
     </section>

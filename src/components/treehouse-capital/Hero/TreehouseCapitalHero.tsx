@@ -1,4 +1,15 @@
+"use client";
+
 import Image from "next/image";
+import Typewriter from "@/components/ui/Typewriter";
+
+const line1 = "Backing founders, not hype. Treehouse Capital is The Chimpions' early-stage investment arm.";
+const line2 = "We invest in the earliest stages of great and bold ideas, often before the public hears about them.";
+const speed = 38;
+const initialDelay = 150;
+const line2Delay = initialDelay + line1.length * speed + 150;
+
+const pCls = "text-2xl leading-5 text-gray-modern-950";
 
 export default function TreehouseCapitalHero() {
   return (
@@ -31,14 +42,18 @@ export default function TreehouseCapitalHero() {
               unoptimized
               className="pointer-events-none absolute inset-0 object-cover [image-rendering:pixelated]"
             />
-            <div className="flex flex-col  text-gray-modern-950 relative z-10 text-center text-2xl max-w-sm leading-5 gap-2">
-              <p>
-                Backing founders, not hype. Treehouse Capital is The
-                Chimpions&apos; early-stage investment arm.{" "}
+            <div className="flex flex-col relative z-10 text-center max-w-sm gap-2">
+              <p className={`${pCls} relative`}>
+                <span className="invisible select-none" aria-hidden>{line1}</span>
+                <span className="absolute inset-0">
+                  <Typewriter text={line1} delay={initialDelay} speed={speed} snapCursorOnDone />
+                </span>
               </p>
-              <p>
-                We invest in the earliest stages of great and bold ideas, often
-                before the public hears about them.
+              <p className={`${pCls} relative`}>
+                <span className="invisible select-none" aria-hidden>{line2}</span>
+                <span className="absolute inset-0">
+                  <Typewriter text={line2} delay={line2Delay} speed={speed} hideCursorUntilStart />
+                </span>
               </p>
             </div>
           </div>

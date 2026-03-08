@@ -1,41 +1,83 @@
 import Image from "next/image";
 import Link from "next/link";
+import FadeUp from "@/components/ui/FadeUp";
 
 const ecosystemItems = [
   {
     title: "The DAO",
     description: "Learn how the DAO works, and how to participate",
     href: "/the-dao",
-    color: "text-electric-purple-400",
+    color: "#c239f4",
     iconSrc: "/assets/the-dao.svg",
   },
   {
     title: "Gallery",
     description: "Browse the 222 animated Chimpions",
     href: "/nft-gallery",
-    color: "text-aqua-marine-400",
+    color: "#39f4c2",
     iconSrc: "/assets/gallery.svg",
   },
   {
     title: "Capital",
     description: "Lorem ipsum dolor sit amet",
     href: "/treehouse-capital",
-    color: "text-gold-500",
+    color: "#eeb411",
     iconSrc: "/assets/capital.svg",
   },
   {
     title: "Treehouse",
     description: "Lorem ipsum dolor sit amet",
     href: "/the-treehouse",
-    color: "text-gray-modern-25",
+    color: "#fcfcfd",
     iconSrc: "/assets/tree-house.svg",
   },
 ];
 
+const cardCls =
+  "block vision-card shooting-top group rounded-sm border border-gray-modern-800 bg-gray-modern-950 p-6 lg:p-10 transition-all duration-300";
+
+function EcosystemCard({ item }: { item: (typeof ecosystemItems)[number] }) {
+  return (
+    <Link
+      href={item.href}
+      className={cardCls}
+      style={{ "--card-color": item.color } as React.CSSProperties}
+    >
+      <div className="flex items-end justify-between gap-6">
+        <div>
+          <div className="size-10">
+            <Image
+              src={item.iconSrc}
+              alt={item.title}
+              width={40}
+              height={40}
+              className="size-10 object-contain transition-all duration-300 group-hover:brightness-0"
+            />
+          </div>
+          <h3 className="mt-4 text-white font-bold text-[2rem] transition-colors duration-300 group-hover:text-gray-modern-950">
+            {item.title}
+          </h3>
+          <p className="mt-2 text-gray-modern-400 text-xl leading-[1.2rem] transition-colors duration-300 group-hover:text-gray-modern-700">
+            {item.description}
+          </p>
+        </div>
+        <div className="arrow-bounce mt-10 transition-all duration-300 group-hover:brightness-0 shrink-0">
+          <Image
+            src="/assets/arrow-right.svg"
+            alt="Arrow right"
+            width={24}
+            height={24}
+            className="shrink-0"
+          />
+        </div>
+      </div>
+    </Link>
+  );
+}
+
 export default function Ecosystem() {
   return (
     <>
-      {/* Mobile */}
       <section className="lg:hidden relative bg-gray-modern-900">
         <div className="absolute top-0 left-0 right-0">
           <Image
@@ -76,47 +118,15 @@ export default function Ecosystem() {
           </div>
 
           <div className="grid grid-cols-1 gap-6">
-            {ecosystemItems.map((item) => (
-              <Link
-                key={item.title}
-                href={item.href}
-                className="group rounded-sm border border-gray-modern-800 bg-gray-modern-950 p-10 transition-all hover:border-gray-modern-700 hover:shadow-[0_0_0_1px_rgba(255,255,255,0.05)]"
-              >
-                <div className="flex items-end justify-between gap-6">
-                  <div>
-                    <div className="size-15">
-                      <Image
-                        src={item.iconSrc}
-                        alt={item.title}
-                        width={60}
-                        height={60}
-                        className="size-15 object-contain"
-                      />
-                    </div>
-                    <h3 className="mt-4 text-white font-bold text-[3rem] ">
-                      {item.title}
-                    </h3>
-                    <p className="mt-2 text-gray-modern-400 text-2xl leading-[1.2rem]">
-                      {item.description}
-                    </p>
-                  </div>
-                  <div className="mt-10 text-white transition-transform group-hover:translate-x-1 shrink-0">
-                    <Image
-                      src="/assets/arrow-right.svg"
-                      alt="Arrow right"
-                      width={24}
-                      height={24}
-                      className="shrink-0"
-                    />
-                  </div>
-                </div>
-              </Link>
+            {ecosystemItems.map((item, i) => (
+              <FadeUp key={item.title} delay={i * 100}>
+                <EcosystemCard item={item} />
+              </FadeUp>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Desktop */}
       <section className="hidden lg:block relative overflow-hidden bg-gray-modern-900">
         <Image
           src="/bgs/bg-ecosystem-desktop.png"
@@ -163,41 +173,10 @@ export default function Ecosystem() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {ecosystemItems.map((item) => (
-              <Link
-                key={item.title}
-                href={item.href}
-                className="group rounded-sm border border-gray-modern-800 bg-gray-modern-950 p-10 transition-all hover:border-gray-modern-700 hover:shadow-[0_0_0_1px_rgba(255,255,255,0.05)]"
-              >
-                <div className="flex items-end justify-between gap-6">
-                  <div>
-                    <div className="size-15">
-                      <Image
-                        src={item.iconSrc}
-                        alt={item.title}
-                        width={60}
-                        height={60}
-                        className="size-15 object-contain"
-                      />
-                    </div>
-                    <h3 className="mt-4 text-white font-bold text-[3rem]">
-                      {item.title}
-                    </h3>
-                    <p className="mt-2 text-gray-modern-400 text-2xl leading-[1.2rem]">
-                      {item.description}
-                    </p>
-                  </div>
-                  <div className="mt-10 text-white transition-transform group-hover:translate-x-1 shrink-0">
-                    <Image
-                      src="/assets/arrow-right.svg"
-                      alt="Arrow right"
-                      width={24}
-                      height={24}
-                      className="shrink-0"
-                    />
-                  </div>
-                </div>
-              </Link>
+            {ecosystemItems.map((item, i) => (
+              <FadeUp key={item.title} delay={i * 100}>
+                <EcosystemCard item={item} />
+              </FadeUp>
             ))}
           </div>
         </div>
