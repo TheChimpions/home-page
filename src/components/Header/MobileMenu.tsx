@@ -71,6 +71,43 @@ function MyListingsButton({ onMyListings, onClose }: { onMyListings: () => void;
   );
 }
 
+function MarketplaceButtons() {
+  return (
+    <>
+      <a
+        href="https://tensor.trade"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="group flex w-full font-bold lg:w-auto items-center justify-center gap-2 h-12 border border-gray-modern-700 bg-gray-modern-900/50 px-6 py-3 text-base font-sans text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"
+      >
+        <span className="font-bold">Tensor</span>
+        <Image
+          src="/logo/tensor.svg"
+          alt="Tensor"
+          width={25}
+          height={16}
+          className="brightness-0 invert group-hover:brightness-0 group-hover:invert-0 transition-all"
+        />
+      </a>
+      <a
+        href="https://magiceden.io"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="group flex w-full font-bold lg:w-auto items-center justify-center gap-2 h-12 border border-gray-modern-700 bg-gray-modern-900/50 px-6 py-3 text-base font-sans text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"
+      >
+        <span className="font-bold">Magic Eden</span>
+        <Image
+          src="/logo/magic-eden.svg"
+          alt="Magic Eden"
+          width={21}
+          height={16}
+          className="brightness-0 invert group-hover:brightness-0 group-hover:invert-0 transition-all"
+        />
+      </a>
+    </>
+  );
+}
+
 export default function MobileMenu({
   isOpen,
   onClose,
@@ -147,7 +184,7 @@ export default function MobileMenu({
             />
           </div>
 
-          <nav className="flex-1 overflow-y-auto px-6 pt-4">
+          <nav className="flex-1 overflow-y-auto px-6 pt-4 pb-8 flex flex-col justify-between gap-10">
             <ul className="flex flex-col gap-8">
               {navigationItems.map((item) => {
                 const isActive = currentPath === item.href;
@@ -177,42 +214,13 @@ export default function MobileMenu({
                 );
               })}
             </ul>
-          </nav>
 
-          <div className="px-6 pb-8 pt-6 space-y-3">
-            <MyListingsButton onMyListings={onMyListings} onClose={onClose} />
-            <MobileWalletButton />
-            <a
-              href="https://tensor.trade"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex w-full font-bold lg:w-auto items-center justify-center gap-2 h-12 border border-gray-modern-700 bg-gray-modern-900/50 px-6 py-3 text-base font-sans text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"
-            >
-              <span className="font-bold">Tensor</span>
-              <Image
-                src="/logo/tensor.svg"
-                alt="Tensor"
-                width={25}
-                height={16}
-                className="brightness-0 invert group-hover:brightness-0 group-hover:invert-0 transition-all"
-              />
-            </a>
-            <a
-              href="https://magiceden.io"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex w-full font-bold lg:w-auto items-center justify-center gap-2 h-12 border border-gray-modern-700 bg-gray-modern-900/50 px-6 py-3 text-base font-sans text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"
-            >
-              <span className="font-bold">Magic Eden</span>
-              <Image
-                src="/logo/magic-eden.svg"
-                alt="Magic Eden"
-                width={21}
-                height={16}
-                className="brightness-0 invert group-hover:brightness-0 group-hover:invert-0 transition-all"
-              />
-            </a>
-          </div>
+            <div className="flex flex-col gap-3">
+              <MyListingsButton onMyListings={onMyListings} onClose={onClose} />
+              <MobileWalletButton />
+              <MarketplaceButtons />
+            </div>
+          </nav>
         </div>
       </div>
     </>
