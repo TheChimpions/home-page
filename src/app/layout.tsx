@@ -52,6 +52,20 @@ export default function RootLayout({
       <head>
         <link
           rel="preload"
+          href="/fonts/PixelOperator.ttf"
+          as="font"
+          type="font/truetype"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preload"
+          href="/fonts/PixelOperator-Bold.ttf"
+          as="font"
+          type="font/truetype"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preload"
           href="/fonts/alagard.ttf"
           as="font"
           type="font/truetype"
