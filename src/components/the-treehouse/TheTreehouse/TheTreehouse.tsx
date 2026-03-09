@@ -18,7 +18,6 @@ export default function TheTreehouse() {
           width={390}
           height={740}
           priority
-          unoptimized
           className="block h-auto w-full [image-rendering:pixelated] lg:hidden"
         />
         <Image
@@ -27,7 +26,6 @@ export default function TheTreehouse() {
           width={1440}
           height={946}
           priority
-          unoptimized
           className="hidden h-auto w-full [image-rendering:pixelated] lg:block"
         />
         <div

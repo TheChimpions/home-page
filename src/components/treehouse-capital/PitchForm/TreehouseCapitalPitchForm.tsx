@@ -192,11 +192,24 @@ function isValidUrl(url: string): boolean {
   }
 }
 
-const INPUT_CLASS =
-  "block h-13 w-full rounded-[2px] border border-[#1d2942] bg-[#121926] px-4 text-xl text-gray-modern-200 placeholder:text-gray-modern-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-aqua-marine-500/70";
+const BASE_BORDER =
+  "rounded-[2px] border border-[#1d2942] bg-[#121926] text-xl text-gray-modern-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-aqua-marine-500/70 placeholder:text-transparent";
 
-const TEXTAREA_BASE_CLASS =
-  "block w-full resize-y rounded-[2px] border border-[#1d2942] bg-[#121926] px-4 py-3 text-xl text-gray-modern-200 placeholder:text-gray-modern-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-aqua-marine-500/70";
+const INPUT_CLASS = `peer block h-13 w-full px-4 ${BASE_BORDER}`;
+
+const TEXTAREA_BASE_CLASS = `peer block w-full resize-y px-4 pt-5 pb-3 ${BASE_BORDER}`;
+
+const LABEL_CLASS =
+  "pointer-events-none absolute left-3 select-none text-gray-modern-500 transition-all duration-200 " +
+  "top-[1.1rem] translate-y-0 text-xl " +
+  "peer-focus:top-0 peer-focus:-translate-y-1/2 peer-focus:text-sm peer-focus:text-aqua-marine-400 peer-focus:bg-[#212F49] peer-focus:px-1.5 peer-focus:rounded " +
+  "peer-[:not(:placeholder-shown)]:top-0 peer-[:not(:placeholder-shown)]:-translate-y-1/2 peer-[:not(:placeholder-shown)]:text-sm peer-[:not(:placeholder-shown)]:text-aqua-marine-400 peer-[:not(:placeholder-shown)]:bg-[#212F49] peer-[:not(:placeholder-shown)]:px-1.5 peer-[:not(:placeholder-shown)]:rounded";
+
+const INPUT_LABEL_CLASS =
+  "pointer-events-none absolute left-3 select-none text-gray-modern-500 transition-all duration-200 " +
+  "top-1/2 -translate-y-1/2 text-xl " +
+  "peer-focus:top-0 peer-focus:text-sm peer-focus:text-aqua-marine-400 peer-focus:bg-[#212F49] peer-focus:px-1.5 peer-focus:rounded " +
+  "peer-[:not(:placeholder-shown)]:top-0 peer-[:not(:placeholder-shown)]:text-sm peer-[:not(:placeholder-shown)]:text-aqua-marine-400 peer-[:not(:placeholder-shown)]:bg-[#212F49] peer-[:not(:placeholder-shown)]:px-1.5 peer-[:not(:placeholder-shown)]:rounded";
 
 export default function TreehouseCapitalPitchForm() {
   const [values, setValues] = useState<PitchFormValues>(initialValues);
@@ -298,50 +311,60 @@ export default function TreehouseCapitalPitchForm() {
           >
             {FIELD_ROWS.map((row, i) => (
               <FadeUp key={i} delay={i * 80}>
-              <div
-                className={
-                  row.length > 1
-                    ? "grid grid-cols-1 gap-4 lg:grid-cols-2"
-                    : undefined
-                }
-              >
-                {row.map((f) =>
-                  f.rows !== undefined ? (
-                    <textarea
-                      key={f.key}
-                      value={values[f.key]}
-                      onChange={(e) => setField(f.key, e.target.value)}
-                      placeholder={f.placeholder}
-                      rows={f.rows}
-                      className={`${f.minHeight} ${TEXTAREA_BASE_CLASS}`}
-                    />
-                  ) : (
-                    <input
-                      key={f.key}
-                      type={f.inputType ?? "text"}
-                      value={values[f.key]}
-                      onChange={(e) => setField(f.key, e.target.value)}
-                      placeholder={f.placeholder}
-                      autoComplete={f.autoComplete}
-                      inputMode={f.inputMode}
-                      className={INPUT_CLASS}
-                    />
-                  ),
-                )}
-              </div>
+                <div
+                  className={
+                    row.length > 1
+                      ? "grid grid-cols-1 gap-4 lg:grid-cols-2"
+                      : undefined
+                  }
+                >
+                  {row.map((f) =>
+                    f.rows !== undefined ? (
+                      <div key={f.key} className="relative">
+                        <textarea
+                          id={f.key}
+                          value={values[f.key]}
+                          onChange={(e) => setField(f.key, e.target.value)}
+                          placeholder=" "
+                          rows={f.rows}
+                          className={`${f.minHeight} ${TEXTAREA_BASE_CLASS}`}
+                        />
+                        <label htmlFor={f.key} className={LABEL_CLASS}>
+                          {f.placeholder}
+                        </label>
+                      </div>
+                    ) : (
+                      <div key={f.key} className="relative">
+                        <input
+                          id={f.key}
+                          type={f.inputType ?? "text"}
+                          value={values[f.key]}
+                          onChange={(e) => setField(f.key, e.target.value)}
+                          placeholder=" "
+                          autoComplete={f.autoComplete}
+                          inputMode={f.inputMode}
+                          className={INPUT_CLASS}
+                        />
+                        <label htmlFor={f.key} className={INPUT_LABEL_CLASS}>
+                          {f.placeholder}
+                        </label>
+                      </div>
+                    ),
+                  )}
+                </div>
               </FadeUp>
             ))}
 
             <FadeUp delay={FIELD_ROWS.length * 80}>
-            <div className="flex justify-center">
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="py-2 min-w-40 cursor-pointer rounded-sm bg-aqua-marine-500 px-20 text-xl font-bold leading-none text-gray-modern-950 transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {isSubmitting ? "Sending..." : "Send"}
-              </button>
-            </div>
+              <div className="flex justify-center">
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="py-2 min-w-40 cursor-pointer rounded-sm bg-aqua-marine-500 px-20 text-xl font-bold leading-none text-gray-modern-950 transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {isSubmitting ? "Sending..." : "Send"}
+                </button>
+              </div>
             </FadeUp>
           </form>
         </div>

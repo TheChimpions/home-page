@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://the-chimpions-two.vercel.app/sitemap.xml

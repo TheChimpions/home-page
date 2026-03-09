@@ -39,7 +39,6 @@ export default function Faq() {
         width={780}
         height={1025}
         priority
-        unoptimized
         className="pointer-events-none absolute -left-85 -top-130 h-[1025.158px] w-[780.92px] opacity-85"
       />
       <div className="max-w-480 mx-auto px-4 3xl:px-20 xl:pt-25 pt-20">
@@ -50,7 +49,6 @@ export default function Faq() {
               alt=""
               width={320}
               height={320}
-              unoptimized
               className="h-80 w-80 [image-rendering:pixelated] hidden xl:block animate-opacity-breathe"
             />
           </div>

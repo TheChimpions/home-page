@@ -382,3 +382,8 @@
     will-change: transform;
   }
 }
+
+/* iOS Safari: html background fills safe-area gaps that the body/overlays might not reach */
+html {
+  background-color: #121926; /* gray-modern-900 — matches mobile menu and most dark sections */
+}

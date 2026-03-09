@@ -87,7 +87,6 @@ export default function ValidatorHowToDelegate() {
                   alt="Wallet screenshot"
                   width={287}
                   height={638}
-                  unoptimized
                   className="block h-auto w-full"
                 />
               </div>
@@ -120,7 +119,6 @@ export default function ValidatorHowToDelegate() {
                   alt=""
                   width={89}
                   height={34}
-                  unoptimized
                   className="pointer-events-none absolute left-18 top-full hidden h-104 w-auto lg:block"
                 />
               </div>

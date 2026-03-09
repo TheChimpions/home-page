@@ -19,7 +19,6 @@ export default function TreehouseCapital() {
             alt=""
             fill
             priority
-            unoptimized
             className="object-cover object-top"
           />
         </div>
@@ -38,7 +37,6 @@ export default function TreehouseCapital() {
           alt=""
           width={280}
           height={248}
-          unoptimized
           className="pointer-events-none absolute left-0 top-1/2 hidden h-auto w-70 -translate-y-1/2 [image-rendering:pixelated] lg:block"
         />
         <div className="relative z-10 mx-auto max-w-480 px-4 pb-8 lg:px-4 3xl:px-20">

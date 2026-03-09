@@ -57,12 +57,21 @@ function MobileWalletButton() {
   return null;
 }
 
-function MyListingsButton({ onMyListings, onClose }: { onMyListings: () => void; onClose: () => void }) {
+function MyListingsButton({
+  onMyListings,
+  onClose,
+}: {
+  onMyListings: () => void;
+  onClose: () => void;
+}) {
   const { connected } = useWallet();
   if (!connected) return null;
   return (
     <button
-      onClick={() => { onClose(); onMyListings(); }}
+      onClick={() => {
+        onClose();
+        onMyListings();
+      }}
       className="group flex w-full items-center justify-center gap-2 h-12 border border-gray-modern-700 bg-gray-modern-900/50 px-6 text-base font-bold font-sans text-white transition-colors hover:bg-aqua-marine-500/20 hover:border-aqua-marine-500/50 hover:text-aqua-marine-400"
     >
       <LayoutList className="w-4 h-4 shrink-0" />
@@ -175,18 +184,17 @@ export default function MobileMenu({
               </svg>
             </button>
             <Image
-              src="/logo/logo-header.svg"
+              src="/logo/logo-header.png"
               alt="The Chimpions"
-              width={88}
-              height={52}
-              className="h-10 w-auto"
+              width={60}
+              height={36}
+              className="h-9 w-auto [image-rendering:pixelated]"
               priority
-              unoptimized
             />
           </div>
 
-          <nav className="flex-1 overflow-y-auto px-6 pt-4 pb-8 flex flex-col justify-between gap-10">
-            <ul className="flex flex-col gap-8">
+          <nav className="flex-1 overflow-y-auto px-6 pt-4 pb-[calc(2rem+env(safe-area-inset-bottom))] flex flex-col justify-between gap-10">
+            <ul className="flex flex-col gap-4">
               {navigationItems.map((item) => {
                 const isActive = currentPath === item.href;
                 return (

@@ -114,7 +114,6 @@ export function TokenInputBlock({
               height={29}
               quality={100}
               priority
-              unoptimized
             />
           </div>
         ) : token && onSelectToken ? (

@@ -31,7 +31,6 @@ export default function TreehouseInside() {
         width={1019}
         height={1192}
         priority
-        unoptimized
         className="pointer-events-none absolute -right-80 -top-52 hidden w-2xl opacity-45 lg:block"
       />
 

@@ -18,12 +18,13 @@ export default function Footer() {
       <footer className="lg:hidden bg-gray-modern-900 border-t border-gray-modern-800">
         <div className="px-4 py-16 flex flex-col items-center text-center">
           <Image
-            src="/logo/logo-footer.svg"
+            src="/logo/logo-footer.png"
             alt="The Chimpions"
             width={106}
             priority
             quality={100}
             height={63}
+            className="[image-rendering:pixelated]"
           />
 
           <p className="text-gray-modern-300 text-xl font-sans leading-5 mt-6">

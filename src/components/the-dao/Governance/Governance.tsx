@@ -36,7 +36,6 @@ export default function Governance() {
           fill
           priority
           quality={100}
-          unoptimized
           className="object-contain 5xl:object-cover  object-top"
         />
         <div className="relative max-w-480 mx-auto px-4 3xl:px-20 pt-20 pb-20 flex flex-col gap-10">

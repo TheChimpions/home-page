@@ -14,7 +14,6 @@ export default function ValidatorDefiIntegration() {
         alt=""
         width={1019}
         height={1192}
-        unoptimized
         className="pointer-events-none absolute left-[calc(50%-45vw-8rem)] -top-30 w-200 4xl:left-[calc(50%-49vw-8rem)] 4xl:-top-54 4xl:w-250"
       />
 

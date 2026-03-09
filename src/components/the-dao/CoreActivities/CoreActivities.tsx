@@ -39,7 +39,6 @@ export default function CoreActivities() {
         width={780}
         height={1025}
         priority
-        unoptimized
         className="pointer-events-none absolute -right-55 -top-100 h-[1025.158px] w-[780.92px] opacity-70 z-0"
       />
       <div className="relative z-10 max-w-480 mx-auto px-4 3xl:px-20 pb-24 lg:pb-32">

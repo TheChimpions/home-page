@@ -27,7 +27,6 @@ function ChimpColumn({
               alt=""
               width={IMG}
               height={IMG}
-              unoptimized
               className="w-full h-full object-contain [image-rendering:pixelated]"
             />
           </div>

@@ -23,7 +23,6 @@ export default function TreehouseCapitalHero() {
               src="/assets/left-capital.png"
               alt=""
               fill
-              unoptimized
               className="pointer-events-none absolute inset-0 object-cover [image-rendering:pixelated]"
             />
             <Image
@@ -31,7 +30,6 @@ export default function TreehouseCapitalHero() {
               alt="Treehouse Capital logo"
               width={220}
               height={220}
-              unoptimized
               className="relative z-10 h-auto w-44 sm:w-52"
             />
           </div>
@@ -41,7 +39,6 @@ export default function TreehouseCapitalHero() {
               src="/assets/right-capital.png"
               alt=""
               fill
-              unoptimized
               className="pointer-events-none absolute inset-0 object-cover [image-rendering:pixelated]"
             />
             <div className="flex flex-col relative z-10 text-center max-w-sm gap-2">

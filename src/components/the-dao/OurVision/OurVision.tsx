@@ -34,7 +34,6 @@ export default function OurVision() {
           alt="Background"
           fill
           priority
-          unoptimized
           className="object-cover [image-rendering:pixelated] block lg:hidden"
         />
 
@@ -43,7 +42,6 @@ export default function OurVision() {
           alt=""
           fill
           priority
-          unoptimized
           className="hidden object-cover [image-rendering:pixelated] lg:block"
         />
       </div>

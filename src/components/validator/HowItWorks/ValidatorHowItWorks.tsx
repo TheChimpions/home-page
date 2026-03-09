@@ -49,7 +49,6 @@ export default function ValidatorHowItWorks() {
           alt=""
           width={214}
           height={102}
-          unoptimized
           className="pointer-events-none absolute left-1/2 -top-14 hidden -translate-x-1/2 lg:block"
         />
 

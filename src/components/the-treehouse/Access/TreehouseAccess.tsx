@@ -120,7 +120,6 @@ export default function TreehouseAccess() {
               fill
               priority
               quality={100}
-              unoptimized
               className="object-contain lg:object-cover"
             />
             <div

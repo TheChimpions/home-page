@@ -49,7 +49,6 @@ export default function TreehouseCapitalPortfolio() {
           alt=""
           width={1104}
           height={223}
-          unoptimized
           className="pointer-events-none absolute left-0 top-0 h-auto w-full [image-rendering:pixelated]"
         />
 
@@ -75,7 +74,6 @@ export default function TreehouseCapitalPortfolio() {
                       alt={company.logoAlt}
                       width={company.logoWidth}
                       height={company.logoHeight}
-                      unoptimized
                       className="h-auto max-h-9 w-auto max-w-full"
                     />
                   </div>

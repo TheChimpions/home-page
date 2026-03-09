@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
@@ -8,6 +8,11 @@ import { SolanaProvider } from "@/components/connect/WalletProvider";
 import { Toaster as HotToaster } from "react-hot-toast";
 
 const siteUrl = "https://the-chimpions-two.vercel.app";
+
+export const viewport: Viewport = {
+  viewportFit: "cover",
+  themeColor: "#121926",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -72,7 +77,7 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
       </head>
-      <body className="antialiased bg-[#0a0f1a] min-h-screen flex flex-col">
+      <body className="antialiased bg-[#121926] min-h-screen flex flex-col">
         <QueryProvider>
           <SolanaProvider>
             <Header />

@@ -86,7 +86,6 @@ export default function Ecosystem() {
             width={800}
             height={400}
             priority
-            unoptimized
             className="w-full h-auto [image-rendering:pixelated]"
           />
         </div>
@@ -133,7 +132,6 @@ export default function Ecosystem() {
           alt=""
           fill
           priority
-          unoptimized
           className="object-cover 3xl:hidden"
         />
 
@@ -142,7 +140,6 @@ export default function Ecosystem() {
           alt=""
           fill
           priority
-          unoptimized
           className="object-cover hidden 3xl:block"
         />
 

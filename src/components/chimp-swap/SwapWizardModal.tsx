@@ -21,7 +21,7 @@ const MOCK_CHIMPS: MyChimp[] = [
   {
     mint: "mock-1",
     name: "The Mercenary",
-    image: "https://arweave.net/vj1GeW0LTfoqGbZ1zJZujfV7l6v5VbyCfQVJVyZGaE0",
+    image: "/carousel/1.png",
     tribe: "Old World Cult",
     type: "1/1",
     artist: "@_rabbels_",
@@ -30,7 +30,7 @@ const MOCK_CHIMPS: MyChimp[] = [
   {
     mint: "mock-2",
     name: "The Reincarnated",
-    image: "https://arweave.net/kKkMVXVsZCu5UtPMSTj3BJFE_aUGVqr1VIW7E_JqhZY",
+    image: "/carousel/5.png",
     tribe: "Proletariat",
     type: "1/1",
     artist: "@katsudon_sol",
@@ -39,7 +39,7 @@ const MOCK_CHIMPS: MyChimp[] = [
   {
     mint: "mock-3",
     name: "The Juror",
-    image: "https://arweave.net/Q2Q2NfJSfQEzRhMrS3MoNJcRXDmS3JzZ_JTQK5BFWA",
+    image: "/carousel/12.png",
     tribe: "Future War Pack",
     type: "1/1",
     artist: "@Sol_Cat17",
@@ -388,7 +388,6 @@ export default function SwapWizardModal({
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                   <div className="w-full sm:w-72">
                     <NftCard
-                      compact
                       name={selected.name}
                       image={selected.image}
                       tribe={selected.tribe}
@@ -410,7 +409,6 @@ export default function SwapWizardModal({
 
                   <div className="w-full sm:w-72">
                     <NftCard
-                      compact
                       name={targetListing.name}
                       image={targetListing.image}
                       tribe={targetListing.tribe}

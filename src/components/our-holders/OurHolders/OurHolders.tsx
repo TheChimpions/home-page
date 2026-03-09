@@ -18,7 +18,6 @@ export default function OurHolders() {
           width={390}
           height={740}
           priority
-          unoptimized
           className="block w-full h-auto [image-rendering:pixelated] lg:hidden"
         />
         <Image
@@ -27,7 +26,6 @@ export default function OurHolders() {
           width={1440}
           height={946}
           priority
-          unoptimized
           className="hidden w-full h-auto [image-rendering:pixelated] lg:block"
         />
         <div
