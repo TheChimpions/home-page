@@ -210,14 +210,14 @@
   }
 
   .ecosystem-bg {
-    background-image: url("/bgs/bg-ecosystem-desktop.webp");
+    background-image: url("/bgs/bg-ecosystem-desktop.png");
     background-size: cover;
     background-position: center;
   }
 
   @media (min-width: 2000px) {
     .ecosystem-bg {
-      background-image: url("/bgs/bg-ecosystem-large.webp");
+      background-image: url("/bgs/bg-ecosystem-large.png");
     }
   }
 

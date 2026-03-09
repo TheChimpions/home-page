@@ -10,7 +10,7 @@ export default function ValidatorDefiIntegration() {
       />
 
       <Image
-        src="/assets/purple-new.webp"
+        src="/assets/purple-new.png"
         alt=""
         width={1019}
         height={1192}

@@ -55,7 +55,7 @@ export default function ChimpSwap() {
         className="pointer-events-none absolute inset-x-0 top-0 z-0 overflow-hidden"
       >
         <Image
-          src="/assets/texture_bottom-mobile.webp"
+          src="/assets/texture_bottom-mobile.png"
           alt=""
           width={390}
           height={740}
@@ -64,7 +64,7 @@ export default function ChimpSwap() {
           className="block w-full h-auto [image-rendering:pixelated] lg:hidden"
         />
         <Image
-          src="/assets/texture-the-dao.webp"
+          src="/assets/texture-the-dao.png"
           alt=""
           width={1440}
           height={946}

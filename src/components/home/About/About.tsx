@@ -45,7 +45,7 @@ export default function About() {
           <div className="mt-11 border">
             <div className="relative w-full aspect-1224/133">
               <Image
-                src="/assets/chimps-board-4.webp"
+                src="/assets/chimps-board-4.png"
                 alt="Chimpions mosaic"
                 fill
                 sizes="100vw"

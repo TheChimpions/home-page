@@ -285,7 +285,7 @@ export default function SwapWizardModal({
               <div className="flex flex-col items-center gap-6 text-center">
                 <div>
                   <Image
-                    src="/assets/wallet.webp"
+                    src="/assets/wallet.png"
                     alt="Wallet Icon"
                     width={40}
                     height={40}

@@ -81,7 +81,7 @@ export default function Ecosystem() {
       <section className="lg:hidden relative bg-gray-modern-900">
         <div className="absolute top-0 left-0 right-0">
           <Image
-            src="/bgs/bg-ecosystem-mobile.webp"
+            src="/bgs/bg-ecosystem-mobile.png"
             alt=""
             width={800}
             height={400}
@@ -129,7 +129,7 @@ export default function Ecosystem() {
 
       <section className="hidden lg:block relative overflow-hidden bg-gray-modern-900">
         <Image
-          src="/bgs/bg-ecosystem-desktop.webp"
+          src="/bgs/bg-ecosystem-desktop.png"
           alt=""
           fill
           priority
@@ -138,7 +138,7 @@ export default function Ecosystem() {
         />
 
         <Image
-          src="/bgs/bg-ecosystem-large.webp"
+          src="/bgs/bg-ecosystem-large.png"
           alt=""
           fill
           priority

@@ -17,7 +17,7 @@ export default function Hero() {
     <>
       <section className="lg:hidden relative overflow-hidden bg-gray-modern-950">
         <Image
-          src="/assets/texture_bottom-mobile.webp"
+          src="/assets/texture_bottom-mobile.png"
           alt="Background"
           fill
           priority
@@ -84,7 +84,7 @@ export default function Hero() {
 
       <section className="hidden lg:block relative h-175 overflow-hidden bg-[#0B0F1A]">
         <Image
-          src="/bgs/hero-bg.webp"
+          src="/bgs/hero-bg.png"
           alt="Hero Background"
           fill
           priority

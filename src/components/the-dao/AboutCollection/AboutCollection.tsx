@@ -107,7 +107,7 @@ export default function AboutCollection() {
             <div className="w-full">
               <div className="relative w-full aspect-[1.2/1] overflow-hidden rounded-md border border-gray-modern-800 bg-gray-modern-950">
                 <Image
-                  src="/assets/chimps-rectangle.webp"
+                  src="/assets/chimps-rectangle.png"
                   alt="The Chimpions collection"
                   fill
                   className="object-cover"

@@ -83,7 +83,7 @@ export default function ValidatorHowToDelegate() {
             <div className="hidden w-full max-w-71.75 rounded-md bshadow-[0_0_18px_rgba(0,0,0,0.25)] lg:block">
               <div className="overflow-hidden">
                 <Image
-                  src="/assets/screenshot.webp"
+                  src="/assets/screenshot.png"
                   alt="Wallet screenshot"
                   width={287}
                   height={638}
@@ -116,7 +116,7 @@ export default function ValidatorHowToDelegate() {
                 </ol>
 
                 <Image
-                  src="/assets/arrow-down.webp"
+                  src="/assets/arrow-down.png"
                   alt=""
                   width={89}
                   height={34}

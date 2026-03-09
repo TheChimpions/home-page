@@ -34,7 +34,7 @@ export default function Faq() {
   return (
     <section className="relative overflow-hidden bg-gray-modern-950 ">
       <Image
-        src="/assets/purple-light.webp"
+        src="/assets/purple-light.png"
         alt=""
         width={780}
         height={1025}
@@ -46,7 +46,7 @@ export default function Faq() {
         <div className="grid grid-cols-1 xl:grid-cols-[0.6fr_1.6fr] xl:gap-10 items-start">
           <div className="flex justify-center lg:justify-start">
             <Image
-              src="/logo/logo_bordered.webp"
+              src="/logo/logo_bordered.png"
               alt=""
               width={320}
               height={320}

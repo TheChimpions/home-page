@@ -103,7 +103,7 @@ export default function TreehouseEditions() {
                       </>
                     ) : (
                       <Image
-                        src="/assets/placeholder.webp"
+                        src="/assets/placeholder.png"
                         alt={edition.name}
                         fill
                         unoptimized

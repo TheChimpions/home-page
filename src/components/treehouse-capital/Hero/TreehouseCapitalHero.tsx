@@ -20,14 +20,14 @@ export default function TreehouseCapitalHero() {
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.05fr]">
           <div className="relative flex h-67.75 items-center justify-center bg-[#202736] px-8 py-10 lg:px-12 lg:py-11">
             <Image
-              src="/assets/left-capital.webp"
+              src="/assets/left-capital.png"
               alt=""
               fill
               unoptimized
               className="pointer-events-none absolute inset-0 object-cover [image-rendering:pixelated]"
             />
             <Image
-              src="/assets/chimpions-treehouse-capital.webp"
+              src="/assets/chimpions-treehouse-capital.png"
               alt="Treehouse Capital logo"
               width={220}
               height={220}
@@ -38,7 +38,7 @@ export default function TreehouseCapitalHero() {
 
           <div className="relative flex h-67.75 items-center justify-center bg-aqua-marine-500 px-8 py-10 lg:px-12 lg:py-11">
             <Image
-              src="/assets/right-capital.webp"
+              src="/assets/right-capital.png"
               alt=""
               fill
               unoptimized

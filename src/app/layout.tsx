@@ -26,7 +26,7 @@ export const metadata: Metadata = {
       "The Chimpions is a premier NFT collection on Solana — join the DAO, stake your chimp, and be part of the community.",
     images: [
       {
-        url: "/assets/preview.webp",
+        url: "/assets/preview.png",
         width: 1200,
         height: 630,
         alt: "The Chimpions",
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     title: "The Chimpions",
     description:
       "The Chimpions is a premier NFT collection on Solana — join the DAO, stake your chimp, and be part of the community.",
-    images: ["/assets/preview.webp"],
+    images: ["/assets/preview.png"],
   },
 };
 

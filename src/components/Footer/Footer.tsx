@@ -18,7 +18,7 @@ export default function Footer() {
       <footer className="lg:hidden bg-gray-modern-900 border-t border-gray-modern-800">
         <div className="px-4 py-16 flex flex-col items-center text-center">
           <Image
-            src="/logo/logo-footer.webp"
+            src="/logo/logo-footer.svg"
             alt="The Chimpions"
             width={106}
             priority
@@ -123,7 +123,7 @@ export default function Footer() {
           <div className="grid grid-cols-1 lg:grid-cols-[2.5fr_1fr_0.6fr] gap-12">
             <div className="flex flex-col gap-6">
               <Image
-                src="/logo/logo-footer.webp"
+                src="/logo/logo-footer.svg"
                 alt="The Chimpions"
                 width={106}
                 priority

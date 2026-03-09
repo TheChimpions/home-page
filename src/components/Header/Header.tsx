@@ -261,7 +261,7 @@ export default function Header() {
               className="min-[1400px]:hidden absolute left-1/2 -translate-x-1/2 shrink-0 focus:outline-none focus-visible:outline-none focus-visible:ring-0"
             >
               <Image
-                src="/logo/logo-header.webp"
+                src="/logo/logo-header.svg"
                 alt="The Chimpions"
                 width={76}
                 height={45}
@@ -276,7 +276,7 @@ export default function Header() {
                 className="shrink-0 focus:outline-none focus-visible:outline-none focus-visible:ring-0"
               >
                 <Image
-                  src="/logo/logo-header.webp"
+                  src="/logo/logo-header.svg"
                   alt="The Chimpions"
                   width={76}
                   height={45}

@@ -45,7 +45,7 @@ export default function ValidatorHowItWorks() {
 
       <div className="relative grid grid-cols-1 gap-11 lg:grid-cols-2 lg:gap-28 mx-auto">
         <Image
-          src="/assets/dashes.webp"
+          src="/assets/dashes.png"
           alt=""
           width={214}
           height={102}

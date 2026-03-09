@@ -45,7 +45,7 @@ export default function TreehouseCapitalPortfolio() {
     <section className="mx-auto w-full ">
       <article className="relative overflow-hidden rounded-md border border-[#c8d3c5] bg-[#d6dfd3] px-5 py-8 shadow-[0_0_18px_rgba(0,0,0,0.25)] lg:px-10 lg:py-20">
         <Image
-          src="/assets/portfolio.webp"
+          src="/assets/portfolio.png"
           alt=""
           width={1104}
           height={223}

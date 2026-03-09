@@ -23,7 +23,7 @@ function ChimpColumn({
         {strip.map((name, i) => (
           <div key={i} className="shrink-0" style={{ width: IMG, height: IMG }}>
             <Image
-              src={`/carousel/${encodeURIComponent(name)}.webp`}
+              src={`/carousel/${encodeURIComponent(name)}.png`}
               alt=""
               width={IMG}
               height={IMG}
