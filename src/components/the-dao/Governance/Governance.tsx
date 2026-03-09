@@ -6,7 +6,7 @@ type Member = {
   imageSrc?: string;
 };
 
-const placeholderAvatar = "/assets/placeholder.png";
+const placeholderAvatar = "/assets/placeholder.webp";
 
 const councilMembers: Member[] = [
   { name: "Bill" },
@@ -31,7 +31,7 @@ export default function Governance() {
     <section className="relative bg-gray-modern-900">
       <div className="relative overflow-hidden">
         <Image
-          src="/bgs/bg-team.png"
+          src="/bgs/bg-team.webp"
           alt=""
           fill
           priority

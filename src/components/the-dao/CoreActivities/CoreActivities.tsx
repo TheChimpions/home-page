@@ -34,7 +34,7 @@ export default function CoreActivities() {
   return (
     <section className="relative overflow-hidden bg-gray-modern-950">
       <Image
-        src="/assets/purple-left.png"
+        src="/assets/purple-left.webp"
         alt=""
         width={780}
         height={1025}

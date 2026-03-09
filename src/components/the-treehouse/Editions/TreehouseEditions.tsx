@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import FadeUp from "@/components/ui/FadeUp";
 
 interface Edition {
@@ -13,12 +13,17 @@ interface Edition {
 
 export default function TreehouseEditions() {
   const [editions, setEditions] = useState<Edition[] | null>(null);
+  const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     fetch("/api/editions")
       .then((r) => r.json())
       .then((data: Edition[]) => setEditions(data))
       .catch(() => {});
+  }, []);
+
+  const onImageLoad = useCallback((symbol: string) => {
+    setLoadedImages((prev) => new Set(prev).add(symbol));
   }, []);
 
   return (
@@ -53,7 +58,10 @@ export default function TreehouseEditions() {
       <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {editions === null
           ? [...Array(10)].map((_, i) => (
-              <div key={i} className="overflow-hidden rounded-md border border-gray-modern-800 bg-gray-modern-900 p-3">
+              <div
+                key={i}
+                className="overflow-hidden rounded-md border border-gray-modern-800 bg-gray-modern-900 p-3"
+              >
                 <div className="aspect-square rounded-sm bg-gray-modern-800 animate-pulse" />
                 <div className="mt-4 flex flex-col gap-2">
                   <div className="h-5 w-3/4 rounded bg-gray-modern-800 animate-pulse" />
@@ -67,23 +75,39 @@ export default function TreehouseEditions() {
                   href={`https://magiceden.io/marketplace/${edition.symbol}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group overflow-hidden rounded-md border border-gray-modern-800 bg-gray-modern-900 p-3 shadow-[0_0_18px_rgba(0,0,0,0.25)] transition-all duration-300 hover:-translate-y-1 hover:border-electric-purple-600 hover:shadow-[0_0_28px_rgba(180,17,238,0.2)] block"
+                  className="group overflow-hidden rounded-md border border-gray-modern-800 bg-gray-modern-900 p-3 shadow-[0_0_18px_rgba(0,0,0,0.25)] transition-all duration-300 hover:-translate-y-1 hover:border-gray-modern-600 hover:shadow-[0_0_18px_rgba(0,0,0,0.15)] block"
                 >
                   <div className="relative aspect-square overflow-hidden rounded-sm border border-gray-modern-800 bg-gray-modern-950">
-                    {edition.image && (
+                    {edition.image ? (
+                      <>
+                        {!loadedImages.has(edition.symbol) && (
+                          <div className="absolute inset-0 bg-gray-modern-800 animate-pulse" />
+                        )}
+                        <Image
+                          src={edition.image}
+                          alt={edition.name}
+                          fill
+                          unoptimized
+                          priority={index < 4}
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                          onLoad={() => onImageLoad(edition.symbol)}
+                          className={`object-cover transition-[transform,opacity] duration-300 ${loadedImages.has(edition.symbol) ? "opacity-100" : "opacity-0"} ${edition.symbol === "tws9" ? "scale-[1.25] group-hover:scale-[1.4]" : "group-hover:scale-105"}`}
+                          style={{
+                            objectFit: "cover",
+                            objectPosition:
+                              edition.symbol === "tws9"
+                                ? "20% center"
+                                : "center",
+                          }}
+                        />
+                      </>
+                    ) : (
                       <Image
-                        src={edition.image}
+                        src="/assets/placeholder.webp"
                         alt={edition.name}
                         fill
                         unoptimized
-                        priority={index < 4}
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                        className={`object-cover transition-transform duration-300 ${edition.symbol === "tws9" ? "scale-[1.25] group-hover:scale-[1.4]" : "group-hover:scale-105"}`}
-                        style={{
-                          objectFit: "cover",
-                          objectPosition:
-                            edition.symbol === "tws9" ? "20% center" : "center",
-                        }}
+                        className="object-cover opacity-30"
                       />
                     )}
                   </div>
@@ -102,7 +126,7 @@ export default function TreehouseEditions() {
                   </div>
                 </a>
               </FadeUp>
-          ))}
+            ))}
       </div>
 
       {editions !== null && (

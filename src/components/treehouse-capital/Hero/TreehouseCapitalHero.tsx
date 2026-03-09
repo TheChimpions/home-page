@@ -3,8 +3,10 @@
 import Image from "next/image";
 import Typewriter from "@/components/ui/Typewriter";
 
-const line1 = "Backing founders, not hype. Treehouse Capital is The Chimpions' early-stage investment arm.";
-const line2 = "We invest in the earliest stages of great and bold ideas, often before the public hears about them.";
+const line1 =
+  "Backing founders, not hype. Treehouse Capital is The Chimpions' early-stage investment arm.";
+const line2 =
+  "We invest in the earliest stages of great and bold ideas, often before the public hears about them.";
 const speed = 38;
 const initialDelay = 150;
 const line2Delay = initialDelay + line1.length * speed + 150;
@@ -18,14 +20,14 @@ export default function TreehouseCapitalHero() {
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.05fr]">
           <div className="relative flex h-67.75 items-center justify-center bg-[#202736] px-8 py-10 lg:px-12 lg:py-11">
             <Image
-              src="/assets/left-capital.png"
+              src="/assets/left-capital.webp"
               alt=""
               fill
               unoptimized
               className="pointer-events-none absolute inset-0 object-cover [image-rendering:pixelated]"
             />
             <Image
-              src="/assets/chimpions-treehouse-capital.png"
+              src="/assets/chimpions-treehouse-capital.webp"
               alt="Treehouse Capital logo"
               width={220}
               height={220}
@@ -36,7 +38,7 @@ export default function TreehouseCapitalHero() {
 
           <div className="relative flex h-67.75 items-center justify-center bg-aqua-marine-500 px-8 py-10 lg:px-12 lg:py-11">
             <Image
-              src="/assets/right-capital.png"
+              src="/assets/right-capital.webp"
               alt=""
               fill
               unoptimized
@@ -44,15 +46,29 @@ export default function TreehouseCapitalHero() {
             />
             <div className="flex flex-col relative z-10 text-center max-w-sm gap-2">
               <p className={`${pCls} relative`}>
-                <span className="invisible select-none" aria-hidden>{line1}</span>
+                <span className="invisible select-none" aria-hidden>
+                  {line1}
+                </span>
                 <span className="absolute inset-0">
-                  <Typewriter text={line1} delay={initialDelay} speed={speed} snapCursorOnDone />
+                  <Typewriter
+                    text={line1}
+                    delay={initialDelay}
+                    speed={speed}
+                    snapCursorOnDone
+                  />
                 </span>
               </p>
               <p className={`${pCls} relative`}>
-                <span className="invisible select-none" aria-hidden>{line2}</span>
+                <span className="invisible select-none" aria-hidden>
+                  {line2}
+                </span>
                 <span className="absolute inset-0">
-                  <Typewriter text={line2} delay={line2Delay} speed={speed} hideCursorUntilStart />
+                  <Typewriter
+                    text={line2}
+                    delay={line2Delay}
+                    speed={speed}
+                    hideCursorUntilStart
+                  />
                 </span>
               </p>
             </div>

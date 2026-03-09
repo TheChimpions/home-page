@@ -33,9 +33,10 @@ export default function About() {
             <p className="text-white text-xl leading-[1.2rem]">
               The Chimpions is more than an NFT collection—it&apos;s a movement.
               222 unique, meticulously crafted digital primates represent
-              ownership in a holder-governed DAO that operates a Solana validator,
-              invests in Web3 startups, and builds tools for the community. We
-              believe in art, capital allocation, and integrity above all.
+              ownership in a holder-governed DAO that operates a Solana
+              validator, invests in Web3 startups, and builds tools for the
+              community. We believe in art, capital allocation, and integrity
+              above all.
             </p>
           </FadeUp>
         </div>
@@ -44,7 +45,7 @@ export default function About() {
           <div className="mt-11 border">
             <div className="relative w-full aspect-1224/133">
               <Image
-                src="/assets/chimps-board-4.png"
+                src="/assets/chimps-board-4.webp"
                 alt="Chimpions mosaic"
                 fill
                 sizes="100vw"

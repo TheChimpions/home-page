@@ -129,7 +129,9 @@ function NftCard({
       <div
         className={`relative w-full overflow-hidden rounded-sm border border-gray-modern-800 bg-gray-modern-950 ${compact ? "h-44" : "aspect-square"}`}
       >
-        {!imageLoaded && <div className="absolute inset-0 bg-gray-modern-800 animate-pulse" />}
+        {!imageLoaded && (
+          <div className="absolute inset-0 bg-gray-modern-800 animate-pulse" />
+        )}
         {image && (
           <Image
             src={image}
@@ -283,7 +285,7 @@ export default function SwapWizardModal({
               <div className="flex flex-col items-center gap-6 text-center">
                 <div>
                   <Image
-                    src="/assets/wallet.png"
+                    src="/assets/wallet.webp"
                     alt="Wallet Icon"
                     width={40}
                     height={40}
@@ -323,11 +325,17 @@ export default function SwapWizardModal({
                 {loadingChimps ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                     {[...Array(3)].map((_, i) => (
-                      <div key={i} className="rounded-md border border-gray-modern-700 bg-rich-black-900 p-4 flex flex-col gap-4 animate-pulse">
+                      <div
+                        key={i}
+                        className="rounded-md border border-gray-modern-700 bg-rich-black-900 p-4 flex flex-col gap-4 animate-pulse"
+                      >
                         <div className="h-5 bg-gray-modern-700 rounded w-2/3" />
                         <div className="aspect-square bg-gray-modern-700 rounded-sm" />
                         {[...Array(4)].map((_, j) => (
-                          <div key={j} className="h-5 bg-gray-modern-700 rounded" />
+                          <div
+                            key={j}
+                            className="h-5 bg-gray-modern-700 rounded"
+                          />
                         ))}
                       </div>
                     ))}

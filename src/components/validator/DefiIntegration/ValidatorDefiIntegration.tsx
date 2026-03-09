@@ -10,7 +10,7 @@ export default function ValidatorDefiIntegration() {
       />
 
       <Image
-        src="/assets/purple-new.png"
+        src="/assets/purple-new.webp"
         alt=""
         width={1019}
         height={1192}
@@ -46,7 +46,7 @@ export default function ValidatorDefiIntegration() {
           </p>
         </div>
 
-        <div className="grid gap-6 grid-rows-2 lg:max-w-2xl  w-full">
+        <div className="grid gap-6 grid-rows-2   w-full">
           <FadeUp delay={0}>
             <article className="h-full rounded-md border bg-gray-modern-800 border-gray-modern-800 px-6 py-6 shadow-[0_0_18px_rgba(0,0,0,0.25)] flex flex-col justify-between">
               <div className="flex flex-col gap-4">

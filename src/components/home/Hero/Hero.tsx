@@ -3,7 +3,8 @@ import Typewriter from "@/components/ui/Typewriter";
 import HeroCarousel from "./HeroCarousel";
 import HeroCarouselHorizontal from "./HeroCarouselHorizontal";
 
-const line1 = "A values-first and art-driven DAO investing in builders, art and Web3 culture.";
+const line1 =
+  "A values-first and art-driven DAO investing in builders, art and Web3 culture.";
 const line2 = "The modern think tank on Solana.";
 const speed = 38;
 const initialDelay = 150;
@@ -16,7 +17,7 @@ export default function Hero() {
     <>
       <section className="lg:hidden relative overflow-hidden bg-gray-modern-950">
         <Image
-          src="/assets/texture_bottom-mobile.png"
+          src="/assets/texture_bottom-mobile.webp"
           alt="Background"
           fill
           priority
@@ -48,15 +49,29 @@ export default function Hero() {
 
           <div className="mt-6 px-4 text-center flex flex-col gap-1">
             <p className={`${pCls} relative`}>
-              <span className="invisible select-none" aria-hidden>{line1}</span>
+              <span className="invisible select-none" aria-hidden>
+                {line1}
+              </span>
               <span className="absolute inset-0">
-                <Typewriter text={line1} delay={initialDelay} speed={speed} snapCursorOnDone />
+                <Typewriter
+                  text={line1}
+                  delay={initialDelay}
+                  speed={speed}
+                  snapCursorOnDone
+                />
               </span>
             </p>
             <p className={`${pCls} relative`}>
-              <span className="invisible select-none" aria-hidden>{line2}</span>
+              <span className="invisible select-none" aria-hidden>
+                {line2}
+              </span>
               <span className="absolute inset-0">
-                <Typewriter text={line2} delay={line2Delay} speed={speed} hideCursorUntilStart />
+                <Typewriter
+                  text={line2}
+                  delay={line2Delay}
+                  speed={speed}
+                  hideCursorUntilStart
+                />
               </span>
             </p>
           </div>
@@ -69,7 +84,7 @@ export default function Hero() {
 
       <section className="hidden lg:block relative h-175 overflow-hidden bg-[#0B0F1A]">
         <Image
-          src="/bgs/hero-bg.png"
+          src="/bgs/hero-bg.webp"
           alt="Hero Background"
           fill
           priority
@@ -102,21 +117,35 @@ export default function Hero() {
 
             <div className="mt-4 flex flex-col gap-1 lg:max-w-md xl:max-w-2xl 2xl:max-w-full">
               <p className={`${pCls} relative`}>
-                <span className="invisible select-none" aria-hidden>{line1}</span>
+                <span className="invisible select-none" aria-hidden>
+                  {line1}
+                </span>
                 <span className="absolute inset-0">
-                  <Typewriter text={line1} delay={initialDelay} speed={speed} snapCursorOnDone />
+                  <Typewriter
+                    text={line1}
+                    delay={initialDelay}
+                    speed={speed}
+                    snapCursorOnDone
+                  />
                 </span>
               </p>
               <p className={`${pCls} relative`}>
-                <span className="invisible select-none" aria-hidden>{line2}</span>
+                <span className="invisible select-none" aria-hidden>
+                  {line2}
+                </span>
                 <span className="absolute inset-0">
-                  <Typewriter text={line2} delay={line2Delay} speed={speed} hideCursorUntilStart />
+                  <Typewriter
+                    text={line2}
+                    delay={line2Delay}
+                    speed={speed}
+                    hideCursorUntilStart
+                  />
                 </span>
               </p>
             </div>
           </div>
 
-          <div className="absolute right-0 3xl:right-13.75 -bottom-7.5 z-10 h-185">
+          <div className="absolute right-4 3xl:right-19.75 -bottom-7.5 z-10 h-185">
             <HeroCarousel />
           </div>
         </div>

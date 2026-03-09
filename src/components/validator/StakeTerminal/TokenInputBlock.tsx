@@ -108,7 +108,7 @@ export function TokenInputBlock({
         {isChimpSol ? (
           <div>
             <Image
-              src="/logo/logo_bordered_fff.png"
+              src="/logo/logo_bordered_fff.webp"
               alt="ChimpSol Logo"
               width={29}
               height={29}

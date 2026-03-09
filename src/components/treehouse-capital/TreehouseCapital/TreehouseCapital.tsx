@@ -15,7 +15,7 @@ export default function TreehouseCapital() {
         >
           <div className="absolute inset-0 bg-[#11112A]" />
           <Image
-            src="/assets/bg-treehouse-capital.png"
+            src="/assets/bg-treehouse-capital.webp"
             alt=""
             fill
             priority
@@ -34,7 +34,7 @@ export default function TreehouseCapital() {
 
       <section className="relative overflow-hidden bg-[#212F49]">
         <Image
-          src="/assets/pitch.png"
+          src="/assets/pitch.webp"
           alt=""
           width={280}
           height={248}

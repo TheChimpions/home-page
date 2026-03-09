@@ -62,7 +62,7 @@ export default function AboutCollection() {
 
               <div className="flex flex-col lg:flex-row gap-4 w-full md:w-auto">
                 <a
-                  href="https://tensor.trade"
+                  href="https://www.tensor.trade/trade/the_chimpions"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group flex w-full font-bold  h-12 lg:w-auto items-center rounded-sm justify-center gap-3  border border-gray-modern-700 bg-gray-modern-900/50 px-6 py-3 text-xl font-sans text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"
@@ -82,7 +82,7 @@ export default function AboutCollection() {
                   />
                 </a>
                 <a
-                  href="https://magiceden.io"
+                  href="https://magiceden.io/creators/the_chimpions"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group flex w-full font-bold h-12 lg:w-auto items-center rounded-sm justify-center gap-3  border border-gray-modern-700 bg-gray-modern-900/50 px-6 py-3 text-xl font-sans text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"
@@ -107,7 +107,7 @@ export default function AboutCollection() {
             <div className="w-full">
               <div className="relative w-full aspect-[1.2/1] overflow-hidden rounded-md border border-gray-modern-800 bg-gray-modern-950">
                 <Image
-                  src="/assets/chimps-rectangle.png"
+                  src="/assets/chimps-rectangle.webp"
                   alt="The Chimpions collection"
                   fill
                   className="object-cover"

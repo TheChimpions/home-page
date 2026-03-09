@@ -30,7 +30,7 @@ export default function OurVision() {
     <section className="relative overflow-hidden bg-gray-modern-950">
       <div aria-hidden="true" className="absolute inset-0">
         <Image
-          src="/assets/texture_bottom-mobile.png"
+          src="/assets/texture_bottom-mobile.webp"
           alt="Background"
           fill
           priority
@@ -39,7 +39,7 @@ export default function OurVision() {
         />
 
         <Image
-          src="/assets/texture-the-dao.png"
+          src="/assets/texture-the-dao.webp"
           alt=""
           fill
           priority
@@ -80,14 +80,14 @@ export default function OurVision() {
           <div className="sm:mt-10 flex justify-center">
             <div className="relative size-25.25 sm:size-33">
               <Image
-                src="/logo/logo_bordered_fff.png"
+                src="/logo/logo_bordered_fff.webp"
                 alt="The Chimpions emblem"
                 width={101}
                 height={101}
                 className="object-contain [image-rendering:pixelated] lg:hidden"
               />
               <Image
-                src="/logo/logo_bordered.png"
+                src="/logo/logo_bordered.webp"
                 alt="The Chimpions emblem"
                 width={132}
                 height={132}

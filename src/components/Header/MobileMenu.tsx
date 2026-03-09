@@ -75,7 +75,7 @@ function MarketplaceButtons() {
   return (
     <>
       <a
-        href="https://tensor.trade"
+        href="https://www.tensor.trade/trade/the_chimpions"
         target="_blank"
         rel="noopener noreferrer"
         className="group flex w-full font-bold lg:w-auto items-center justify-center gap-2 h-12 border border-gray-modern-700 bg-gray-modern-900/50 px-6 py-3 text-base font-sans text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"
@@ -90,7 +90,7 @@ function MarketplaceButtons() {
         />
       </a>
       <a
-        href="https://magiceden.io"
+        href="https://magiceden.io/creators/the_chimpions"
         target="_blank"
         rel="noopener noreferrer"
         className="group flex w-full font-bold lg:w-auto items-center justify-center gap-2 h-12 border border-gray-modern-700 bg-gray-modern-900/50 px-6 py-3 text-base font-sans text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"
@@ -175,12 +175,13 @@ export default function MobileMenu({
               </svg>
             </button>
             <Image
-              src="/logo/logo-header.png"
+              src="/logo/logo-header.svg"
               alt="The Chimpions"
               width={88}
               height={52}
               className="h-10 w-auto"
               priority
+              unoptimized
             />
           </div>
 

@@ -18,7 +18,7 @@ export default function Footer() {
       <footer className="lg:hidden bg-gray-modern-900 border-t border-gray-modern-800">
         <div className="px-4 py-16 flex flex-col items-center text-center">
           <Image
-            src="/logo/logo-footer.png"
+            src="/logo/logo-footer.webp"
             alt="The Chimpions"
             width={106}
             priority
@@ -85,7 +85,7 @@ export default function Footer() {
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-11 w-full">
             <a
-              href="https://tensor.trade"
+              href="https://www.tensor.trade/trade/the_chimpions"
               target="_blank"
               rel="noopener noreferrer"
               className="group w-full font-bold sm:max-w-xs px-4 flex flex-row gap-2 h-10 items-center justify-center border border-gray-modern-700 text-white text-xl font-sans hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950 transition-colors"
@@ -100,7 +100,7 @@ export default function Footer() {
               />
             </a>
             <a
-              href="https://magiceden.io"
+              href="https://magiceden.io/creators/the_chimpions"
               target="_blank"
               rel="noopener noreferrer"
               className="group w-full font-bold sm:max-w-xs px-4 flex flex-row gap-2 h-10 items-center justify-center border border-gray-modern-700 text-white text-xl font-sans hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950 transition-colors"
@@ -123,7 +123,7 @@ export default function Footer() {
           <div className="grid grid-cols-1 lg:grid-cols-[2.5fr_1fr_0.6fr] gap-12">
             <div className="flex flex-col gap-6">
               <Image
-                src="/logo/logo-footer.png"
+                src="/logo/logo-footer.webp"
                 alt="The Chimpions"
                 width={106}
                 priority
@@ -196,7 +196,7 @@ export default function Footer() {
 
             <div className="flex items-center gap-4 shrink-0">
               <a
-                href="https://tensor.trade"
+                href="https://www.tensor.trade/trade/the_chimpions"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group px-3 flex font-bold flex-row gap-2 lg:px-4 h-10 items-center border border-gray-modern-700 text-white text-xl  font-sans hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950 transition-colors"
@@ -211,7 +211,7 @@ export default function Footer() {
                 />
               </a>
               <a
-                href="https://magiceden.io"
+                href="https://magiceden.io/creators/the_chimpions"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group px-3 flex font-bold flex-row gap-2 lg:px-4 h-10 items-center border border-gray-modern-700 text-white text-xl font-sans hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950 transition-colors"

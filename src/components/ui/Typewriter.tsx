@@ -7,9 +7,7 @@ interface TypewriterProps {
   delay?: number;
   speed?: number;
   className?: string;
-  /** Hide cursor until typing begins (for lines that start later) */
   hideCursorUntilStart?: boolean;
-  /** Remove cursor instantly when done instead of fading */
   snapCursorOnDone?: boolean;
 }
 
@@ -55,7 +53,9 @@ export default function Typewriter({
         className="inline-block w-0.5 h-[1em] ml-0.5 align-middle bg-current"
         style={{
           opacity: showCursor ? 1 : 0,
-          animation: showCursor ? "tw-blink 0.7s ease-in-out infinite" : undefined,
+          animation: showCursor
+            ? "tw-blink 0.7s ease-in-out infinite"
+            : undefined,
         }}
       />
     </span>

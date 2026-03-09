@@ -115,7 +115,7 @@ export default function TreehouseAccess() {
         <FadeUp delay={80} className="order-1 lg:order-2">
           <div className="relative aspect-4/5 lg:aspect-auto lg:min-h-80 overflow-hidden rounded-md shadow-[0_0_18px_rgba(0,0,0,0.25)] h-full">
             <Image
-              src="/assets/treehouse.png"
+              src="/assets/treehouse.webp"
               alt="Treehouse visual"
               fill
               priority

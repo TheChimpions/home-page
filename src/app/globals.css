@@ -21,7 +21,7 @@
   src: url("/fonts/alagard.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
-  font-display: swap;
+  font-display: block;
 }
 
 @theme {
@@ -143,6 +143,25 @@
   html {
     font-size: 16px;
   }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #364552 transparent;
+  }
+  *::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  *::-webkit-scrollbar-thumb {
+    background-color: #364552;
+    border-radius: 2px;
+  }
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: #4b5565;
+  }
 }
 
 @layer utilities {
@@ -191,14 +210,14 @@
   }
 
   .ecosystem-bg {
-    background-image: url("/bgs/bg-ecosystem-desktop.png");
+    background-image: url("/bgs/bg-ecosystem-desktop.webp");
     background-size: cover;
     background-position: center;
   }
 
   @media (min-width: 2000px) {
     .ecosystem-bg {
-      background-image: url("/bgs/bg-ecosystem-large.png");
+      background-image: url("/bgs/bg-ecosystem-large.webp");
     }
   }
 

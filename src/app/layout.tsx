@@ -7,9 +7,39 @@ import { Toaster } from "sonner";
 import { SolanaProvider } from "@/components/connect/WalletProvider";
 import { Toaster as HotToaster } from "react-hot-toast";
 
+const siteUrl = "https://the-chimpions-two.vercel.app";
+
 export const metadata: Metadata = {
-  title: "The Chimpions",
-  description: "Join The Chimpions, the premier NFT collection on Solana",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "The Chimpions",
+    template: "%s | The Chimpions",
+  },
+  description:
+    "The Chimpions is a premier NFT collection on Solana — join the DAO, stake your chimp, and be part of the community.",
+  openGraph: {
+    type: "website",
+    url: siteUrl,
+    siteName: "The Chimpions",
+    title: "The Chimpions",
+    description:
+      "The Chimpions is a premier NFT collection on Solana — join the DAO, stake your chimp, and be part of the community.",
+    images: [
+      {
+        url: "/assets/preview.webp",
+        width: 1200,
+        height: 630,
+        alt: "The Chimpions",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "The Chimpions",
+    description:
+      "The Chimpions is a premier NFT collection on Solana — join the DAO, stake your chimp, and be part of the community.",
+    images: ["/assets/preview.webp"],
+  },
 };
 
 export default function RootLayout({
@@ -19,6 +49,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link
+          rel="preload"
+          href="/fonts/alagard.ttf"
+          as="font"
+          type="font/truetype"
+          crossOrigin="anonymous"
+        />
+      </head>
       <body className="antialiased bg-[#0a0f1a] min-h-screen flex flex-col">
         <QueryProvider>
           <SolanaProvider>

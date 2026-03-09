@@ -26,7 +26,7 @@ export default function TreehouseInside() {
   return (
     <section id="treehouse-inside" className="relative scroll-mt-28">
       <Image
-        src="/assets/purple-left.png"
+        src="/assets/purple-left.webp"
         alt=""
         width={1019}
         height={1192}

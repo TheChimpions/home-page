@@ -23,7 +23,7 @@ export default function HeroCarouselHorizontal() {
             style={{ width: IMG, height: IMG }}
           >
             <Image
-              src={`/carousel/${encodeURIComponent(name)}.png`}
+              src={`/carousel/${encodeURIComponent(name)}.webp`}
               alt=""
               width={IMG}
               height={IMG}

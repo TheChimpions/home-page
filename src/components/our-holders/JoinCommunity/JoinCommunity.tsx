@@ -26,7 +26,7 @@ export default function JoinCommunity() {
 
           <div className="flex flex-col gap-4 lg:items-end w-full md:w-auto">
             <a
-              href="https://tensor.trade"
+              href="https://www.tensor.trade/trade/the_chimpions"
               target="_blank"
               rel="noopener noreferrer"
               className="group h-12 flex w-full font-bold  lg:max-w-auto items-center justify-between gap-3 rounded-sm border border-gray-modern-800 bg-gray-modern-900/50 px-4 py-3 text-xl font-sans text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"
@@ -45,7 +45,7 @@ export default function JoinCommunity() {
               </span>
             </a>
             <a
-              href="https://magiceden.io"
+              href="https://magiceden.io/creators/the_chimpions"
               target="_blank"
               rel="noopener noreferrer"
               className="group h-12 flex w-full font-bold lg:max-w-auto items-center justify-between gap-3 rounded-sm border border-gray-modern-800 bg-gray-modern-900/50 px-4 py-3 text-xl font-sans text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"

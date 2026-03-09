@@ -6,19 +6,19 @@ const strategyCards = [
     title: "Deep Involvement with Builders",
     description:
       "We work closely with founders from day one, providing hands-on support and guidance.",
-    iconSrc: "/assets/deep.png",
+    iconSrc: "/assets/deep.webp",
   },
   {
     title: "Real-time Feedback",
     description:
       "Active users in our community provide immediate, valuable feedback on new projects.",
-    iconSrc: "/assets/feedback.png",
+    iconSrc: "/assets/feedback.webp",
   },
   {
     title: "Long-term Vision",
     description:
       "The DAO's alignment ensures we think beyond quick wins to lasting value creation.",
-    iconSrc: "/assets/long-term.png",
+    iconSrc: "/assets/long-term.webp",
   },
 ];
 

@@ -261,7 +261,7 @@ export default function Header() {
               className="min-[1400px]:hidden absolute left-1/2 -translate-x-1/2 shrink-0 focus:outline-none focus-visible:outline-none focus-visible:ring-0"
             >
               <Image
-                src="/logo/logo-header.png"
+                src="/logo/logo-header.webp"
                 alt="The Chimpions"
                 width={76}
                 height={45}
@@ -276,7 +276,7 @@ export default function Header() {
                 className="shrink-0 focus:outline-none focus-visible:outline-none focus-visible:ring-0"
               >
                 <Image
-                  src="/logo/logo-header.png"
+                  src="/logo/logo-header.webp"
                   alt="The Chimpions"
                   width={76}
                   height={45}
@@ -323,7 +323,7 @@ export default function Header() {
 
             <div className="hidden min-[1400px]:flex items-center gap-2 shrink-0">
               <a
-                href="https://tensor.trade"
+                href="https://www.tensor.trade/trade/the_chimpions"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group text-xl font-bold px-3 flex flex-row gap-2 lg:px-4 h-10 items-center border border-gray-modern-700 text-white font-sans hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950 transition-colors"
@@ -338,7 +338,7 @@ export default function Header() {
                 />
               </a>
               <a
-                href="https://magiceden.io"
+                href="https://magiceden.io/creators/the_chimpions"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group text-xl font-bold px-3 flex flex-row gap-2 lg:px-4 h-10 items-center border border-gray-modern-700 text-white font-sans hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950 transition-colors"

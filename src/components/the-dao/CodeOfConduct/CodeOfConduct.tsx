@@ -21,7 +21,7 @@ export default function CodeOfConduct() {
       <div className="max-w-480 mx-auto px-4 3xl:px-20 pb-10 pt-10 lg:pb-32 lg:pt-32">
         <div className="relative overflow-hidden rounded-md border border-gray-modern-800 bg-gray-modern-900 shadow-[0_0_24px_rgba(0,0,0,0.35)]">
           <div className="absolute right-0 top-0">
-            <img src="/assets/texture_top.png" alt="" className="object-fit" />
+            <img src="/assets/texture_top.webp" alt="" className="object-fit" />
             <div className="absolute inset-0 bg-linear-to-b from-transparent via-gray-modern-900/30 to-gray-modern-900/85" />
           </div>
 
