@@ -87,6 +87,7 @@ export default function Hero() {
           alt="Hero Background"
           fill
           priority
+          unoptimized
           className="object-cover [image-rendering:pixelated]"
         />
 

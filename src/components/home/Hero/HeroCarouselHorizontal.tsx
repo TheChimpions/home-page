@@ -37,10 +37,12 @@ export default function HeroCarouselHorizontal() {
         {strip.map((name, i) => (
           <div key={i} className="shrink-0" style={{ width: IMG, height: IMG }}>
             <Image
-              src={`/carousel/${encodeURIComponent(name)}.png`}
+              src={`/carousel/${encodeURIComponent(name)}v2.png`}
               alt=""
               width={IMG}
               height={IMG}
+              quality={100}
+              sizes="200px"
               className="w-full h-full object-contain [image-rendering:pixelated]"
             />
           </div>

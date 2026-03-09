@@ -20,7 +20,7 @@ const MOCK_CHIMPS: MyChimp[] = [
   {
     mint: "mock-1",
     name: "The Mercenary",
-    image: "/carousel/1.png",
+    image: "/carousel/1v2.png",
     tribe: "Old World Cult",
     type: "1/1",
     artist: "@_rabbels_",
@@ -29,7 +29,7 @@ const MOCK_CHIMPS: MyChimp[] = [
   {
     mint: "mock-2",
     name: "The Reincarnated",
-    image: "/carousel/5.png",
+    image: "/carousel/5v2.png",
     tribe: "Proletariat",
     type: "1/1",
     artist: "@katsudon_sol",
@@ -38,7 +38,7 @@ const MOCK_CHIMPS: MyChimp[] = [
   {
     mint: "mock-3",
     name: "The Juror",
-    image: "/carousel/12.png",
+    image: "/carousel/12v2.png",
     tribe: "Future War Pack",
     type: "1/1",
     artist: "@Sol_Cat17",
