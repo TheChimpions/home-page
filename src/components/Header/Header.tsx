@@ -31,16 +31,12 @@ const navigation: NavEntry[] = [
       { label: "NFT Gallery", href: "/nft-gallery" },
       { label: "Our Holders", href: "/our-holders" },
       { label: "Chimp Swap", href: "/chimp-swap" },
-    ],
-  },
-  {
-    label: "Treehouse",
-    items: [
       { label: "The Treehouse", href: "/the-treehouse" },
-      { label: "Treehouse Capital", href: "/treehouse-capital" },
     ],
   },
+  { label: "Treehouse Capital", href: "/treehouse-capital" },
   { label: "Validator", href: "/validator" },
+  { label: "Merch Store", href: "#" },
 ];
 
 const allNavItems: NavLink[] = [
@@ -52,6 +48,7 @@ const allNavItems: NavLink[] = [
   { label: "The Treehouse", href: "/the-treehouse" },
   { label: "Treehouse Capital", href: "/treehouse-capital" },
   { label: "Validator", href: "/validator" },
+  { label: "Merch Store", href: "#" },
 ];
 
 function NavDropdown({

@@ -28,7 +28,7 @@ const executiveTeam: Member[] = [
 
 export default function Governance() {
   return (
-    <section className="relative bg-gray-modern-900">
+    <section id="governance" className="relative bg-gray-modern-900 scroll-mt-16 min-[1400px]:scroll-mt-20">
       <div className="relative overflow-hidden">
         <Image
           src="/bgs/bg-team.png"

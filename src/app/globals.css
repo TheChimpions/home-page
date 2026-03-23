@@ -231,7 +231,6 @@
   }
 
   .animate-gradient-flow {
-    /* Fallback color if gradient text is not supported */
     color: #11eeb4;
     animation: gradient-flow 3s linear infinite;
   }
@@ -383,7 +382,6 @@
   }
 }
 
-/* iOS Safari: html background fills safe-area gaps that the body/overlays might not reach */
 html {
   background-color: #121926; /* gray-modern-900 — matches mobile menu and most dark sections */
 }

@@ -1,4 +1,3 @@
-import Image from "next/image";
 import FadeUp from "@/components/ui/FadeUp";
 
 export default function About() {
@@ -30,29 +29,38 @@ export default function About() {
           </FadeUp>
 
           <FadeUp delay={150}>
-            <p className="text-white text-xl leading-[1.2rem]">
-              The Chimpions is more than an NFT collection—it&apos;s a movement.
-              222 unique, meticulously crafted digital primates represent
-              ownership in a holder-governed DAO that operates a Solana
-              validator, invests in Web3 startups, and builds tools for the
-              community. We believe in art, capital allocation, and integrity
-              above all.
-            </p>
+            <div className="text-white text-xl leading-relaxed space-y-4">
+              <p>
+                The Chimpions is a curated collection of 222 NFTs, forming a
+                network of individuals united by shared values. Each Chimpion is
+                a 1/1 digital identity and a key to the DAO. At its core, The
+                Chimpions is a values-first organization:
+              </p>
+              <ul className="space-y-1 pl-4 list-disc">
+                <li>Integrity over hype</li>
+                <li>Long-term thinking over short-term speculation</li>
+                <li>Contribution over extraction</li>
+              </ul>
+              <p>
+                Backed by a community-owned treasury, The Chimpions funds
+                initiatives across Web3, art, and DeFi — from infrastructure and
+                investments to creative projects and real-world activations.
+              </p>
+              <p>
+                As a holder, you help govern a living treasury, back emerging
+                builders, and shape projects with real impact.
+              </p>
+            </div>
           </FadeUp>
         </div>
 
         <FadeUp delay={300}>
-          <div className="mt-11 border">
-            <div className="relative w-full aspect-1224/133">
-              <Image
-                src="/assets/chimps-board-4.png"
-                alt="Chimpions mosaic"
-                fill
-                sizes="100vw"
-                quality={100}
-                className="object-contain"
-              />
-            </div>
+          <div className="mt-11 border border-gray-modern-800 overflow-hidden max-h-77.5">
+            <img
+              src="/assets/chimpions-banner.gif"
+              alt="Chimpions mosaic"
+              className="w-full [image-rendering:pixelated]"
+            />
           </div>
         </FadeUp>
       </div>

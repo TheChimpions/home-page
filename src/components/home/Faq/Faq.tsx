@@ -4,27 +4,54 @@ import { useState } from "react";
 import Image from "next/image";
 import FadeUp from "@/components/ui/FadeUp";
 
-const faqItems = [
+const faqItems: {
+  question: string;
+  answer: string;
+  link?: { text: string; href: string };
+}[] = [
   {
-    question: "Lorem Ipsum Dolor Sit Amet",
+    question: "What are the Chimpions?",
     answer:
-      "Lorem ipsum dolor sit amet lorem ipsum dolor. Lorem ipsum dolor sit amet lorem ipsum dolor.",
+      "A collection of 222 unique 1/1 hand-drawn pixel NFTs on Solana. It's not just a project — it's a place to build, share, and grow.",
   },
   {
-    question: "Lorem Ipsum Dolor Sit Amet",
-    answer: "Lorem ipsum dolor sit amet lorem ipsum dolor.",
+    question: "When did it launch?",
+    answer: "January 31, 2022 — fully whitelisted at 0.22 SOL.",
   },
   {
-    question: "Lorem Ipsum Dolor Sit Amet",
-    answer: "Lorem ipsum dolor sit amet lorem ipsum dolor.",
+    question: "Who leads this?",
+    answer:
+      "Every 6 months, the Chimpions elect the council. Any member of the chiao can run for a seat. In April 2025, 8 members were elected to lead the Chimpions, alongside an executive team of 3 responsible for day-to-day operations.",
+    link: { text: "Meet them here →", href: "/the-dao#governance" },
   },
   {
-    question: "Lorem Ipsum Dolor Sit Amet",
-    answer: "Lorem ipsum dolor sit amet lorem ipsum dolor.",
+    question: "Do Chimpions have rarity rankings?",
+    answer: "Nope. Each one is 1/1. Rarity is in the eye of the beholder.",
   },
   {
-    question: "Lorem Ipsum Dolor Sit Amet",
-    answer: "Lorem ipsum dolor sit amet lorem ipsum dolor.",
+    question: "Who is the Chimpions artist?",
+    answer:
+      "All Chimpions were hand-drawn by Zen0, Zulp, Brink, and Rabbels. All animations were created by @katsudon., with collaborations from @zeroxxx and @duckzzy on 10 of them.",
+  },
+  {
+    question: "What is the Treehouse?",
+    answer:
+      "A subcommunity for artists, collectors, and researchers. This is where thoughtful creation and signal-sharing happens.",
+  },
+  {
+    question: "Why stake with the Chimpions validator?",
+    answer:
+      "You earn one of the best yields on your SOL, get access to the Treehouse section, and become eligible for future art edition airdrops.",
+  },
+  {
+    question: "How does the DAO work?",
+    answer:
+      "The Chimpions DAO is governed by holders who participate in proposals, voting, and community initiatives. We focus on investing in builders, supporting art, and fostering Web3 culture through collective decision-making.",
+  },
+  {
+    question: "What else should I know?",
+    answer:
+      "The Chimpions are a tight-knit community. If you have a question, don't hesitate to ask. If you'd prefer to connect directly with one of the Council Members, please do. We want to make sure you feel at home.",
   },
 ];
 
@@ -79,42 +106,54 @@ export default function Faq() {
                 const isOpen = openIndex === index;
                 return (
                   <FadeUp key={`${item.question}-${index}`} delay={index * 80}>
-                  <div
-                    className="group py-6 cursor-pointer"
-                    onClick={() => setOpenIndex(isOpen ? -1 : index)}
-                  >
-                    <button
-                      type="button"
-                      className="flex w-full justify-between items-center gap-6 text-left cursor-pointer"
-                      aria-expanded={isOpen}
-                    >
-                      <span className="text-gray-modern-25 text-xl font-sans font-semibold transition-colors group-hover:text-gold-500">
-                        {item.question}
-                      </span>
-                      <Image
-                        src={
-                          isOpen
-                            ? "/assets/faq-arrow-up.svg"
-                            : "/assets/faq-arrow-down.svg"
-                        }
-                        alt=""
-                        width={30}
-                        height={30}
-                        className="mt-1 shrink-0 size-5 sm:size-8 transition-transform group-hover:scale-110"
-                      />
-                    </button>
                     <div
-                      className={`grid transition-all duration-300 ease-in-out ${
-                        isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
-                      }`}
+                      className="group py-6 cursor-pointer"
+                      onClick={() => setOpenIndex(isOpen ? -1 : index)}
                     >
-                      <div className="overflow-hidden">
-                        <p className="mt-2 text-gray-modern-400 text-xl leading-5 max-w-xl">
-                          {item.answer}
-                        </p>
+                      <button
+                        type="button"
+                        className="flex w-full justify-between items-center gap-6 text-left cursor-pointer"
+                        aria-expanded={isOpen}
+                      >
+                        <span className={`text-xl font-sans font-semibold transition-colors group-hover:text-gold-500 ${isOpen ? "text-gold-500" : "text-gray-modern-25"}`}>
+                          {item.question}
+                        </span>
+                        <Image
+                          src={
+                            isOpen
+                              ? "/assets/arrow-gold.png"
+                              : "/assets/faq-arrow-down.svg"
+                          }
+                          alt=""
+                          width={30}
+                          height={30}
+                          className="mt-1 shrink-0 size-5 sm:size-8 transition-transform group-hover:scale-110"
+                        />
+                      </button>
+                      <div
+                        className={`grid transition-all duration-300 ease-in-out ${
+                          isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+                        }`}
+                      >
+                        <div className="overflow-hidden">
+                          <p className="mt-2 text-gray-modern-400 text-xl leading-5">
+                            {item.answer}
+                            {item.link && (
+                              <>
+                                {" "}
+                                <a
+                                  href={item.link.href}
+                                  className="text-gold-500 hover:underline"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  {item.link.text}
+                                </a>
+                              </>
+                            )}
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </div>
                   </FadeUp>
                 );
               })}

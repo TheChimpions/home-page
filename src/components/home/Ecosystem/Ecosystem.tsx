@@ -19,14 +19,14 @@ const ecosystemItems = [
   },
   {
     title: "Capital",
-    description: "Lorem ipsum dolor sit amet",
+    description: "See our investments & syndicate deals",
     href: "/treehouse-capital",
     color: "#eeb411",
     iconSrc: "/assets/capital.svg",
   },
   {
     title: "Treehouse",
-    description: "Lorem ipsum dolor sit amet",
+    description: "Explore our Art & Research center, open to anyone",
     href: "/the-treehouse",
     color: "#fcfcfd",
     iconSrc: "/assets/tree-house.svg",

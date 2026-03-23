@@ -10,6 +10,7 @@ const chimpionsLinks = [
   { label: "Our Holders", href: "/our-holders" },
   { label: "The Treehouse", href: "/the-treehouse" },
   { label: "Treehouse Capital", href: "/treehouse-capital" },
+  { label: "Validator", href: "/validator" },
 ];
 
 export default function Footer() {
