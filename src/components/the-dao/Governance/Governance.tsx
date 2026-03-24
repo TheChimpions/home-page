@@ -3,32 +3,34 @@ import FadeUp from "@/components/ui/FadeUp";
 
 type Member = {
   name: string;
-  imageSrc?: string;
+  role?: string;
+  imageSrc: string;
 };
 
-const placeholderAvatar = "/assets/placeholder.png";
-
 const councilMembers: Member[] = [
-  { name: "Bill" },
-  { name: "HotSauce" },
-  { name: "Jiners" },
-  { name: "Minine" },
-  { name: "Katsu" },
-  { name: "Dasein" },
-  { name: "Utopia" },
-  { name: "Bip" },
-  { name: "Kev" },
+  { name: "BM", imageSrc: "/team/TheJovian-BM.gif" },
+  { name: "HotSauce", imageSrc: "/team/TheUneasy-HotSauce.gif" },
+  { name: "Johners", imageSrc: "/team/TheRoyal-johners.gif" },
+  { name: "Minne", imageSrc: "/team/ThePensive-Minne.gif" },
+  { name: "Katsu", imageSrc: "/team/TheRocker-Katsu.gif" },
+  { name: "Dasein", imageSrc: "/team/TheStatic-Dasein.gif" },
+  { name: "Utopia", imageSrc: "/team/TheSinged-Utopia.gif" },
+  { name: "Bip", imageSrc: "/team/TheJuror-Bip.gif" },
+  { name: "Kev", imageSrc: "/team/TheGrunt-Kev.gif" },
 ];
 
 const executiveTeam: Member[] = [
-  { name: "Dasein" },
-  { name: "Utopia" },
-  { name: "Bip" },
+  { name: "Tuxr", role: "CTO", imageSrc: "/team/TheBionic-tuxr.gif" },
+  { name: "Max", role: "CEO", imageSrc: "/team/TheOriginal-Max.gif" },
+  { name: "Jota", role: "CBO", imageSrc: "/team/TheMeathead-jota.gif" },
 ];
 
 export default function Governance() {
   return (
-    <section id="governance" className="relative bg-gray-modern-900 scroll-mt-16 min-[1400px]:scroll-mt-20">
+    <section
+      id="governance"
+      className="relative bg-gray-modern-900 scroll-mt-16 min-[1400px]:scroll-mt-20"
+    >
       <div className="relative overflow-hidden">
         <Image
           src="/bgs/bg-team.png"
@@ -70,9 +72,9 @@ export default function Governance() {
                 {councilMembers.slice(0, 5).map((member, i) => (
                   <FadeUp key={member.name} delay={i * 80}>
                     <div className="flex flex-col items-center gap-4">
-                      <div className="relative w-full aspect-square overflow-hidden rounded-sm border border-gray-modern-700 bg-gray-modern-800/80">
+                      <div className="relative w-full aspect-square overflow-hidden rounded-sm">
                         <Image
-                          src={member.imageSrc ?? placeholderAvatar}
+                          src={member.imageSrc}
                           alt={member.name}
                           fill
                           sizes="20vw"
@@ -92,9 +94,9 @@ export default function Governance() {
                 {councilMembers.slice(5).map((member, i) => (
                   <FadeUp key={member.name} delay={i * 80}>
                     <div className="flex flex-col items-center gap-4">
-                      <div className="relative w-full aspect-square overflow-hidden rounded-sm border border-gray-modern-700 bg-gray-modern-800/80">
+                      <div className="relative w-full aspect-square overflow-hidden rounded-sm">
                         <Image
-                          src={member.imageSrc ?? placeholderAvatar}
+                          src={member.imageSrc}
                           alt={member.name}
                           fill
                           sizes="20vw"
@@ -114,16 +116,10 @@ export default function Governance() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 lg:hidden">
               {councilMembers.map((member, index) => (
                 <FadeUp key={member.name} delay={index * 80}>
-                  <div
-                    className={`flex flex-col items-center gap-4 ${
-                      index === councilMembers.length - 1
-                        ? "sm:col-span-2 sm:max-w-sm sm:w-full sm:mx-auto"
-                        : ""
-                    }`}
-                  >
-                    <div className="relative w-full aspect-square overflow-hidden rounded-sm border border-gray-modern-700 bg-gray-modern-800/80">
+                  <div className="flex flex-col items-center gap-4">
+                    <div className="relative w-full aspect-square overflow-hidden rounded-sm ">
                       <Image
-                        src={member.imageSrc ?? placeholderAvatar}
+                        src={member.imageSrc}
                         alt={member.name}
                         fill
                         sizes="(min-width: 640px) 50vw, 100vw"
@@ -150,9 +146,9 @@ export default function Governance() {
               {executiveTeam.map((member, i) => (
                 <FadeUp key={member.name} delay={i * 80}>
                   <div className="flex flex-col items-center gap-4">
-                    <div className="relative w-full aspect-square overflow-hidden rounded-sm border border-gray-modern-700 bg-gray-modern-800/80">
+                    <div className="relative w-full aspect-square overflow-hidden rounded-sm">
                       <Image
-                        src={member.imageSrc ?? placeholderAvatar}
+                        src={member.imageSrc}
                         alt={member.name}
                         fill
                         sizes="20vw"
@@ -160,9 +156,16 @@ export default function Governance() {
                         className="object-cover"
                       />
                     </div>
-                    <span className="text-white font-medium text-[1.5rem] font-title">
-                      {member.name}
-                    </span>
+                    <div className="flex flex-col items-center">
+                      <span className="text-white font-medium text-[1.5rem] font-title">
+                        {member.name}
+                      </span>
+                      {member.role && (
+                        <span className="text-gray-modern-400 text-xl">
+                          {member.role}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </FadeUp>
               ))}
@@ -172,16 +175,10 @@ export default function Governance() {
             <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-6 lg:hidden">
               {executiveTeam.map((member, index) => (
                 <FadeUp key={member.name} delay={index * 80}>
-                  <div
-                    className={`flex flex-col items-center gap-4 ${
-                      index === executiveTeam.length - 1
-                        ? "sm:col-span-2 sm:max-w-sm sm:w-full sm:mx-auto"
-                        : ""
-                    }`}
-                  >
-                    <div className="relative w-full aspect-square overflow-hidden rounded-sm border border-gray-modern-700 bg-gray-modern-800/80">
+                  <div className="flex flex-col items-center gap-4">
+                    <div className="relative w-full aspect-square overflow-hidden rounded-sm">
                       <Image
-                        src={member.imageSrc ?? placeholderAvatar}
+                        src={member.imageSrc}
                         alt={member.name}
                         fill
                         sizes="(min-width: 640px) 50vw, 100vw"
@@ -189,9 +186,16 @@ export default function Governance() {
                         className="object-cover"
                       />
                     </div>
-                    <span className="text-white font-medium text-[1.5rem] font-title">
-                      {member.name}
-                    </span>
+                    <div className="flex flex-col items-center gap-1">
+                      <span className="text-white font-medium text-[1.5rem] font-title">
+                        {member.name}
+                      </span>
+                      {member.role && (
+                        <span className="text-gray-modern-400 text-xl">
+                          {member.role}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </FadeUp>
               ))}
