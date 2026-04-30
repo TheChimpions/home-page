@@ -8,7 +8,6 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import {
   ChevronDown,
-  ChevronUp,
   Wallet,
   LayoutList,
   Trash2,

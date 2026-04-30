@@ -210,36 +210,29 @@ export default function PostChimpModal({ onClose }: PostChimpModalProps) {
   const { connected, publicKey } = useWallet();
   const { setVisible } = useWalletModal();
 
-  const [step, setStep] = useState<1 | 2 | 3 | 4>(connected ? 2 : 1);
-  const [myChimps, setMyChimps] = useState<MyChimp[]>([]);
+  const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
+  const effectiveStep: 1 | 2 | 3 | 4 = connected && step === 1 ? 2 : step;
+  const [myChimps, setMyChimps] = useState<MyChimp[]>(MOCK_CHIMPS);
   const [loadingChimps, setLoadingChimps] = useState(false);
   const [selected, setSelected] = useState<MyChimp | null>(null);
 
   useEffect(() => {
-    if (connected && step === 1) setStep(2);
-  }, [connected, step]);
-
-  useEffect(() => {
-    if (step === 2 && myChimps.length === 0) {
-      if (!publicKey) {
+    if (effectiveStep !== 2 || !publicKey) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setLoadingChimps(true);
+    fetch(`/api/my-chimps?wallet=${publicKey.toBase58()}`)
+      .then((r) => r.json())
+      .then((data) => {
+        const chimps =
+          Array.isArray(data) && data.length > 0 ? data : MOCK_CHIMPS;
+        setMyChimps(chimps);
+        setLoadingChimps(false);
+      })
+      .catch(() => {
         setMyChimps(MOCK_CHIMPS);
-        return;
-      }
-      setLoadingChimps(true);
-      fetch(`/api/my-chimps?wallet=${publicKey.toBase58()}`)
-        .then((r) => r.json())
-        .then((data) => {
-          const chimps =
-            Array.isArray(data) && data.length > 0 ? data : MOCK_CHIMPS;
-          setMyChimps(chimps);
-          setLoadingChimps(false);
-        })
-        .catch(() => {
-          setMyChimps(MOCK_CHIMPS);
-          setLoadingChimps(false);
-        });
-    }
-  }, [step, publicKey, myChimps.length]);
+        setLoadingChimps(false);
+      });
+  }, [effectiveStep, publicKey]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -275,11 +268,11 @@ export default function PostChimpModal({ onClose }: PostChimpModalProps) {
           </div>
 
           <div className="hidden min-[332px]:flex justify-center">
-            <StepIndicator current={step} />
+            <StepIndicator current={effectiveStep} />
           </div>
 
           <div className="flex flex-col">
-            {step === 1 && (
+            {effectiveStep === 1 && (
               <div className="flex flex-col items-center gap-6 text-center">
                 <div>
                   <Image
@@ -308,7 +301,7 @@ export default function PostChimpModal({ onClose }: PostChimpModalProps) {
               </div>
             )}
 
-            {step === 2 && (
+            {effectiveStep === 2 && (
               <div className="flex flex-col gap-6">
                 <div className="text-center">
                   <h3 className="text-white font-bold text-xl">
@@ -377,7 +370,7 @@ export default function PostChimpModal({ onClose }: PostChimpModalProps) {
               </div>
             )}
 
-            {step === 3 && selected && (
+            {effectiveStep === 3 && selected && (
               <div className="flex flex-col gap-6">
                 <div className="text-center">
                   <h3 className="text-white font-bold text-xl">
@@ -425,7 +418,7 @@ export default function PostChimpModal({ onClose }: PostChimpModalProps) {
               </div>
             )}
 
-            {step === 4 && selected && (
+            {effectiveStep === 4 && selected && (
               <div className="flex flex-col items-center gap-6">
                 <div className="flex flex-col items-center text-center gap-3">
                   <Image

@@ -129,6 +129,7 @@ export default function MobileMenu({
 
   useEffect(() => {
     if (isOpen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setShouldRender(true);
       const frame = requestAnimationFrame(() => setIsVisible(true));
       return () => cancelAnimationFrame(frame);

@@ -1,6 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const HELIUS_API_KEY = process.env.NEXT_PUBLIC_HELIUS_API_KEY;
+interface HeliusAsset {
+  id: string;
+  content?: {
+    metadata?: {
+      name?: string;
+      animation_url?: string;
+      image?: string;
+      attributes?: { trait_type: string; value: string }[];
+    };
+    files?: { mime?: string; cdn_uri?: string; uri?: string }[];
+    links?: { image?: string };
+  };
+  creators?: { address: string; verified: boolean }[];
+}
+
+const HELIUS_API_KEY = process.env.HELIUS_API_KEY;
 const CREATOR_ADDRESS =
   process.env.NEXT_PUBLIC_CREATOR_ADDRESS ||
   "D7hKRyCsdaaSGVGwSAgcEfkSofBb6gn68UPD3yWW59zW";
@@ -36,13 +51,13 @@ export async function GET(request: NextRequest) {
     const data = await res.json();
     const assets = data.result?.items ?? [];
 
-    const chimps = assets
-      .filter((asset: any) =>
+    const chimps = (assets as HeliusAsset[])
+      .filter((asset) =>
         asset.creators?.some(
-          (c: any) => c.address === CREATOR_ADDRESS && c.verified,
+          (c) => c.address === CREATOR_ADDRESS && c.verified,
         ),
       )
-      .map((asset: any) => {
+      .map((asset) => {
         const metadata = asset.content?.metadata;
         const attributes: { trait_type: string; value: string }[] =
           metadata?.attributes ?? [];
@@ -51,7 +66,7 @@ export async function GET(request: NextRequest) {
 
         const files = asset.content?.files ?? [];
         const gifFile = files.find(
-          (f: any) => f.mime === "image/gif" || f.cdn_uri?.includes(".gif"),
+          (f) => f.mime === "image/gif" || f.cdn_uri?.includes(".gif"),
         );
         const image =
           metadata?.animation_url ||

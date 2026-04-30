@@ -215,36 +215,29 @@ export default function SwapWizardModal({
   const { publicKey } = useWallet();
   const { setVisible } = useWalletModal();
 
-  const [step, setStep] = useState<1 | 2 | 3 | 4>(publicKey ? 2 : 1);
-  const [myChimps, setMyChimps] = useState<MyChimp[]>([]);
+  const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
+  const effectiveStep: 1 | 2 | 3 | 4 = publicKey && step === 1 ? 2 : step;
+  const [myChimps, setMyChimps] = useState<MyChimp[]>(MOCK_CHIMPS);
   const [loadingChimps, setLoadingChimps] = useState(false);
   const [selected, setSelected] = useState<MyChimp | null>(null);
 
   useEffect(() => {
-    if (step === 2 && myChimps.length === 0) {
-      if (!publicKey) {
+    if (effectiveStep !== 2 || !publicKey) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setLoadingChimps(true);
+    fetch(`/api/my-chimps?wallet=${publicKey.toBase58()}`)
+      .then((r) => r.json())
+      .then((data) => {
+        setMyChimps(
+          Array.isArray(data) && data.length > 0 ? data : MOCK_CHIMPS,
+        );
+        setLoadingChimps(false);
+      })
+      .catch(() => {
         setMyChimps(MOCK_CHIMPS);
-        return;
-      }
-      setLoadingChimps(true);
-      fetch(`/api/my-chimps?wallet=${publicKey.toBase58()}`)
-        .then((r) => r.json())
-        .then((data) => {
-          setMyChimps(
-            Array.isArray(data) && data.length > 0 ? data : MOCK_CHIMPS,
-          );
-          setLoadingChimps(false);
-        })
-        .catch(() => {
-          setMyChimps(MOCK_CHIMPS);
-          setLoadingChimps(false);
-        });
-    }
-  }, [step, publicKey, myChimps.length]);
-
-  useEffect(() => {
-    if (publicKey && step === 1) setStep(2);
-  }, [publicKey, step]);
+        setLoadingChimps(false);
+      });
+  }, [effectiveStep, publicKey]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -277,11 +270,11 @@ export default function SwapWizardModal({
           </div>
 
           <div className="hidden min-[332px]:flex justify-center">
-            <StepIndicator current={step} />
+            <StepIndicator current={effectiveStep} />
           </div>
 
           <div className="flex flex-col">
-            {step === 1 && (
+            {effectiveStep === 1 && (
               <div className="flex flex-col items-center gap-6 text-center">
                 <div>
                   <Image
@@ -311,7 +304,7 @@ export default function SwapWizardModal({
               </div>
             )}
 
-            {step === 2 && (
+            {effectiveStep === 2 && (
               <div className="flex flex-col gap-6">
                 <div className="text-center">
                   <h3 className="text-white font-bold text-lg">
@@ -376,7 +369,7 @@ export default function SwapWizardModal({
               </div>
             )}
 
-            {step === 3 && selected && (
+            {effectiveStep === 3 && selected && (
               <div className="flex flex-col gap-6">
                 <div className="text-center">
                   <h3 className="text-white font-bold text-lg">Confirm Swap</h3>
@@ -450,7 +443,7 @@ export default function SwapWizardModal({
               </div>
             )}
 
-            {step === 4 && (
+            {effectiveStep === 4 && (
               <div className="flex flex-col items-center gap-6 text-center">
                 <Image
                   src="/assets/complete.svg"

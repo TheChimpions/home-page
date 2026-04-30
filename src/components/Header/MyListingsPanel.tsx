@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { X, Users, Diamond, User, Palette } from "lucide-react";
+import { X, Users, Diamond, User } from "lucide-react";
 import { useWallet } from "@solana/wallet-adapter-react";
 
 interface MyChimp {
@@ -88,13 +88,12 @@ interface MyListingsPanelProps {
 export default function MyListingsPanel({ onClose }: MyListingsPanelProps) {
   const { publicKey } = useWallet();
   const [chimps, setChimps] = useState<MyChimp[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!publicKey) {
-      setLoading(false);
-      return;
-    }
+    if (!publicKey) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setLoading(true);
     fetch(`/api/my-chimps?wallet=${publicKey.toBase58()}`)
       .then((r) => r.json())
       .then((data) => {

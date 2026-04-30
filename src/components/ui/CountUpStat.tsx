@@ -24,13 +24,11 @@ export default function CountUpStat({
   const started = useRef(false);
 
   useEffect(() => {
-    started.current = false;
-    setDisplay((0).toFixed(decimals));
-  }, [end, decimals]);
-
-  useEffect(() => {
     const el = ref.current;
     if (!el) return;
+
+    started.current = false;
+    const resetFrame = requestAnimationFrame(() => setDisplay((0).toFixed(decimals)));
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -51,7 +49,10 @@ export default function CountUpStat({
     );
 
     observer.observe(el);
-    return () => observer.disconnect();
+    return () => {
+      cancelAnimationFrame(resetFrame);
+      observer.disconnect();
+    };
   }, [end, decimals, duration]);
 
   const finalText = `${end.toFixed(decimals)}${suffix}`;

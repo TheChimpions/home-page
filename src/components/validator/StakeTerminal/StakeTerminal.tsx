@@ -26,7 +26,7 @@ export default function StakeTerminal() {
   const [walletBalance, setWalletBalance] = useState<number | null>(null);
   const [chimpSolBalance, setChimpSolBalance] = useState<number | null>(null);
   const [walletSymbol, setWalletSymbol] = useState<string>("SOL");
-  const [isReversed, setIsReversed] = useState(false);
+  const [isReversed] = useState(false);
   const [isRefreshingBalances, setIsRefreshingBalances] = useState(false);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [tooSmall, setTooSmall] = useState(false);

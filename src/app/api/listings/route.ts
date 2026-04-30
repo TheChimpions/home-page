@@ -3,7 +3,7 @@ import { ChimpListing } from "@/types/listing";
 
 const ME_BASE = "https://api-mainnet.magiceden.dev/v2";
 const COLLECTION = "the_chimpions";
-const HELIUS_API_KEY = process.env.NEXT_PUBLIC_HELIUS_API_KEY;
+const HELIUS_API_KEY = process.env.HELIUS_API_KEY;
 
 interface MEAttribute {
   trait_type: string;

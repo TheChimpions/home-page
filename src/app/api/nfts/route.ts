@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ChimpionMetadata, PaginatedNFTs } from "@/types/nft";
+import { PaginatedNFTs } from "@/types/nft";
 import { fetchAllChimpions } from "@/lib/solana-nft";
 
 const PAGE_SIZE = 12;

@@ -1,6 +1,30 @@
 import { ChimpionMetadata } from "@/types/nft";
 
-const HELIUS_API_KEY = process.env.NEXT_PUBLIC_HELIUS_API_KEY;
+interface HeliusAssetFile {
+  mime?: string;
+  cdn_uri?: string;
+  uri?: string;
+}
+
+interface HeliusAssetMetadata {
+  name?: string;
+  animation_url?: string;
+  image?: string;
+  attributes?: { trait_type: string; value: string }[];
+}
+
+interface HeliusAsset {
+  id: string;
+  content?: {
+    metadata?: HeliusAssetMetadata;
+    json_uri?: string;
+    files?: HeliusAssetFile[];
+    links?: { image?: string };
+  };
+  ownership?: { owner?: string };
+}
+
+const HELIUS_API_KEY = process.env.HELIUS_API_KEY;
 const CREATOR_ADDRESS =
   process.env.NEXT_PUBLIC_CREATOR_ADDRESS ||
   "D7hKRyCsdaaSGVGwSAgcEfkSofBb6gn68UPD3yWW59zW";
@@ -21,7 +45,7 @@ export async function fetchAllChimpions(): Promise<ChimpionMetadata[]> {
 
     if (!HELIUS_API_KEY) {
       throw new Error(
-        "NEXT_PUBLIC_HELIUS_API_KEY is not configured in .env.local",
+        "HELIUS_API_KEY is not configured in .env.local",
       );
     }
 
@@ -67,12 +91,12 @@ export async function fetchAllChimpions(): Promise<ChimpionMetadata[]> {
       return [];
     }
 
-    const nftsPromises = assets.map(async (asset: any, index: number) => {
+    const nftsPromises = (assets as HeliusAsset[]).map(async (asset, index) => {
       try {
         const metadata = asset.content?.metadata;
         const jsonUri = asset.content?.json_uri;
 
-        let fullMetadata = metadata;
+        let fullMetadata: HeliusAssetMetadata | undefined = metadata;
         if (
           jsonUri &&
           (!metadata?.attributes || metadata.attributes.length === 0)
@@ -91,21 +115,21 @@ export async function fetchAllChimpions(): Promise<ChimpionMetadata[]> {
           fullMetadata?.attributes || asset.content?.metadata?.attributes || [];
 
         const tribe = attributes.find(
-          (attr: any) => attr.trait_type === "Tribe",
+          (attr) => attr.trait_type === "Tribe",
         )?.value;
 
         const type = attributes.find(
-          (attr: any) => attr.trait_type === "Type",
+          (attr) => attr.trait_type === "Type",
         )?.value;
 
         const artists = attributes
-          .filter((attr: any) => attr.trait_type?.includes("Artist"))
-          .map((attr: any) => attr.value)
+          .filter((attr) => attr.trait_type?.includes("Artist"))
+          .map((attr) => attr.value)
           .join(", ");
 
         const files = asset.content?.files || [];
         const gifFile = files.find(
-          (f: any) => f.mime === "image/gif" || f.cdn_uri?.includes(".gif"),
+          (f) => f.mime === "image/gif" || f.cdn_uri?.includes(".gif"),
         );
 
         const image =

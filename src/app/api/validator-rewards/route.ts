@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
@@ -20,7 +20,7 @@ interface SanctumResponse {
 
 const CHIMPSOL_MINT = "sctmZbtfE4dBNBEqBriQQVZLBrTaTjiTfKNRzKUcSLa";
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     const apiKey = process.env.SANCTUM_API_KEY;
 

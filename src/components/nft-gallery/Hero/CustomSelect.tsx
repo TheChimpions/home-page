@@ -17,7 +17,7 @@ export default function CustomSelect({
   onChange,
   options,
   icon,
-  placeholder = "Select...",
+  placeholder: _placeholder = "Select...", // eslint-disable-line @typescript-eslint/no-unused-vars
   containerClassName,
 }: CustomSelectProps) {
   const [isOpen, setIsOpen] = useState(false);

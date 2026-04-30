@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 
 interface Props {
   label: string;
@@ -21,25 +21,15 @@ export function AmountInput({
   placeholder = "0",
   onClickBalance,
 }: Props) {
-  const [formatted, setFormatted] = useState("");
-  const scrollRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    if (!value) {
-      setFormatted("");
-      return;
-    }
-
+  const formatted = useMemo(() => {
+    if (!value) return "";
     const [intPart, decimalPart] = value.split(".");
     const intNum = Number(intPart.replace(/\D/g, ""));
     const formattedInt = isNaN(intNum) ? "" : intNum.toLocaleString("en-US");
-
-    setFormatted(
-      decimalPart !== undefined
-        ? `${formattedInt}.${decimalPart}`
-        : formattedInt
-    );
+    return decimalPart !== undefined ? `${formattedInt}.${decimalPart}` : formattedInt;
   }, [value]);
+
+  const scrollRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (scrollRef.current) {
