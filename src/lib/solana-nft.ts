@@ -161,8 +161,8 @@ export async function fetchAllChimpions(): Promise<ChimpionMetadata[]> {
     });
 
     const nfts = (await Promise.all(nftsPromises)).filter(
-      (nft): nft is ChimpionMetadata => nft !== null,
-    );
+      (nft) => nft !== null,
+    ) as ChimpionMetadata[];
 
     nfts.sort((a, b) => a.name.localeCompare(b.name));
 
