@@ -6,7 +6,7 @@ import {
   getMatricaUsername,
   type MatricaProfile,
 } from "./matrica";
-import { scrapeMatricaTwitter } from "./matrica-scraper";
+import { scrapeTwitterForProfile } from "./matrica-scraper";
 import {
   fetchActiveListings,
   MARKETPLACE_ADDRESSES,
@@ -164,14 +164,22 @@ export async function fetchHoldersWithProfiles(
   }
 
   const groupedHolders = [...grouped.values()];
+  const SCRAPE_CONCURRENCY = 2;
+  let scrapeCursor = 0;
   await Promise.all(
-    groupedHolders.map(async (h) => {
-      if (h.twitter) return;
-      const profile = profileByWallet.get(h.wallet);
-      const username = getMatricaUsername(profile ?? null);
-      if (!username) return;
-      h.twitter = await scrapeMatricaTwitter(username);
-    }),
+    Array.from(
+      { length: Math.min(SCRAPE_CONCURRENCY, groupedHolders.length) },
+      async () => {
+        while (true) {
+          const i = scrapeCursor++;
+          if (i >= groupedHolders.length) return;
+          const h = groupedHolders[i];
+          if (h.twitter) continue;
+          const profile = profileByWallet.get(h.wallet) ?? null;
+          h.twitter = await scrapeTwitterForProfile(profile);
+        }
+      },
+    ),
   );
 
   const merged = [...groupedHolders, ...standalone].sort(

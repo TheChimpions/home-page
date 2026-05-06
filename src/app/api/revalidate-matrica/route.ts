@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { revalidateTag } from "next/cache";
-import { clearCache } from "@/lib/solana-nft";
+import { startBackgroundRefresh } from "@/lib/solana-nft";
 
 export async function POST(request: NextRequest) {
   const secret = process.env.REVALIDATE_SECRET;
@@ -20,10 +20,10 @@ export async function POST(request: NextRequest) {
   }
 
   revalidateTag("matrica-profile", "default");
-  clearCache();
+  startBackgroundRefresh();
 
   return NextResponse.json({
     revalidated: true,
-    cleared: ["matrica-profile", "nft-cache"],
+    refreshing: ["matrica-profile", "nft-cache"],
   });
 }

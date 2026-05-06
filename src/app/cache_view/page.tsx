@@ -1,8 +1,9 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 import {
-  clearCache,
   fetchAllChimpions,
   getCacheSnapshot,
+  isRefreshing,
+  startBackgroundRefresh,
 } from "@/lib/solana-nft";
 import { truncateAddress } from "@/lib/utils";
 
@@ -10,8 +11,8 @@ export const dynamic = "force-dynamic";
 
 async function refreshCache() {
   "use server";
-  clearCache();
   revalidateTag("matrica-profile", "default");
+  startBackgroundRefresh();
   revalidatePath("/cache_view");
 }
 
@@ -31,6 +32,7 @@ interface PageProps {
 export default async function CacheViewPage({ searchParams }: PageProps) {
   await fetchAllChimpions();
   const snapshot = getCacheSnapshot();
+  const refreshing = isRefreshing();
   const params = await searchParams;
   const filter = params.filter || "all";
   const query = params.q?.toLowerCase() || "";
@@ -112,6 +114,16 @@ export default async function CacheViewPage({ searchParams }: PageProps) {
           </form>
         </div>
       </div>
+
+      {refreshing && (
+        <div className="mb-6 px-4 py-3 rounded border border-gold-500/60 bg-gold-500/10 text-gold-200 text-sm flex items-center gap-3">
+          <span className="inline-block size-2 rounded-full bg-gold-300 animate-pulse" />
+          <span>
+            Cache refresh running in background. Showing previous data —
+            reload in ~30s for fresh values.
+          </span>
+        </div>
+      )}
 
       <section className="mb-8">
         <h2 className="text-lg font-bold mb-2 text-aqua-marine-400">Stats</h2>

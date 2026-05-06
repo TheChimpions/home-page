@@ -5,7 +5,7 @@ import {
   getMatricaTwitterHandle,
   getMatricaUsername,
 } from "./matrica";
-import { scrapeMatricaTwitter } from "./matrica-scraper";
+import { scrapeTwitterForProfile } from "./matrica-scraper";
 import {
   detectListingByHolder,
   fetchActiveListings,
@@ -43,14 +43,47 @@ const CREATOR_ADDRESS =
 
 let cachedNFTs: ChimpionMetadata[] | null = null;
 let lastFetch: number = 0;
+let refreshPromise: Promise<ChimpionMetadata[]> | null = null;
+let refreshStartedAt: number = 0;
 const CACHE_DURATION = 12 * 60 * 60 * 1000; // 12 hours
 
 export async function fetchAllChimpions(): Promise<ChimpionMetadata[]> {
-  if (cachedNFTs && Date.now() - lastFetch < CACHE_DURATION) {
+  const fresh = cachedNFTs && Date.now() - lastFetch < CACHE_DURATION;
+
+  if (fresh) {
     console.log("Returning cached NFTs");
+    return cachedNFTs!;
+  }
+
+  if (cachedNFTs) {
+    if (!refreshPromise) {
+      console.log("Cache stale: returning old data, refreshing in background");
+      startBackgroundRefresh();
+    }
     return cachedNFTs;
   }
 
+  if (!refreshPromise) startBackgroundRefresh();
+  return refreshPromise!;
+}
+
+export function startBackgroundRefresh(): void {
+  if (refreshPromise) return;
+  refreshStartedAt = Date.now();
+  refreshPromise = doFetch().finally(() => {
+    refreshPromise = null;
+  });
+}
+
+export function isRefreshing(): boolean {
+  return refreshPromise !== null;
+}
+
+export function getRefreshStartedAt(): number | null {
+  return refreshPromise ? refreshStartedAt : null;
+}
+
+async function doFetch(): Promise<ChimpionMetadata[]> {
   try {
     console.log("Fetching NFTs from Helius DAS API...");
     console.log("Creator Address:", CREATOR_ADDRESS);
@@ -206,6 +239,10 @@ export function clearCache() {
   console.log("Cache cleared");
 }
 
+export function getCacheAgeMs(): number | null {
+  return lastFetch > 0 ? Date.now() - lastFetch : null;
+}
+
 export function getCacheSnapshot(): {
   hasCache: boolean;
   ageMs: number | null;
@@ -231,34 +268,59 @@ async function resolveHolderNames(nfts: ChimpionMetadata[]): Promise<void> {
     ),
   );
 
-  const CONCURRENCY = 8;
+  const API_CONCURRENCY = 8;
   const profileByHolder = new Map<
     string,
     { name: string | null; twitter: string | null }
   >();
+  const needsScrape: {
+    wallet: string;
+    profile: Awaited<ReturnType<typeof getMatricaProfileByWallet>>;
+  }[] = [];
 
-  let cursor = 0;
-  const workers = Array.from(
-    { length: Math.min(CONCURRENCY, uniqueHolders.length) },
-    async () => {
-      while (true) {
-        const i = cursor++;
-        if (i >= uniqueHolders.length) return;
-        const wallet = uniqueHolders[i];
-        const profile = await getMatricaProfileByWallet(wallet);
-        const username = getMatricaUsername(profile);
-        let twitter = getMatricaTwitterHandle(profile);
-        if (!twitter && username) {
-          twitter = await scrapeMatricaTwitter(username);
+  let apiCursor = 0;
+  await Promise.all(
+    Array.from(
+      { length: Math.min(API_CONCURRENCY, uniqueHolders.length) },
+      async () => {
+        while (true) {
+          const i = apiCursor++;
+          if (i >= uniqueHolders.length) return;
+          const wallet = uniqueHolders[i];
+          const profile = await getMatricaProfileByWallet(wallet);
+          const username = getMatricaUsername(profile);
+          const aboutTwitter = getMatricaTwitterHandle(profile);
+          profileByHolder.set(wallet, {
+            name: getMatricaDisplayName(profile),
+            twitter: aboutTwitter,
+          });
+          if (!aboutTwitter && username) {
+            needsScrape.push({ wallet, profile });
+          }
         }
-        profileByHolder.set(wallet, {
-          name: getMatricaDisplayName(profile),
-          twitter,
-        });
-      }
-    },
+      },
+    ),
   );
-  await Promise.all(workers);
+
+  const SCRAPE_CONCURRENCY = 2;
+  let scrapeCursor = 0;
+  await Promise.all(
+    Array.from(
+      { length: Math.min(SCRAPE_CONCURRENCY, needsScrape.length) },
+      async () => {
+        while (true) {
+          const i = scrapeCursor++;
+          if (i >= needsScrape.length) return;
+          const { wallet, profile } = needsScrape[i];
+          const handle = await scrapeTwitterForProfile(profile);
+          if (handle) {
+            const entry = profileByHolder.get(wallet);
+            if (entry) entry.twitter = handle;
+          }
+        }
+      },
+    ),
+  );
 
   let nftsWithName = 0;
   for (const nft of nfts) {

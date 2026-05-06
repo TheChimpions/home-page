@@ -39,13 +39,6 @@ async function fetchProfile(wallet: string): Promise<MatricaProfile | null> {
       return null;
     }
     const data = (await res.json()) as MatricaProfile;
-    if (!loggedFirstHit) {
-      console.log(
-        "Matrica /v1/wallet first response sample:",
-        JSON.stringify(data, null, 2),
-      );
-      loggedFirstHit = true;
-    }
     return data;
   } catch (err) {
     console.warn(`Matrica lookup error for ${wallet}:`, err);
@@ -80,8 +73,6 @@ export function getMatricaUsername(
   return profile?.user?.username || null;
 }
 
-export function getMatricaPfp(
-  profile: MatricaProfile | null,
-): string | null {
+export function getMatricaPfp(profile: MatricaProfile | null): string | null {
   return profile?.user?.profile?.pfp || null;
 }
