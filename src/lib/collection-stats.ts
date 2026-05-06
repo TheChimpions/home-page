@@ -4,6 +4,14 @@ import {
   getMatricaTwitterHandle,
   getMatricaPfp,
 } from "./matrica";
+import { fetchActiveListings } from "./marketplace-listings";
+
+const MARKETPLACE_ADDRESSES = new Set<string>([
+  "1BWutmTvYPwDtmw9abTkS4Ssr8no61spGAvW1X6NDix",
+  "M2mx93ekt1fmXSVkTrUL9xVFHkmME8HTUi5Cyc5aF7K",
+  "TSWAPaqyCSx2KABk68Shruf4rp7CxcNi8hAsbdwmHbN",
+  "TCMPhJdwDryooaGtiocG1u3xcYbRpiJzb283XfCZsDp",
+]);
 
 const ME_BASE = "https://api-mainnet.magiceden.dev/v2";
 const COLLECTION = "the_chimpions";
@@ -11,7 +19,8 @@ const COLLECTION = "the_chimpions";
 const TRILLIUM_URL =
   "https://api.trillium.so/validator_rewards/CHiaohVV2SQCFhiYP73iQzWT6HxnZqnAZJJqAYTeLAo";
 
-const HELIUS_API_KEY = process.env.NEXT_PUBLIC_HELIUS_API_KEY;
+const HELIUS_API_KEY =
+  process.env.HELIUS_API_KEY || process.env.NEXT_PUBLIC_HELIUS_API_KEY;
 const CREATOR_ADDRESS =
   process.env.NEXT_PUBLIC_CREATOR_ADDRESS ||
   "D7hKRyCsdaaSGVGwSAgcEfkSofBb6gn68UPD3yWW59zW";
@@ -51,9 +60,8 @@ export async function fetchMEStats(): Promise<MEStats> {
 async function fetchHolderCounts(): Promise<Map<string, number>> {
   if (!HELIUS_API_KEY) return new Map();
 
-  const data = await fetch(
-    `https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`,
-    {
+  const [data, listings] = await Promise.all([
+    fetch(`https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -68,18 +76,22 @@ async function fetchHolderCounts(): Promise<Map<string, number>> {
         },
       }),
       next: { revalidate: 3600 },
-    },
-  )
-    .then((r) => (r.ok ? r.json() : null))
-    .catch(() => null);
+    })
+      .then((r) => (r.ok ? r.json() : null))
+      .catch(() => null),
+    fetchActiveListings(),
+  ]);
 
-  const assets: { ownership?: { owner?: string } }[] =
+  const assets: { id: string; ownership?: { owner?: string } }[] =
     data?.result?.items ?? [];
 
   const counts = new Map<string, number>();
   for (const asset of assets) {
-    const owner = asset.ownership?.owner;
-    if (owner) counts.set(owner, (counts.get(owner) ?? 0) + 1);
+    const listing = listings.get(asset.id);
+    const owner = listing?.seller || asset.ownership?.owner;
+    if (!owner) continue;
+    if (MARKETPLACE_ADDRESSES.has(owner)) continue;
+    counts.set(owner, (counts.get(owner) ?? 0) + 1);
   }
   return counts;
 }

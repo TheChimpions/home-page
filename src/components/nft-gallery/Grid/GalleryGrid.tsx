@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { NFTFilters } from "@/types/nft";
 import { useNFTs } from "@/hooks/use-nfts";
+import { truncateAddress } from "@/lib/utils";
 import NFTCardSkeleton from "./NFTCardSkeleton";
 import FadeUp from "@/components/ui/FadeUp";
 
@@ -11,12 +12,6 @@ const details = [
   { label: "Holder", value: "holder", icon: "/assets/holder.svg" },
   { label: "Artist", value: "artist", icon: "/assets/artist.svg" },
 ];
-
-function truncateAddress(address?: string): string {
-  if (!address || address === "Unknown") return "Unknown";
-  if (address.length <= 11) return address;
-  return `${address.slice(0, 4)}...${address.slice(-4)}`;
-}
 
 interface GalleryGridProps {
   filters: NFTFilters;
@@ -92,7 +87,13 @@ export default function GalleryGrid({ filters }: GalleryGridProps) {
                   nft[detail.value as keyof typeof nft] || "Unknown",
                 );
                 if (detail.value === "holder") {
-                  raw = nft.holderName || truncateAddress(nft.holder);
+                  if (nft.listing) {
+                    raw = "Listed";
+                  } else if (nft.holderName) {
+                    raw = `@${nft.holderName}`;
+                  } else {
+                    raw = truncateAddress(nft.holder);
+                  }
                 }
                 const artists =
                   detail.value === "artist"
@@ -103,6 +104,32 @@ export default function GalleryGrid({ filters }: GalleryGridProps) {
                   artists && artists.length > 1
                     ? artists.slice(1).join(", ")
                     : null;
+                let holderHref: string | null = null;
+                if (detail.value === "holder") {
+                  if (nft.listing) {
+                    holderHref = nft.listing.url;
+                  } else if (nft.holderTwitter) {
+                    holderHref = `https://x.com/${nft.holderTwitter}`;
+                  }
+                }
+                const firstLineNode = holderHref ? (
+                  <a
+                    href={holderHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-white text-xl truncate max-w-full text-right hover:underline"
+                    title={firstLine}
+                  >
+                    {firstLine}
+                  </a>
+                ) : (
+                  <span
+                    className="text-white text-xl truncate max-w-full text-right"
+                    title={firstLine}
+                  >
+                    {firstLine}
+                  </span>
+                );
                 return (
                   <div
                     key={`${nft.tokenId}-${detail.label}`}
@@ -121,12 +148,7 @@ export default function GalleryGrid({ filters }: GalleryGridProps) {
                       </span>
                     </div>
                     <div className="flex flex-col items-end min-w-0">
-                      <span
-                        className="text-white text-xl truncate max-w-full text-right"
-                        title={firstLine}
-                      >
-                        {firstLine}
-                      </span>
+                      {firstLineNode}
                       {restLine && (
                         <span
                           className="text-white text-xl truncate max-w-full text-right"

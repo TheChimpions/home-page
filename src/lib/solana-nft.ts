@@ -2,7 +2,11 @@ import { ChimpionMetadata } from "@/types/nft";
 import {
   getMatricaProfileByWallet,
   getMatricaDisplayName,
+  getMatricaTwitterHandle,
+  getMatricaUsername,
 } from "./matrica";
+import { scrapeMatricaTwitter } from "./matrica-scraper";
+import { fetchActiveListings } from "./marketplace-listings";
 
 interface HeliusAssetFile {
   mime?: string;
@@ -148,6 +152,7 @@ export async function fetchAllChimpions(): Promise<ChimpionMetadata[]> {
 
         return {
           tokenId: index + 1,
+          mint: asset.id,
           name:
             fullMetadata?.name || metadata?.name || `Chimpion #${index + 1}`,
           image,
@@ -174,7 +179,7 @@ export async function fetchAllChimpions(): Promise<ChimpionMetadata[]> {
       nft.tokenId = index + 1;
     });
 
-    await resolveHolderNames(nfts);
+    await Promise.all([resolveHolderNames(nfts), applyListings(nfts)]);
 
     cachedNFTs = nfts;
     lastFetch = Date.now();
@@ -212,6 +217,22 @@ export function clearCache() {
   console.log("Cache cleared");
 }
 
+export function getCacheSnapshot(): {
+  hasCache: boolean;
+  ageMs: number | null;
+  ttlMs: number;
+  count: number;
+  nfts: ChimpionMetadata[];
+} {
+  return {
+    hasCache: cachedNFTs !== null,
+    ageMs: lastFetch > 0 ? Date.now() - lastFetch : null,
+    ttlMs: CACHE_DURATION,
+    count: cachedNFTs?.length ?? 0,
+    nfts: cachedNFTs ?? [],
+  };
+}
+
 async function resolveHolderNames(nfts: ChimpionMetadata[]): Promise<void> {
   const uniqueHolders = Array.from(
     new Set(
@@ -222,7 +243,10 @@ async function resolveHolderNames(nfts: ChimpionMetadata[]): Promise<void> {
   );
 
   const CONCURRENCY = 8;
-  const nameByHolder = new Map<string, string | null>();
+  const profileByHolder = new Map<
+    string,
+    { name: string | null; twitter: string | null }
+  >();
 
   let cursor = 0;
   const workers = Array.from(
@@ -233,7 +257,15 @@ async function resolveHolderNames(nfts: ChimpionMetadata[]): Promise<void> {
         if (i >= uniqueHolders.length) return;
         const wallet = uniqueHolders[i];
         const profile = await getMatricaProfileByWallet(wallet);
-        nameByHolder.set(wallet, getMatricaDisplayName(profile));
+        const username = getMatricaUsername(profile);
+        let twitter = getMatricaTwitterHandle(profile);
+        if (!twitter && username) {
+          twitter = await scrapeMatricaTwitter(username);
+        }
+        profileByHolder.set(wallet, {
+          name: getMatricaDisplayName(profile),
+          twitter,
+        });
       }
     },
   );
@@ -242,17 +274,38 @@ async function resolveHolderNames(nfts: ChimpionMetadata[]): Promise<void> {
   let nftsWithName = 0;
   for (const nft of nfts) {
     if (!nft.holder) continue;
-    const name = nameByHolder.get(nft.holder);
-    if (name) {
-      nft.holderName = name;
+    const entry = profileByHolder.get(nft.holder);
+    if (!entry) continue;
+    if (entry.name) {
+      nft.holderName = entry.name;
       nftsWithName++;
+    }
+    if (entry.twitter) {
+      nft.holderTwitter = entry.twitter;
     }
   }
 
-  const uniqueResolved = [...nameByHolder.values()].filter(
-    (n) => n !== null,
+  const uniqueResolved = [...profileByHolder.values()].filter(
+    (p) => p.name !== null,
   ).length;
   console.log(
     `Matrica: ${uniqueResolved}/${uniqueHolders.length} unique holders resolved (${nftsWithName}/${nfts.length} NFTs labeled)`,
   );
+}
+
+async function applyListings(nfts: ChimpionMetadata[]): Promise<void> {
+  const listings = await fetchActiveListings();
+  if (listings.size === 0) return;
+
+  let listed = 0;
+  for (const nft of nfts) {
+    if (!nft.mint) continue;
+    const listing = listings.get(nft.mint);
+    if (listing) {
+      nft.listing = listing;
+      listed++;
+    }
+  }
+
+  console.log(`Marketplace: ${listed}/${nfts.length} NFTs marked as Listed`);
 }

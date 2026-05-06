@@ -74,6 +74,12 @@ export function getMatricaTwitterHandle(
   return match ? match[1] : null;
 }
 
+export function getMatricaUsername(
+  profile: MatricaProfile | null,
+): string | null {
+  return profile?.user?.username || null;
+}
+
 export function getMatricaPfp(
   profile: MatricaProfile | null,
 ): string | null {

@@ -1,11 +1,7 @@
 import Image from "next/image";
 import FadeUp from "@/components/ui/FadeUp";
 import type { HolderProfile } from "@/lib/collection-stats";
-
-function truncateAddress(address: string): string {
-  if (address.length <= 11) return address;
-  return `${address.slice(0, 4)}...${address.slice(-4)}`;
-}
+import { truncateAddress } from "@/lib/utils";
 
 interface HoldersGridProps {
   holders: HolderProfile[];
@@ -53,9 +49,20 @@ export default function HoldersGrid({ holders }: HoldersGridProps) {
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  <p className="text-white text-xl font-bold truncate">
-                    {display}
-                  </p>
+                  {twitterHandle ? (
+                    <a
+                      href={`https://x.com/${twitterHandle}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-white text-xl font-bold truncate hover:underline"
+                    >
+                      {display}
+                    </a>
+                  ) : (
+                    <p className="text-white text-xl font-bold truncate">
+                      {display}
+                    </p>
+                  )}
                   <div className="flex items-center justify-center gap-2">
                     <Image
                       src="/assets/chimps-aqua-marine.svg"

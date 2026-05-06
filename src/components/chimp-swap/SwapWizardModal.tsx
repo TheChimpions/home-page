@@ -6,6 +6,7 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import { Check, Wallet, X } from "lucide-react";
 import { ChimpListing } from "@/types/listing";
+import { truncateAddress as shortAddr } from "@/lib/utils";
 
 interface MyChimp {
   mint: string;
@@ -46,10 +47,6 @@ const MOCK_CHIMPS: MyChimp[] = [
     holder: "8GwdguquB96eSGFWJbz49PRuKRT5nZNLBDttm4mDQrh",
   },
 ];
-
-function shortAddr(addr: string) {
-  return `${addr.slice(0, 4)}...${addr.slice(-4)}`;
-}
 
 function StepIndicator({ current }: { current: 1 | 2 | 3 | 4 }) {
   return (

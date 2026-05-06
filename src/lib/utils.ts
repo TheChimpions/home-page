@@ -13,3 +13,9 @@ export function getFilterHash(filters: NFTFilters): string {
   if (filters.search) parts.push(`search:${filters.search}`);
   return parts.join("|") || "all";
 }
+
+export function truncateAddress(address?: string | null): string {
+  if (!address || address === "Unknown") return "Unknown";
+  if (address.length <= 11) return address;
+  return `${address.slice(0, 4)}...${address.slice(-4)}`;
+}
