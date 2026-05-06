@@ -40,12 +40,11 @@ export default async function OurHolders() {
       </div>
 
       <div className="relative z-10 max-w-480 mx-auto px-4 3xl:px-20 pt-16 pb-24 lg:pt-24 lg:pb-28 flex flex-col gap-20">
-        <div className="flex flex-col gap-6">
-          <OurHoldersHero />
-          <HoldersGrid holders={holders.slice(0, 12)} />
-        </div>
         <CommunityStats />
-        <TopHolders holders={holders.slice(0, 5)} />
+        <OurHoldersHero />
+        <div className="flex flex-col gap-6">
+          <HoldersGrid holders={holders.slice(0, 166)} />
+        </div>
         <JoinCommunity />
       </div>
     </section>
