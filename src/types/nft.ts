@@ -1,7 +1,7 @@
 export interface NFTListing {
   marketplace: "magiceden" | "tensor";
   url: string;
-  price: number;
+  price: number | null;
   seller: string;
 }
 

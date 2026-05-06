@@ -7,14 +7,10 @@ import {
   type MatricaProfile,
 } from "./matrica";
 import { scrapeMatricaTwitter } from "./matrica-scraper";
-import { fetchActiveListings } from "./marketplace-listings";
-
-const MARKETPLACE_ADDRESSES = new Set<string>([
-  "1BWutmTvYPwDtmw9abTkS4Ssr8no61spGAvW1X6NDix",
-  "M2mx93ekt1fmXSVkTrUL9xVFHkmME8HTUi5Cyc5aF7K",
-  "TSWAPaqyCSx2KABk68Shruf4rp7CxcNi8hAsbdwmHbN",
-  "TCMPhJdwDryooaGtiocG1u3xcYbRpiJzb283XfCZsDp",
-]);
+import {
+  fetchActiveListings,
+  MARKETPLACE_ADDRESSES,
+} from "./marketplace-listings";
 
 const ME_BASE = "https://api-mainnet.magiceden.dev/v2";
 const COLLECTION = "the_chimpions";

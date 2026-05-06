@@ -220,7 +220,10 @@ export default async function CacheViewPage({ searchParams }: PageProps) {
                         rel="noopener noreferrer"
                         className="text-gold-400 hover:underline"
                       >
-                        {nft.listing.marketplace} · {nft.listing.price} SOL
+                        {nft.listing.marketplace}
+                        {nft.listing.price !== null
+                          ? ` · ${nft.listing.price} SOL`
+                          : ""}
                       </a>
                     ) : (
                       <span className="text-gray-modern-600">—</span>

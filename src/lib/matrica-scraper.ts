@@ -3,7 +3,7 @@ import puppeteer, { Browser } from "puppeteer-core";
 import chromium from "@sparticuz/chromium";
 
 const REVALIDATE_SECONDS = 30 * 24 * 60 * 60;
-const NAV_TIMEOUT_MS = 15000;
+const NAV_TIMEOUT_MS = 12000;
 const CONTENT_TIMEOUT_MS = 8000;
 
 let browserPromise: Promise<Browser | null> | null = null;
@@ -51,14 +51,22 @@ async function scrapeUser(username: string): Promise<string | null> {
   try {
     page = await browser.newPage();
     await page.goto(`https://matrica.io/user/${username}`, {
-      waitUntil: "networkidle2",
+      waitUntil: "domcontentloaded",
       timeout: NAV_TIMEOUT_MS,
     });
 
     await page
       .waitForFunction(
-        () => !document.body.innerText.includes("Loading..."),
-        { timeout: CONTENT_TIMEOUT_MS },
+        () => {
+          const text = document.body.innerText;
+          if (text.includes("Loading...")) return false;
+          const links = Array.from(document.querySelectorAll("a"));
+          return links.some((l) => {
+            const href = (l as HTMLAnchorElement).href || "";
+            return /(?:x\.com|twitter\.com)\//.test(href);
+          });
+        },
+        { timeout: CONTENT_TIMEOUT_MS, polling: 250 },
       )
       .catch(() => null);
 
