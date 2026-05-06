@@ -3,7 +3,10 @@ import {
   getMatricaDisplayName,
   getMatricaTwitterHandle,
   getMatricaPfp,
+  getMatricaUsername,
+  type MatricaProfile,
 } from "./matrica";
+import { scrapeMatricaTwitter } from "./matrica-scraper";
 import { fetchActiveListings } from "./marketplace-listings";
 
 const MARKETPLACE_ADDRESSES = new Set<string>([
@@ -97,12 +100,12 @@ async function fetchHolderCounts(): Promise<Map<string, number>> {
 }
 
 export async function fetchHolderStats(): Promise<HolderStats> {
-  const counts = await fetchHolderCounts();
-  if (counts.size === 0) return { uniqueHolders: null, whales: null };
+  const holders = await fetchHoldersWithProfiles();
+  if (holders.length === 0) return { uniqueHolders: null, whales: null };
 
   return {
-    uniqueHolders: counts.size,
-    whales: [...counts.values()].filter((c) => c >= 5).length,
+    uniqueHolders: holders.length,
+    whales: holders.filter((h) => h.count >= 5).length,
   };
 }
 
@@ -112,30 +115,73 @@ export async function fetchHoldersWithProfiles(
   const counts = await fetchHolderCounts();
   if (counts.size === 0) return [];
 
-  const sorted = [...counts.entries()].sort((a, b) => b[1] - a[1]);
-  const top = limit ? sorted.slice(0, limit) : sorted;
+  const wallets = [...counts.entries()];
+  const profileByWallet = new Map<string, MatricaProfile | null>();
 
   const CONCURRENCY = 8;
-  const results: HolderProfile[] = new Array(top.length);
   let cursor = 0;
   await Promise.all(
-    Array.from({ length: Math.min(CONCURRENCY, top.length) }, async () => {
-      while (true) {
-        const i = cursor++;
-        if (i >= top.length) return;
-        const [wallet, count] = top[i];
-        const profile = await getMatricaProfileByWallet(wallet);
-        results[i] = {
+    Array.from(
+      { length: Math.min(CONCURRENCY, wallets.length) },
+      async () => {
+        while (true) {
+          const i = cursor++;
+          if (i >= wallets.length) return;
+          const [wallet] = wallets[i];
+          const profile = await getMatricaProfileByWallet(wallet);
+          profileByWallet.set(wallet, profile);
+        }
+      },
+    ),
+  );
+
+  const grouped = new Map<string, HolderProfile>();
+  const standalone: HolderProfile[] = [];
+
+  for (const [wallet, count] of wallets) {
+    const profile = profileByWallet.get(wallet) ?? null;
+    const userId = profile?.user?.id;
+    const username = getMatricaDisplayName(profile);
+
+    if (userId && username) {
+      const existing = grouped.get(userId);
+      if (existing) {
+        existing.count += count;
+      } else {
+        grouped.set(userId, {
           wallet,
           count,
-          username: getMatricaDisplayName(profile),
+          username,
           twitter: getMatricaTwitterHandle(profile),
           pfp: getMatricaPfp(profile),
-        };
+        });
       }
+    } else {
+      standalone.push({
+        wallet,
+        count,
+        username: null,
+        twitter: null,
+        pfp: null,
+      });
+    }
+  }
+
+  const groupedHolders = [...grouped.values()];
+  await Promise.all(
+    groupedHolders.map(async (h) => {
+      if (h.twitter) return;
+      const profile = profileByWallet.get(h.wallet);
+      const username = getMatricaUsername(profile ?? null);
+      if (!username) return;
+      h.twitter = await scrapeMatricaTwitter(username);
     }),
   );
-  return results;
+
+  const merged = [...groupedHolders, ...standalone].sort(
+    (a, b) => b.count - a.count,
+  );
+  return limit ? merged.slice(0, limit) : merged;
 }
 
 export async function fetchValidatorStake(): Promise<number | null> {

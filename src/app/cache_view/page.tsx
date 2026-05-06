@@ -77,14 +77,40 @@ export default async function CacheViewPage({ searchParams }: PageProps) {
     <div className="min-h-screen bg-gray-modern-950 text-white p-8 font-mono text-sm">
       <div className="flex items-center justify-between mb-6 gap-4 flex-wrap">
         <h1 className="text-2xl font-bold">NFT Cache View</h1>
-        <form action={refreshCache}>
-          <button
-            type="submit"
-            className="px-4 py-2 rounded border border-aqua-marine-400 bg-aqua-marine-900/30 text-aqua-marine-200 hover:bg-aqua-marine-900/60 text-sm font-bold cursor-pointer"
+        <div className="flex flex-wrap gap-2">
+          <a
+            href="/api/cache-export?type=full&format=csv"
+            className="px-3 py-2 rounded border border-gray-modern-700 bg-gray-modern-900 hover:border-gray-modern-500 text-sm"
           >
-            Refresh cache (pull new data)
-          </button>
-        </form>
+            Full table .csv
+          </a>
+          <a
+            href="/api/cache-export?type=full&format=txt"
+            className="px-3 py-2 rounded border border-gray-modern-700 bg-gray-modern-900 hover:border-gray-modern-500 text-sm"
+          >
+            Full table .txt
+          </a>
+          <a
+            href="/api/cache-export?type=twitters&format=csv"
+            className="px-3 py-2 rounded border border-gray-modern-700 bg-gray-modern-900 hover:border-gray-modern-500 text-sm"
+          >
+            Twitter .csv
+          </a>
+          <a
+            href="/api/cache-export?type=twitters&format=txt"
+            className="px-3 py-2 rounded border border-gray-modern-700 bg-gray-modern-900 hover:border-gray-modern-500 text-sm"
+          >
+            Twitter .txt
+          </a>
+          <form action={refreshCache}>
+            <button
+              type="submit"
+              className="px-4 py-2 rounded border border-aqua-marine-400 bg-aqua-marine-900/30 text-aqua-marine-200 hover:bg-aqua-marine-900/60 text-sm font-bold cursor-pointer"
+            >
+              Refresh cache
+            </button>
+          </form>
+        </div>
       </div>
 
       <section className="mb-8">

@@ -2,6 +2,7 @@ import Image from "next/image";
 import FadeUp from "@/components/ui/FadeUp";
 import type { HolderProfile } from "@/lib/collection-stats";
 import { truncateAddress } from "@/lib/utils";
+import HolderAvatar from "../HolderAvatar";
 
 interface TopHoldersProps {
   holders: HolderProfile[];
@@ -47,22 +48,7 @@ export default function TopHolders({ holders }: TopHoldersProps) {
               <div className="group flex items-center justify-between gap-3 xs:gap-4 rounded-md border border-gray-modern-800 bg-gray-modern-900 p-6 shadow-[0_0_18px_rgba(0,0,0,0.25)] transition-all duration-300 hover:border-gray-modern-700 hover:bg-gray-modern-900/90 hover:shadow-[0_0_24px_rgba(0,0,0,0.4)] cursor-pointer">
                 <div className="flex items-center gap-3 xs:gap-6 min-w-0 flex-1">
                   <div className="relative size-16 xs:size-22 shrink-0 rounded-full overflow-hidden border border-gray-modern-700 bg-gray-modern-800 transition-transform duration-300 group-hover:scale-110">
-                    {holder.pfp ? (
-                      <Image
-                        src={holder.pfp}
-                        alt={display}
-                        fill
-                        className="object-cover"
-                        unoptimized
-                      />
-                    ) : (
-                      <Image
-                        src="/assets/profile-placeholder.svg"
-                        alt={display}
-                        fill
-                        className="object-cover"
-                      />
-                    )}
+                    <HolderAvatar src={holder.pfp} alt={display} />
                   </div>
                   <div className="flex flex-col gap-1.5 xs:gap-3 min-w-0 flex-1">
                     {twitterHandle ? (
@@ -78,16 +64,6 @@ export default function TopHolders({ holders }: TopHoldersProps) {
                       <p className="text-white text-xl font-bold truncate">
                         {display}
                       </p>
-                    )}
-                    {twitterHandle && (
-                      <a
-                        href={`https://x.com/${twitterHandle}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-gray-modern-25 underline text-base hover:text-white transition-colors"
-                      >
-                        Twitter Profile
-                      </a>
                     )}
                     <p className="text-aqua-marine-400 text-xl font-bold xs:hidden">
                       {countLabel}
