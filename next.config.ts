@@ -32,6 +32,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "shdw-drive.genesysgo.net",
       },
+      {
+        protocol: "https",
+        hostname: "nft.matrica.io",
+      },
     ],
   },
 };

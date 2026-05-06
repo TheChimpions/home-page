@@ -10,6 +10,7 @@ export interface ChimpionMetadata {
   tribe?: string;
   type?: string;
   holder?: string;
+  holderName?: string;
   artist?: string;
 }
 

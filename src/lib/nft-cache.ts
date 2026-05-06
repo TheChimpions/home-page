@@ -1,7 +1,7 @@
 import { ChimpionMetadata } from '@/types/nft';
 
 const CACHE_NAME = 'chimpions-nft-cache';
-const CACHE_VERSION = 'v2-real-blockchain';
+const CACHE_VERSION = 'v3-matrica-holders';
 const CACHE_DURATION = 24 * 60 * 60 * 1000; 
 
 interface CacheEntry {

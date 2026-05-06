@@ -35,6 +35,7 @@ export async function GET(request: NextRequest) {
           nft.name.toLowerCase().includes(searchLower) ||
           nft.tokenId.toString().includes(searchLower) ||
           nft.holder?.toLowerCase().includes(searchLower) ||
+          nft.holderName?.toLowerCase().includes(searchLower) ||
           nft.tribe?.toLowerCase().includes(searchLower) ||
           nft.artist?.toLowerCase().includes(searchLower),
       );

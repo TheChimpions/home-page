@@ -1,3 +1,10 @@
+import {
+  getMatricaProfileByWallet,
+  getMatricaDisplayName,
+  getMatricaTwitterHandle,
+  getMatricaPfp,
+} from "./matrica";
+
 const ME_BASE = "https://api-mainnet.magiceden.dev/v2";
 const COLLECTION = "the_chimpions";
 
@@ -19,6 +26,14 @@ export interface HolderStats {
   whales: number | null;
 }
 
+export interface HolderProfile {
+  wallet: string;
+  count: number;
+  username: string | null;
+  twitter: string | null;
+  pfp: string | null;
+}
+
 export async function fetchMEStats(): Promise<MEStats> {
   const data = await fetch(
     `${ME_BASE}/collections/${COLLECTION}/stats`,
@@ -33,8 +48,8 @@ export async function fetchMEStats(): Promise<MEStats> {
   };
 }
 
-export async function fetchHolderStats(): Promise<HolderStats> {
-  if (!HELIUS_API_KEY) return { uniqueHolders: null, whales: null };
+async function fetchHolderCounts(): Promise<Map<string, number>> {
+  if (!HELIUS_API_KEY) return new Map();
 
   const data = await fetch(
     `https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`,
@@ -43,7 +58,7 @@ export async function fetchHolderStats(): Promise<HolderStats> {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         jsonrpc: "2.0",
-        id: "holder-stats",
+        id: "holder-counts",
         method: "getAssetsByCreator",
         params: {
           creatorAddress: CREATOR_ADDRESS,
@@ -61,18 +76,54 @@ export async function fetchHolderStats(): Promise<HolderStats> {
   const assets: { ownership?: { owner?: string } }[] =
     data?.result?.items ?? [];
 
-  if (assets.length === 0) return { uniqueHolders: null, whales: null };
-
   const counts = new Map<string, number>();
   for (const asset of assets) {
     const owner = asset.ownership?.owner;
     if (owner) counts.set(owner, (counts.get(owner) ?? 0) + 1);
   }
+  return counts;
+}
+
+export async function fetchHolderStats(): Promise<HolderStats> {
+  const counts = await fetchHolderCounts();
+  if (counts.size === 0) return { uniqueHolders: null, whales: null };
 
   return {
     uniqueHolders: counts.size,
     whales: [...counts.values()].filter((c) => c >= 5).length,
   };
+}
+
+export async function fetchHoldersWithProfiles(
+  limit?: number,
+): Promise<HolderProfile[]> {
+  const counts = await fetchHolderCounts();
+  if (counts.size === 0) return [];
+
+  const sorted = [...counts.entries()].sort((a, b) => b[1] - a[1]);
+  const top = limit ? sorted.slice(0, limit) : sorted;
+
+  const CONCURRENCY = 8;
+  const results: HolderProfile[] = new Array(top.length);
+  let cursor = 0;
+  await Promise.all(
+    Array.from({ length: Math.min(CONCURRENCY, top.length) }, async () => {
+      while (true) {
+        const i = cursor++;
+        if (i >= top.length) return;
+        const [wallet, count] = top[i];
+        const profile = await getMatricaProfileByWallet(wallet);
+        results[i] = {
+          wallet,
+          count,
+          username: getMatricaDisplayName(profile),
+          twitter: getMatricaTwitterHandle(profile),
+          pfp: getMatricaPfp(profile),
+        };
+      }
+    }),
+  );
+  return results;
 }
 
 export async function fetchValidatorStake(): Promise<number | null> {

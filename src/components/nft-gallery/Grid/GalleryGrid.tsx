@@ -8,10 +8,15 @@ import FadeUp from "@/components/ui/FadeUp";
 
 const details = [
   { label: "Tribe", value: "tribe", icon: "/assets/tribe.svg" },
-  { label: "Type", value: "type", icon: "/assets/type.svg" },
   { label: "Holder", value: "holder", icon: "/assets/holder.svg" },
   { label: "Artist", value: "artist", icon: "/assets/artist.svg" },
 ];
+
+function truncateAddress(address?: string): string {
+  if (!address || address === "Unknown") return "Unknown";
+  if (address.length <= 11) return address;
+  return `${address.slice(0, 4)}...${address.slice(-4)}`;
+}
 
 interface GalleryGridProps {
   filters: NFTFilters;
@@ -29,7 +34,7 @@ export default function GalleryGrid({ filters }: GalleryGridProps) {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 3xl:grid-cols-5 4xl:grid-cols-6 gap-6">
         {Array.from({ length: 12 }).map((_, i) => (
           <NFTCardSkeleton key={i} />
         ))}
@@ -61,7 +66,7 @@ export default function GalleryGrid({ filters }: GalleryGridProps) {
 
   return (
     <div className="">
-      <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 3xl:grid-cols-5 4xl:grid-cols-6 gap-6">
         {allNFTs.map((nft, i) => (
           <FadeUp key={nft.tokenId} delay={(i % 4) * 80}>
           <div
@@ -74,7 +79,7 @@ export default function GalleryGrid({ filters }: GalleryGridProps) {
                 src={nft.image}
                 alt={nft.name}
                 fill
-                sizes="(min-width: 1024px) 220px, (min-width: 640px) 240px, 100vw"
+                sizes="(min-width: 1900px) 17vw, (min-width: 1600px) 20vw, (min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
                 className="object-cover [image-rendering:pixelated] transition-transform duration-500 group-hover:scale-[1.04]"
                 loading="lazy"
                 unoptimized
@@ -83,13 +88,27 @@ export default function GalleryGrid({ filters }: GalleryGridProps) {
 
             <div className="flex flex-col gap-2">
               {details.map((detail) => {
-                const value = nft[detail.value as keyof typeof nft];
+                let raw = String(
+                  nft[detail.value as keyof typeof nft] || "Unknown",
+                );
+                if (detail.value === "holder") {
+                  raw = nft.holderName || truncateAddress(nft.holder);
+                }
+                const artists =
+                  detail.value === "artist"
+                    ? raw.split(",").map((v) => v.trim()).filter(Boolean)
+                    : null;
+                const firstLine = artists ? artists[0] : raw;
+                const restLine =
+                  artists && artists.length > 1
+                    ? artists.slice(1).join(", ")
+                    : null;
                 return (
                   <div
                     key={`${nft.tokenId}-${detail.label}`}
-                    className="flex items-center justify-between"
+                    className="flex items-start justify-between gap-3"
                   >
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 shrink-0">
                       <Image
                         src={detail.icon}
                         alt=""
@@ -101,12 +120,22 @@ export default function GalleryGrid({ filters }: GalleryGridProps) {
                         {detail.label}:
                       </span>
                     </div>
-                    <span
-                      className="text-white text-xl truncate max-w-50"
-                      title={String(value || "Unknown")}
-                    >
-                      {String(value || "Unknown")}
-                    </span>
+                    <div className="flex flex-col items-end min-w-0">
+                      <span
+                        className="text-white text-xl truncate max-w-full text-right"
+                        title={firstLine}
+                      >
+                        {firstLine}
+                      </span>
+                      {restLine && (
+                        <span
+                          className="text-white text-xl truncate max-w-full text-right"
+                          title={restLine}
+                        >
+                          {restLine}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 );
               })}

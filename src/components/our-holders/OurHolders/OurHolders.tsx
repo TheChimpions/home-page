@@ -4,8 +4,10 @@ import HoldersGrid from "../Grid/HoldersGrid";
 import CommunityStats from "../CommunityStats/CommunityStats";
 import TopHolders from "../TopHolders/TopHolders";
 import JoinCommunity from "../JoinCommunity/JoinCommunity";
+import { fetchHoldersWithProfiles } from "@/lib/collection-stats";
 
-export default function OurHolders() {
+export default async function OurHolders() {
+  const holders = await fetchHoldersWithProfiles();
   return (
     <section className="relative overflow-hidden bg-gray-modern-950">
       <div
@@ -40,10 +42,10 @@ export default function OurHolders() {
       <div className="relative z-10 max-w-480 mx-auto px-4 3xl:px-20 pt-16 pb-24 lg:pt-24 lg:pb-28 flex flex-col gap-20">
         <div className="flex flex-col gap-6">
           <OurHoldersHero />
-          <HoldersGrid />
+          <HoldersGrid holders={holders.slice(0, 12)} />
         </div>
         <CommunityStats />
-        <TopHolders />
+        <TopHolders holders={holders.slice(0, 5)} />
         <JoinCommunity />
       </div>
     </section>

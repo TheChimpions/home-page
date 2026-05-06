@@ -1,4 +1,8 @@
 import { ChimpionMetadata } from "@/types/nft";
+import {
+  getMatricaProfileByWallet,
+  getMatricaDisplayName,
+} from "./matrica";
 
 interface HeliusAssetFile {
   mime?: string;
@@ -170,6 +174,8 @@ export async function fetchAllChimpions(): Promise<ChimpionMetadata[]> {
       nft.tokenId = index + 1;
     });
 
+    await resolveHolderNames(nfts);
+
     cachedNFTs = nfts;
     lastFetch = Date.now();
 
@@ -180,6 +186,8 @@ export async function fetchAllChimpions(): Promise<ChimpionMetadata[]> {
         name: nfts[0].name,
         tribe: nfts[0].tribe,
         type: nfts[0].type,
+        holder: nfts[0].holder,
+        holderName: nfts[0].holderName,
         hasImage: !!nfts[0].image,
       });
     }
@@ -202,4 +210,49 @@ export function clearCache() {
   cachedNFTs = null;
   lastFetch = 0;
   console.log("Cache cleared");
+}
+
+async function resolveHolderNames(nfts: ChimpionMetadata[]): Promise<void> {
+  const uniqueHolders = Array.from(
+    new Set(
+      nfts
+        .map((nft) => nft.holder)
+        .filter((h): h is string => !!h && h !== "Unknown"),
+    ),
+  );
+
+  const CONCURRENCY = 8;
+  const nameByHolder = new Map<string, string | null>();
+
+  let cursor = 0;
+  const workers = Array.from(
+    { length: Math.min(CONCURRENCY, uniqueHolders.length) },
+    async () => {
+      while (true) {
+        const i = cursor++;
+        if (i >= uniqueHolders.length) return;
+        const wallet = uniqueHolders[i];
+        const profile = await getMatricaProfileByWallet(wallet);
+        nameByHolder.set(wallet, getMatricaDisplayName(profile));
+      }
+    },
+  );
+  await Promise.all(workers);
+
+  let nftsWithName = 0;
+  for (const nft of nfts) {
+    if (!nft.holder) continue;
+    const name = nameByHolder.get(nft.holder);
+    if (name) {
+      nft.holderName = name;
+      nftsWithName++;
+    }
+  }
+
+  const uniqueResolved = [...nameByHolder.values()].filter(
+    (n) => n !== null,
+  ).length;
+  console.log(
+    `Matrica: ${uniqueResolved}/${uniqueHolders.length} unique holders resolved (${nftsWithName}/${nfts.length} NFTs labeled)`,
+  );
 }
