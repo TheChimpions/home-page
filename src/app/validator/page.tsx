@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Validator from "@/components/validator/Validator/Validator";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Validator",
   description:

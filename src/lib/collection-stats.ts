@@ -205,8 +205,24 @@ interface VoteAccount {
   activatedStake: number;
 }
 
-export async function fetchValidatorStake(): Promise<number | null> {
-  if (process.env.NEXT_PHASE === "phase-production-build") return null;
+const STAKE_PROGRAM = "Stake11111111111111111111111111111111111111";
+
+interface RpcStakeAccount {
+  pubkey: string;
+  account: { data: [string, string]; lamports: number };
+}
+
+let cachedVoteAccount: VoteAccount | null = null;
+let voteAccountCachedAt = 0;
+const VOTE_ACCOUNT_TTL_MS = 10 * 60 * 1000;
+
+async function getValidatorVoteAccount(): Promise<VoteAccount | null> {
+  if (
+    cachedVoteAccount &&
+    Date.now() - voteAccountCachedAt < VOTE_ACCOUNT_TTL_MS
+  ) {
+    return cachedVoteAccount;
+  }
   if (!HELIUS_API_KEY) return null;
 
   const data = await fetch(
@@ -216,7 +232,7 @@ export async function fetchValidatorStake(): Promise<number | null> {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         jsonrpc: "2.0",
-        id: "validator-stake",
+        id: "vote-accounts",
         method: "getVoteAccounts",
         params: [{ votePubkey: VALIDATOR_PUBKEY }],
       }),
@@ -226,7 +242,7 @@ export async function fetchValidatorStake(): Promise<number | null> {
     .then((r) => (r.ok ? r.json() : null))
     .catch(() => null);
 
-  const accounts: VoteAccount[] = [
+  let accounts: VoteAccount[] = [
     ...(data?.result?.current ?? []),
     ...(data?.result?.delinquent ?? []),
   ];
@@ -250,19 +266,127 @@ export async function fetchValidatorStake(): Promise<number | null> {
       .then((r) => (r.ok ? r.json() : null))
       .catch(() => null);
 
-    const allAccounts: VoteAccount[] = [
+    accounts = [
       ...(allData?.result?.current ?? []),
       ...(allData?.result?.delinquent ?? []),
     ];
-    found = allAccounts.find(
+    found = accounts.find(
       (a) =>
         a.votePubkey === VALIDATOR_PUBKEY ||
         a.nodePubkey === VALIDATOR_PUBKEY,
     );
   }
 
-  if (!found) return null;
-  return found.activatedStake / 1_000_000_000;
+  if (found) {
+    cachedVoteAccount = found;
+    voteAccountCachedAt = Date.now();
+  }
+  return found ?? null;
+}
+
+export async function fetchValidatorDelegators(): Promise<{
+  stakeAccountCount: number;
+  uniqueDelegators: number;
+  votePubkey: string;
+} | null> {
+  if (process.env.NEXT_PHASE === "phase-production-build") return null;
+  if (!HELIUS_API_KEY) return null;
+
+  const va = await getValidatorVoteAccount();
+  if (!va) {
+    console.warn(
+      `Validator delegators: vote account not found for ${VALIDATOR_PUBKEY}`,
+    );
+    return null;
+  }
+  const votePubkey = va.votePubkey;
+
+  const data = await fetch(
+    `https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        id: "stake-accounts",
+        method: "getProgramAccounts",
+        params: [
+          STAKE_PROGRAM,
+          {
+            encoding: "base64",
+            filters: [
+              { dataSize: 200 },
+              { memcmp: { offset: 124, bytes: votePubkey } },
+            ],
+          },
+        ],
+      }),
+      next: { revalidate: 3600 },
+    },
+  )
+    .then((r) => (r.ok ? r.json() : null))
+    .catch((err) => {
+      console.warn("getProgramAccounts(stake) failed:", err);
+      return null;
+    });
+
+  if (data?.error) {
+    console.warn("getProgramAccounts(stake) returned error:", data.error);
+  }
+
+  const accounts: RpcStakeAccount[] = data?.result ?? [];
+  if (accounts.length === 0) {
+    console.warn(
+      `Validator delegators: 0 stake accounts for vote=${votePubkey}`,
+    );
+    return null;
+  }
+
+  const stakers = new Set<string>();
+  for (const acc of accounts) {
+    const buf = Buffer.from(acc.account.data[0], "base64");
+    if (buf.length < 44) continue;
+    const stakerBytes = buf.subarray(12, 44);
+    stakers.add(Buffer.from(stakerBytes).toString("base64"));
+  }
+
+  return {
+    stakeAccountCount: accounts.length,
+    uniqueDelegators: stakers.size,
+    votePubkey,
+  };
+}
+
+export async function fetchValidatorStake(): Promise<number | null> {
+  if (process.env.NEXT_PHASE === "phase-production-build") return null;
+  const va = await getValidatorVoteAccount();
+  return va ? va.activatedStake / 1_000_000_000 : null;
+}
+
+interface StakewizValidator {
+  identity: string;
+  vote_identity: string;
+  credit_ratio: number;
+  skip_rate: number;
+  apy_estimate: number;
+  commission: number;
+  delinquent: boolean;
+  uptime?: number;
+}
+
+export async function fetchValidatorStakewiz(): Promise<StakewizValidator | null> {
+  if (process.env.NEXT_PHASE === "phase-production-build") return null;
+  const va = await getValidatorVoteAccount();
+  if (!va) return null;
+
+  const data = await fetch(
+    `https://api.stakewiz.com/validator/${va.votePubkey}`,
+    { next: { revalidate: 3600 } },
+  )
+    .then((r) => (r.ok ? (r.json() as Promise<StakewizValidator>) : null))
+    .catch(() => null);
+
+  return data;
 }
 
 export function formatSOL(lamports: number | null): string {
