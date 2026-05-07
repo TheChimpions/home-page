@@ -6,6 +6,7 @@ import { QueryProvider } from "@/providers/query-provider";
 import { Toaster } from "sonner";
 import { SolanaProvider } from "@/components/connect/WalletProvider";
 import { Toaster as HotToaster } from "react-hot-toast";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const siteUrl = "https://the-chimpions-two.vercel.app";
 
@@ -102,6 +103,7 @@ export default function RootLayout({
             <HotToaster position="top-center" />
           </SolanaProvider>
         </QueryProvider>
+        <SpeedInsights />
       </body>
     </html>
   );

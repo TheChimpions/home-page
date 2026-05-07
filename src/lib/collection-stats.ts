@@ -119,8 +119,15 @@ export async function fetchHoldersWithProfiles(
     return [];
   }
 
+  const t0 = Date.now();
   const counts = await fetchHolderCounts();
-  if (counts.size === 0) return [];
+  if (counts.size === 0) {
+    console.warn("[holders] fetchHolderCounts returned empty");
+    return [];
+  }
+  console.log(
+    `[holders] ${counts.size} unique wallets (incl marketplaces filtered)`,
+  );
 
   const wallets = [...counts.entries()];
   const profileByWallet = new Map<string, MatricaProfile | null>();
@@ -199,6 +206,10 @@ export async function fetchHoldersWithProfiles(
   const merged = [...groupedHolders, ...standalone].sort(
     (a, b) => b.count - a.count,
   );
+  const withTwitter = merged.filter((h) => h.twitter).length;
+  console.log(
+    `[holders] ${merged.length} merged (${groupedHolders.length} matrica + ${standalone.length} wallet-only, ${withTwitter} w/ twitter) in ${((Date.now() - t0) / 1000).toFixed(1)}s`,
+  );
   return limit ? merged.slice(0, limit) : merged;
 }
 
@@ -226,7 +237,10 @@ async function getValidatorVoteAccount(): Promise<VoteAccount | null> {
   ) {
     return cachedVoteAccount;
   }
-  if (!HELIUS_API_KEY) return null;
+  if (!HELIUS_API_KEY) {
+    console.warn("[validator] HELIUS_API_KEY not set");
+    return null;
+  }
 
   const data = await fetch(
     `https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`,
@@ -283,6 +297,13 @@ async function getValidatorVoteAccount(): Promise<VoteAccount | null> {
   if (found) {
     cachedVoteAccount = found;
     voteAccountCachedAt = Date.now();
+    console.log(
+      `[validator] vote account resolved (vote=${found.votePubkey.slice(0, 8)}…, node=${found.nodePubkey.slice(0, 8)}…)`,
+    );
+  } else {
+    console.warn(
+      `[validator] vote account NOT FOUND for ${VALIDATOR_PUBKEY}`,
+    );
   }
   return found ?? null;
 }
@@ -329,18 +350,21 @@ export async function fetchValidatorDelegators(): Promise<{
   )
     .then((r) => (r.ok ? r.json() : null))
     .catch((err) => {
-      console.warn("getProgramAccounts(stake) failed:", err);
+      console.warn("[validator] getProgramAccounts(stake) failed:", err);
       return null;
     });
 
   if (data?.error) {
-    console.warn("getProgramAccounts(stake) returned error:", data.error);
+    console.warn(
+      "[validator] getProgramAccounts(stake) returned error:",
+      data.error,
+    );
   }
 
   const accounts: RpcStakeAccount[] = data?.result ?? [];
   if (accounts.length === 0) {
     console.warn(
-      `Validator delegators: 0 stake accounts for vote=${votePubkey}`,
+      `[validator] 0 stake accounts found (vote=${votePubkey.slice(0, 8)}…)`,
     );
     return null;
   }
@@ -353,6 +377,10 @@ export async function fetchValidatorDelegators(): Promise<{
     stakers.add(Buffer.from(stakerBytes).toString("base64"));
   }
 
+  console.log(
+    `[validator] delegators: ${stakers.size} unique / ${accounts.length} stake accounts`,
+  );
+
   return {
     stakeAccountCount: accounts.length,
     uniqueDelegators: stakers.size,
@@ -363,7 +391,17 @@ export async function fetchValidatorDelegators(): Promise<{
 export async function fetchValidatorStake(): Promise<number | null> {
   if (process.env.NEXT_PHASE === "phase-production-build") return null;
   const va = await getValidatorVoteAccount();
-  return va ? va.activatedStake / 1_000_000_000 : null;
+  if (!va) {
+    console.warn(
+      `[validator] no vote account found for ${VALIDATOR_PUBKEY}`,
+    );
+    return null;
+  }
+  const sol = va.activatedStake / 1_000_000_000;
+  console.log(
+    `[validator] stake=${sol.toFixed(0)} SOL (vote=${va.votePubkey.slice(0, 8)}…)`,
+  );
+  return sol;
 }
 
 interface StakewizValidator {
@@ -387,8 +425,18 @@ export async function fetchValidatorStakewiz(): Promise<StakewizValidator | null
     { next: { revalidate: 3600 } },
   )
     .then((r) => (r.ok ? (r.json() as Promise<StakewizValidator>) : null))
-    .catch(() => null);
+    .catch((err) => {
+      console.warn("[stakewiz] fetch failed:", err);
+      return null;
+    });
 
+  if (!data) {
+    console.warn("[stakewiz] no data returned");
+  } else {
+    console.log(
+      `[stakewiz] apy=${data.apy_estimate?.toFixed(2)}% credit_ratio=${data.credit_ratio?.toFixed(2)}% commission=${data.commission}%`,
+    );
+  }
   return data;
 }
 
@@ -460,8 +508,12 @@ export async function fetchTreasuryValueUSD(): Promise<number | null> {
   }
 
   const override = parseTreasuryEnv(process.env.TREASURY_USD);
-  if (override !== null) return override;
+  if (override !== null) {
+    console.log(`[treasury] using TREASURY_USD env override = ${override}`);
+    return override;
+  }
 
+  console.log(`[treasury] using fallback = ${TREASURY_USD_FALLBACK}`);
   return TREASURY_USD_FALLBACK;
 }
 

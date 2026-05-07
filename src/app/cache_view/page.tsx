@@ -3,6 +3,7 @@ import {
   fetchAllChimpions,
   getCacheSnapshot,
   isRefreshing,
+  scrapePendingTwitters,
   startBackgroundRefresh,
 } from "@/lib/solana-nft";
 import { truncateAddress } from "@/lib/utils";
@@ -11,8 +12,20 @@ export const dynamic = "force-dynamic";
 
 async function refreshCache() {
   "use server";
+  console.log("[cache_view] action: refreshCache");
   revalidateTag("matrica-profile", "default");
   startBackgroundRefresh();
+  revalidatePath("/cache_view");
+}
+
+async function scrapeTwittersOnly() {
+  "use server";
+  console.log("[cache_view] action: scrapeTwittersOnly");
+  const result = await scrapePendingTwitters({ budgetMs: 50_000 });
+  console.log(
+    `[cache_view] scrapeTwittersOnly result:`,
+    JSON.stringify(result),
+  );
   revalidatePath("/cache_view");
 }
 
@@ -104,6 +117,14 @@ export default async function CacheViewPage({ searchParams }: PageProps) {
           >
             Twitter .txt
           </a>
+          <form action={scrapeTwittersOnly}>
+            <button
+              type="submit"
+              className="px-4 py-2 rounded border border-electric-purple-400 bg-electric-purple-900/30 text-electric-purple-200 hover:bg-electric-purple-900/60 text-sm font-bold cursor-pointer"
+            >
+              Scrape twitters
+            </button>
+          </form>
           <form action={refreshCache}>
             <button
               type="submit"

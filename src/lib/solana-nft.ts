@@ -49,32 +49,48 @@ const CACHE_DURATION = 12 * 60 * 60 * 1000; // 12 hours
 
 export async function fetchAllChimpions(): Promise<ChimpionMetadata[]> {
   if (process.env.NEXT_PHASE === "phase-production-build") {
+    console.log("[cache] build phase: returning []");
     return [];
   }
 
   const fresh = cachedNFTs && Date.now() - lastFetch < CACHE_DURATION;
 
   if (fresh) {
-    console.log("Returning cached NFTs");
+    const ageMin = Math.floor((Date.now() - lastFetch) / 60_000);
+    console.log(
+      `[cache] HIT (fresh, age=${ageMin}m, count=${cachedNFTs!.length})`,
+    );
     return cachedNFTs!;
   }
 
   if (cachedNFTs) {
     if (!refreshPromise) {
-      console.log("Cache stale: returning old data, refreshing in background");
+      const ageMin = Math.floor((Date.now() - lastFetch) / 60_000);
+      console.log(
+        `[cache] STALE (age=${ageMin}m, count=${cachedNFTs.length}) → returning stale + background refresh`,
+      );
       startBackgroundRefresh();
+    } else {
+      console.log("[cache] STALE → returning stale (refresh already in flight)");
     }
     return cachedNFTs;
   }
 
+  console.log("[cache] EMPTY → blocking on first fetch");
   if (!refreshPromise) startBackgroundRefresh();
   return refreshPromise!;
 }
 
 export function startBackgroundRefresh(): void {
-  if (refreshPromise) return;
+  if (refreshPromise) {
+    console.log("[refresh] skip (already in flight)");
+    return;
+  }
   refreshStartedAt = Date.now();
+  console.log("[refresh] starting background refresh");
   refreshPromise = doFetch().finally(() => {
+    const ms = Date.now() - refreshStartedAt;
+    console.log(`[refresh] complete in ${(ms / 1000).toFixed(1)}s`);
     refreshPromise = null;
   });
 }
@@ -88,9 +104,9 @@ export function getRefreshStartedAt(): number | null {
 }
 
 async function doFetch(): Promise<ChimpionMetadata[]> {
+  const t0 = Date.now();
   try {
-    console.log("Fetching NFTs from Helius DAS API...");
-    console.log("Creator Address:", CREATOR_ADDRESS);
+    console.log(`[helius] fetching getAssetsByCreator (${CREATOR_ADDRESS})`);
 
     if (!HELIUS_API_KEY) {
       throw new Error("HELIUS_API_KEY is not configured in .env.local");
@@ -129,10 +145,12 @@ async function doFetch(): Promise<ChimpionMetadata[]> {
     }
 
     const assets = data.result?.items || [];
-    console.log(`Found ${assets.length} NFTs from Helius`);
+    console.log(
+      `[helius] returned ${assets.length} assets in ${Date.now() - t0}ms`,
+    );
 
     if (assets.length === 0) {
-      console.warn("No NFTs found. Check if the creator address is correct.");
+      console.warn("[helius] no NFTs found — creator address may be wrong");
       return [];
     }
 
@@ -216,31 +234,38 @@ async function doFetch(): Promise<ChimpionMetadata[]> {
       nft.tokenId = index + 1;
     });
 
+    console.log(
+      `[helius] assembled ${nfts.length} NFTs in ${Date.now() - t0}ms — running enrichment`,
+    );
+
     await Promise.all([resolveHolderNames(nfts), applyListings(nfts)]);
 
     cachedNFTs = nfts;
     lastFetch = Date.now();
 
-    console.log(`Successfully fetched and cached ${nfts.length} NFTs`);
+    console.log(
+      `[cache] populated: ${nfts.length} NFTs in ${((Date.now() - t0) / 1000).toFixed(1)}s`,
+    );
 
     return nfts;
   } catch (error) {
-    console.error("Error fetching Chimpions:", error);
+    console.error("[cache] fetch error:", error);
 
     if (cachedNFTs) {
-      console.log("Returning stale cache due to error");
+      console.log("[cache] returning stale due to error");
       return cachedNFTs;
     }
 
-    console.log("No cache available, returning empty array");
+    console.log("[cache] no fallback available, returning []");
     return [];
   }
 }
 
 export function clearCache() {
+  const had = cachedNFTs !== null;
   cachedNFTs = null;
   lastFetch = 0;
-  console.log("Cache cleared");
+  console.log(`[cache] cleared (had=${had})`);
 }
 
 export function getCacheAgeMs(): number | null {
@@ -261,6 +286,67 @@ export function getCacheSnapshot(): {
     count: cachedNFTs?.length ?? 0,
     nfts: cachedNFTs ?? [],
   };
+}
+
+export async function scrapePendingTwitters(opts: {
+  budgetMs?: number;
+} = {}): Promise<{ total: number; attempted: number; resolved: number }> {
+  if (!cachedNFTs) return { total: 0, attempted: 0, resolved: 0 };
+
+  const targets = new Map<string, ChimpionMetadata[]>();
+  for (const nft of cachedNFTs) {
+    if (!nft.holder || !nft.holderName || nft.holderTwitter) continue;
+    const list = targets.get(nft.holder) ?? [];
+    list.push(nft);
+    targets.set(nft.holder, list);
+  }
+
+  const wallets = [...targets.keys()];
+  const total = wallets.length;
+  if (total === 0) {
+    console.log("[scrape-twitters] no pending users");
+    return { total: 0, attempted: 0, resolved: 0 };
+  }
+
+  const SCRAPE_CONCURRENCY = 2;
+  const budgetMs = opts.budgetMs ?? 50_000;
+  const startedAt = Date.now();
+  let cursor = 0;
+  let attempted = 0;
+  let resolved = 0;
+
+  console.log(
+    `[scrape-twitters] starting (pending=${total}, budget=${budgetMs / 1000}s, concurrency=${SCRAPE_CONCURRENCY})`,
+  );
+
+  await Promise.all(
+    Array.from(
+      { length: Math.min(SCRAPE_CONCURRENCY, wallets.length) },
+      async () => {
+        while (true) {
+          if (Date.now() - startedAt > budgetMs) return;
+          const i = cursor++;
+          if (i >= wallets.length) return;
+          const wallet = wallets[i];
+          attempted++;
+          const profile = await getMatricaProfileByWallet(wallet);
+          const handle = await scrapeTwitterForProfile(profile);
+          if (handle) {
+            const nfts = targets.get(wallet) ?? [];
+            for (const nft of nfts) nft.holderTwitter = handle;
+            resolved++;
+          }
+        }
+      },
+    ),
+  );
+
+  const elapsed = ((Date.now() - startedAt) / 1000).toFixed(1);
+  console.log(
+    `[scrape-twitters] done: resolved=${resolved} attempted=${attempted} pending_remaining=${total - attempted} elapsed=${elapsed}s`,
+  );
+
+  return { total, attempted, resolved };
 }
 
 async function resolveHolderNames(nfts: ChimpionMetadata[]): Promise<void> {
@@ -333,7 +419,11 @@ async function resolveHolderNames(nfts: ChimpionMetadata[]): Promise<void> {
 
   if (scrapesAttempted < needsScrape.length) {
     console.log(
-      `Matrica scrape: budget exhausted at ${scrapesAttempted}/${needsScrape.length} (next render will continue)`,
+      `[matrica] scrape budget exhausted at ${scrapesAttempted}/${needsScrape.length} (next render will continue)`,
+    );
+  } else if (scrapesAttempted > 0) {
+    console.log(
+      `[matrica] scraped ${scrapesAttempted}/${needsScrape.length} pending users`,
     );
   }
 
@@ -355,11 +445,12 @@ async function resolveHolderNames(nfts: ChimpionMetadata[]): Promise<void> {
     (p) => p.name !== null,
   ).length;
   console.log(
-    `Matrica: ${uniqueResolved}/${uniqueHolders.length} unique holders resolved (${nftsWithName}/${nfts.length} NFTs labeled)`,
+    `[matrica] resolved ${uniqueResolved}/${uniqueHolders.length} unique holders (${nftsWithName}/${nfts.length} NFTs labeled)`,
   );
 }
 
 async function applyListings(nfts: ChimpionMetadata[]): Promise<void> {
+  const t0 = Date.now();
   const meListings = await fetchActiveListings();
 
   let listedFromApi = 0;
@@ -401,6 +492,6 @@ async function applyListings(nfts: ChimpionMetadata[]): Promise<void> {
 
   const total = listedFromApi + tensorListed + listedByHolder;
   console.log(
-    `Marketplace: ${listedFromApi} ME API + ${tensorListed} Tensor SDK + ${listedByHolder} holder fallback = ${total}/${nfts.length} NFTs marked as Listed`,
+    `[listings] ${listedFromApi} ME + ${tensorListed} Tensor + ${listedByHolder} holder = ${total}/${nfts.length} listed (${Date.now() - t0}ms)`,
   );
 }
