@@ -3,8 +3,8 @@ import { getBrowser } from "./puppeteer-browser";
 import type { MatricaProfile } from "./matrica";
 
 const REVALIDATE_SECONDS = 365 * 24 * 60 * 60;
-const NAV_TIMEOUT_MS = 8000;
-const CONTENT_TIMEOUT_MS = 6000;
+const NAV_TIMEOUT_MS = 5000;
+const CONTENT_TIMEOUT_MS = 4000;
 const CIRCUIT_FAILURE_THRESHOLD = 3;
 
 let consecutiveFailures = 0;
