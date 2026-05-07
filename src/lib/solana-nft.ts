@@ -307,15 +307,20 @@ async function resolveHolderNames(nfts: ChimpionMetadata[]): Promise<void> {
   );
 
   const SCRAPE_CONCURRENCY = 2;
+  const SCRAPE_BUDGET_MS = 15_000;
+  const scrapeStart = Date.now();
   let scrapeCursor = 0;
+  let scrapesAttempted = 0;
   await Promise.all(
     Array.from(
       { length: Math.min(SCRAPE_CONCURRENCY, needsScrape.length) },
       async () => {
         while (true) {
+          if (Date.now() - scrapeStart > SCRAPE_BUDGET_MS) return;
           const i = scrapeCursor++;
           if (i >= needsScrape.length) return;
           const { wallet, profile } = needsScrape[i];
+          scrapesAttempted++;
           const handle = await scrapeTwitterForProfile(profile);
           if (handle) {
             const entry = profileByHolder.get(wallet);
@@ -325,6 +330,12 @@ async function resolveHolderNames(nfts: ChimpionMetadata[]): Promise<void> {
       },
     ),
   );
+
+  if (scrapesAttempted < needsScrape.length) {
+    console.log(
+      `Matrica scrape: budget exhausted at ${scrapesAttempted}/${needsScrape.length} (next render will continue)`,
+    );
+  }
 
   let nftsWithName = 0;
   for (const nft of nfts) {

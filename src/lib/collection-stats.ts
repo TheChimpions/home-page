@@ -176,12 +176,15 @@ export async function fetchHoldersWithProfiles(
 
   const groupedHolders = [...grouped.values()];
   const SCRAPE_CONCURRENCY = 2;
+  const SCRAPE_BUDGET_MS = 15_000;
+  const scrapeStart = Date.now();
   let scrapeCursor = 0;
   await Promise.all(
     Array.from(
       { length: Math.min(SCRAPE_CONCURRENCY, groupedHolders.length) },
       async () => {
         while (true) {
+          if (Date.now() - scrapeStart > SCRAPE_BUDGET_MS) return;
           const i = scrapeCursor++;
           if (i >= groupedHolders.length) return;
           const h = groupedHolders[i];
@@ -434,22 +437,30 @@ export async function fetchHeliusBalances(
     .catch(() => null);
 }
 
+function parseTreasuryEnv(raw: string | undefined): number | null {
+  if (!raw) return null;
+  const cleaned = raw.replace(/[$,\s_]/g, "").toLowerCase();
+  let body = cleaned;
+  let multiplier = 1;
+  if (body.endsWith("k")) {
+    multiplier = 1_000;
+    body = body.slice(0, -1);
+  } else if (body.endsWith("m")) {
+    multiplier = 1_000_000;
+    body = body.slice(0, -1);
+  }
+  const n = Number(body);
+  if (!Number.isFinite(n) || n <= 0) return null;
+  return n * multiplier;
+}
+
 export async function fetchTreasuryValueUSD(): Promise<number | null> {
   if (process.env.NEXT_PHASE === "phase-production-build") {
     return null;
   }
 
-  const override = process.env.TREASURY_USD
-    ? Number(process.env.TREASURY_USD)
-    : null;
-  if (override && !Number.isNaN(override) && override > 0) return override;
-
-  const orb = await fetchOrbPortfolioUSD(TREASURY_ADDRESS);
-  if (orb !== null && orb >= TREASURY_USD_FALLBACK * 0.5) return orb;
-
-  const data = await fetchHeliusBalances(TREASURY_ADDRESS);
-  const helius = data?.totalUsdValue ?? null;
-  if (helius !== null && helius >= TREASURY_USD_FALLBACK * 0.5) return helius;
+  const override = parseTreasuryEnv(process.env.TREASURY_USD);
+  if (override !== null) return override;
 
   return TREASURY_USD_FALLBACK;
 }
