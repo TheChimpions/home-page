@@ -1,6 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  serverExternalPackages: [
+    "puppeteer-core",
+    "@sparticuz/chromium",
+    "@tensor-oss/tcomp-sdk",
+  ],
   images: {
     qualities: [75, 100],
     remotePatterns: [
