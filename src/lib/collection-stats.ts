@@ -20,6 +20,7 @@ const VALIDATOR_PUBKEY = "2AKKnirWVZMhnzuwqpizw9SwfZjGpRFLx2zCCNtPWpbc";
 
 const TREASURY_MULTISIG = "Df7VuBkasBXHyEYUsuqQnEpDvLyZmfoxDnk932CUak2c";
 const TREASURY_CACHE_SECONDS = 24 * 60 * 60;
+const TREASURY_USD_FALLBACK = 140000;
 
 const HELIUS_API_KEY =
   process.env.HELIUS_API_KEY || process.env.NEXT_PUBLIC_HELIUS_API_KEY;
@@ -313,10 +314,20 @@ export async function fetchTreasuryValueUSD(): Promise<number | null> {
   if (process.env.NEXT_PHASE === "phase-production-build") {
     return null;
   }
+
+  const override = process.env.TREASURY_USD
+    ? Number(process.env.TREASURY_USD)
+    : null;
+  if (override && !Number.isNaN(override) && override > 0) return override;
+
   const orb = await fetchOrbPortfolioUSD(TREASURY_ADDRESS);
-  if (orb !== null) return orb;
+  if (orb !== null && orb >= TREASURY_USD_FALLBACK * 0.5) return orb;
+
   const data = await fetchHeliusBalances(TREASURY_ADDRESS);
-  return data?.totalUsdValue ?? null;
+  const helius = data?.totalUsdValue ?? null;
+  if (helius !== null && helius >= TREASURY_USD_FALLBACK * 0.5) return helius;
+
+  return TREASURY_USD_FALLBACK;
 }
 
 export function formatTreasuryUSD(usd: number | null): string {

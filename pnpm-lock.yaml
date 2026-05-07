@@ -47,7 +47,7 @@ importers:
       '@solana/web3.js':
         specifier: ^1.98.4
         version: 1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)
-      '@sparticuz/chromium':
+      '@sparticuz/chromium-min':
         specifier: ^148.0.0
         version: 148.0.0
       '@tanstack/react-query':
@@ -2022,8 +2022,8 @@ packages:
     peerDependencies:
       '@solana/web3.js': '*'
 
-  '@sparticuz/chromium@148.0.0':
-    resolution: {integrity: sha512-na5beDSZkrlcEWEMt+eHu4Xe+MLUgCtHBjHaXGsNaQu5tJWwXE+McxAcMtyumEM/JzXrxGpkO5vAPD9TWhil3g==}
+  '@sparticuz/chromium-min@148.0.0':
+    resolution: {integrity: sha512-3RW2gPJrOIutXdTtwLDuIFOZwKKq4YU2zwt73U75QmgYaDVSYfSC1xLksou71sAy1B/MgZhLSmU+wCZDLW4MFg==}
     engines: {node: '>=22.17.0'}
 
   '@stablelib/base64@1.0.1':
@@ -8781,7 +8781,7 @@ snapshots:
       eventemitter3: 5.0.4
       uuid: 9.0.1
 
-  '@sparticuz/chromium@148.0.0':
+  '@sparticuz/chromium-min@148.0.0':
     dependencies:
       tar-fs: 3.1.2
     transitivePeerDependencies:

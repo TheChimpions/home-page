@@ -3,7 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   serverExternalPackages: [
     "puppeteer-core",
-    "@sparticuz/chromium",
+    "@sparticuz/chromium-min",
     "@tensor-oss/tcomp-sdk",
   ],
   images: {

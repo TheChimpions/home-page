@@ -1,5 +1,8 @@
 import puppeteer, { Browser } from "puppeteer-core";
-import chromium from "@sparticuz/chromium";
+import chromium from "@sparticuz/chromium-min";
+
+const CHROMIUM_PACK_URL =
+  "https://github.com/Sparticuz/chromium/releases/download/v148.0.0/chromium-v148.0.0-pack.x64.tar";
 
 let browserPromise: Promise<Browser | null> | null = null;
 
@@ -10,7 +13,7 @@ async function launchBrowser(): Promise<Browser | null> {
     if (isServerless) {
       return await puppeteer.launch({
         args: chromium.args,
-        executablePath: await chromium.executablePath(),
+        executablePath: await chromium.executablePath(CHROMIUM_PACK_URL),
         headless: true,
       });
     }
