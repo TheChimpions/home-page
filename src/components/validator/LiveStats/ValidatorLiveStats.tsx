@@ -15,8 +15,12 @@ export default async function ValidatorLiveStats() {
     fetchValidatorDelegators(),
   ]);
 
-  const stakeK =
-    stakeSol !== null ? Math.round(stakeSol / 1000) : null;
+  const stakeFormat: { end: number; decimals: number; suffix: string } | null =
+    stakeSol === null
+      ? null
+      : stakeSol >= 1_000_000
+        ? { end: stakeSol / 1_000_000, decimals: 2, suffix: "M" }
+        : { end: Math.round(stakeSol / 1000), decimals: 0, suffix: "k" };
   const apy = stakewiz?.apy_estimate ?? null;
   const commission = stakewiz?.commission ?? null;
   const uptime = stakewiz?.credit_ratio ?? null;
@@ -57,8 +61,13 @@ export default async function ValidatorLiveStats() {
     {
       label: "Delegated SOL",
       node:
-        stakeK !== null ? (
-          <CountUpStat end={stakeK} decimals={0} suffix="k" className={numCls} />
+        stakeFormat !== null ? (
+          <CountUpStat
+            end={stakeFormat.end}
+            decimals={stakeFormat.decimals}
+            suffix={stakeFormat.suffix}
+            className={numCls}
+          />
         ) : (
           <span className={numCls}>—</span>
         ),
