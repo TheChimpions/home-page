@@ -1,5 +1,13 @@
+export interface NFTListing {
+  marketplace: "magiceden" | "tensor";
+  url: string;
+  price: number | null;
+  seller: string;
+}
+
 export interface ChimpionMetadata {
   tokenId: number;
+  mint?: string;
   name: string;
   image: string;
   animationUrl?: string;
@@ -10,6 +18,9 @@ export interface ChimpionMetadata {
   tribe?: string;
   type?: string;
   holder?: string;
+  holderName?: string;
+  holderTwitter?: string;
+  listing?: NFTListing;
   artist?: string;
 }
 

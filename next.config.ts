@@ -1,6 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  serverExternalPackages: [
+    "puppeteer-core",
+    "@sparticuz/chromium-min",
+    "@tensor-oss/tcomp-sdk",
+  ],
   images: {
     qualities: [75, 100],
     remotePatterns: [
@@ -31,6 +36,10 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "shdw-drive.genesysgo.net",
+      },
+      {
+        protocol: "https",
+        hostname: "nft.matrica.io",
       },
     ],
   },

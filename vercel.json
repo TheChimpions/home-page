@@ -1,0 +1,10 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "src/app/cache_view/page.tsx": { "maxDuration": 60 },
+    "src/app/our-holders/page.tsx": { "maxDuration": 60 },
+    "src/app/page.tsx": { "maxDuration": 60 },
+    "src/app/api/orb-debug/route.ts": { "maxDuration": 60 },
+    "src/app/api/cache-export/route.ts": { "maxDuration": 60 }
+  }
+}

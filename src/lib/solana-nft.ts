@@ -1,4 +1,16 @@
 import { ChimpionMetadata } from "@/types/nft";
+import {
+  getMatricaProfileByWallet,
+  getMatricaDisplayName,
+  getMatricaTwitterHandle,
+  getMatricaUsername,
+} from "./matrica";
+import { scrapeTwitterForProfile } from "./matrica-scraper";
+import {
+  detectListingByHolder,
+  fetchActiveListings,
+} from "./marketplace-listings";
+import { fetchTensorListingsBatch } from "./tensor-listings";
 
 interface HeliusAssetFile {
   mime?: string;
@@ -31,22 +43,57 @@ const CREATOR_ADDRESS =
 
 let cachedNFTs: ChimpionMetadata[] | null = null;
 let lastFetch: number = 0;
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+let refreshPromise: Promise<ChimpionMetadata[]> | null = null;
+let refreshStartedAt: number = 0;
+const CACHE_DURATION = 12 * 60 * 60 * 1000; // 12 hours
 
 export async function fetchAllChimpions(): Promise<ChimpionMetadata[]> {
-  if (cachedNFTs && Date.now() - lastFetch < CACHE_DURATION) {
+  if (process.env.NEXT_PHASE === "phase-production-build") {
+    return [];
+  }
+
+  const fresh = cachedNFTs && Date.now() - lastFetch < CACHE_DURATION;
+
+  if (fresh) {
     console.log("Returning cached NFTs");
+    return cachedNFTs!;
+  }
+
+  if (cachedNFTs) {
+    if (!refreshPromise) {
+      console.log("Cache stale: returning old data, refreshing in background");
+      startBackgroundRefresh();
+    }
     return cachedNFTs;
   }
 
+  if (!refreshPromise) startBackgroundRefresh();
+  return refreshPromise!;
+}
+
+export function startBackgroundRefresh(): void {
+  if (refreshPromise) return;
+  refreshStartedAt = Date.now();
+  refreshPromise = doFetch().finally(() => {
+    refreshPromise = null;
+  });
+}
+
+export function isRefreshing(): boolean {
+  return refreshPromise !== null;
+}
+
+export function getRefreshStartedAt(): number | null {
+  return refreshPromise ? refreshStartedAt : null;
+}
+
+async function doFetch(): Promise<ChimpionMetadata[]> {
   try {
     console.log("Fetching NFTs from Helius DAS API...");
     console.log("Creator Address:", CREATOR_ADDRESS);
 
     if (!HELIUS_API_KEY) {
-      throw new Error(
-        "HELIUS_API_KEY is not configured in .env.local",
-      );
+      throw new Error("HELIUS_API_KEY is not configured in .env.local");
     }
 
     const url = `https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`;
@@ -85,9 +132,7 @@ export async function fetchAllChimpions(): Promise<ChimpionMetadata[]> {
     console.log(`Found ${assets.length} NFTs from Helius`);
 
     if (assets.length === 0) {
-      console.warn(
-        "No NFTs found. Check if the creator address is correct.",
-      );
+      console.warn("No NFTs found. Check if the creator address is correct.");
       return [];
     }
 
@@ -144,6 +189,7 @@ export async function fetchAllChimpions(): Promise<ChimpionMetadata[]> {
 
         return {
           tokenId: index + 1,
+          mint: asset.id,
           name:
             fullMetadata?.name || metadata?.name || `Chimpion #${index + 1}`,
           image,
@@ -170,19 +216,12 @@ export async function fetchAllChimpions(): Promise<ChimpionMetadata[]> {
       nft.tokenId = index + 1;
     });
 
+    await Promise.all([resolveHolderNames(nfts), applyListings(nfts)]);
+
     cachedNFTs = nfts;
     lastFetch = Date.now();
 
     console.log(`Successfully fetched and cached ${nfts.length} NFTs`);
-
-    if (nfts.length > 0) {
-      console.log("First NFT example:", {
-        name: nfts[0].name,
-        tribe: nfts[0].tribe,
-        type: nfts[0].type,
-        hasImage: !!nfts[0].image,
-      });
-    }
 
     return nfts;
   } catch (error) {
@@ -202,4 +241,155 @@ export function clearCache() {
   cachedNFTs = null;
   lastFetch = 0;
   console.log("Cache cleared");
+}
+
+export function getCacheAgeMs(): number | null {
+  return lastFetch > 0 ? Date.now() - lastFetch : null;
+}
+
+export function getCacheSnapshot(): {
+  hasCache: boolean;
+  ageMs: number | null;
+  ttlMs: number;
+  count: number;
+  nfts: ChimpionMetadata[];
+} {
+  return {
+    hasCache: cachedNFTs !== null,
+    ageMs: lastFetch > 0 ? Date.now() - lastFetch : null,
+    ttlMs: CACHE_DURATION,
+    count: cachedNFTs?.length ?? 0,
+    nfts: cachedNFTs ?? [],
+  };
+}
+
+async function resolveHolderNames(nfts: ChimpionMetadata[]): Promise<void> {
+  const uniqueHolders = Array.from(
+    new Set(
+      nfts
+        .map((nft) => nft.holder)
+        .filter((h): h is string => !!h && h !== "Unknown"),
+    ),
+  );
+
+  const API_CONCURRENCY = 8;
+  const profileByHolder = new Map<
+    string,
+    { name: string | null; twitter: string | null }
+  >();
+  const needsScrape: {
+    wallet: string;
+    profile: Awaited<ReturnType<typeof getMatricaProfileByWallet>>;
+  }[] = [];
+
+  let apiCursor = 0;
+  await Promise.all(
+    Array.from(
+      { length: Math.min(API_CONCURRENCY, uniqueHolders.length) },
+      async () => {
+        while (true) {
+          const i = apiCursor++;
+          if (i >= uniqueHolders.length) return;
+          const wallet = uniqueHolders[i];
+          const profile = await getMatricaProfileByWallet(wallet);
+          const username = getMatricaUsername(profile);
+          const aboutTwitter = getMatricaTwitterHandle(profile);
+          profileByHolder.set(wallet, {
+            name: getMatricaDisplayName(profile),
+            twitter: aboutTwitter,
+          });
+          if (!aboutTwitter && username) {
+            needsScrape.push({ wallet, profile });
+          }
+        }
+      },
+    ),
+  );
+
+  const SCRAPE_CONCURRENCY = 2;
+  let scrapeCursor = 0;
+  await Promise.all(
+    Array.from(
+      { length: Math.min(SCRAPE_CONCURRENCY, needsScrape.length) },
+      async () => {
+        while (true) {
+          const i = scrapeCursor++;
+          if (i >= needsScrape.length) return;
+          const { wallet, profile } = needsScrape[i];
+          const handle = await scrapeTwitterForProfile(profile);
+          if (handle) {
+            const entry = profileByHolder.get(wallet);
+            if (entry) entry.twitter = handle;
+          }
+        }
+      },
+    ),
+  );
+
+  let nftsWithName = 0;
+  for (const nft of nfts) {
+    if (!nft.holder) continue;
+    const entry = profileByHolder.get(nft.holder);
+    if (!entry) continue;
+    if (entry.name) {
+      nft.holderName = entry.name;
+      nftsWithName++;
+    }
+    if (entry.twitter) {
+      nft.holderTwitter = entry.twitter;
+    }
+  }
+
+  const uniqueResolved = [...profileByHolder.values()].filter(
+    (p) => p.name !== null,
+  ).length;
+  console.log(
+    `Matrica: ${uniqueResolved}/${uniqueHolders.length} unique holders resolved (${nftsWithName}/${nfts.length} NFTs labeled)`,
+  );
+}
+
+async function applyListings(nfts: ChimpionMetadata[]): Promise<void> {
+  const meListings = await fetchActiveListings();
+
+  let listedFromApi = 0;
+  for (const nft of nfts) {
+    if (!nft.mint) continue;
+    const apiListing = meListings.get(nft.mint);
+    if (apiListing) {
+      nft.listing = apiListing;
+      listedFromApi++;
+    }
+  }
+
+  const tensorCandidates = nfts
+    .filter((n) => !n.listing && n.mint)
+    .map((n) => n.mint!);
+
+  let tensorListed = 0;
+  if (tensorCandidates.length > 0) {
+    const tensorListings = await fetchTensorListingsBatch(tensorCandidates);
+    for (const nft of nfts) {
+      if (nft.listing || !nft.mint) continue;
+      const t = tensorListings.get(nft.mint);
+      if (t) {
+        nft.listing = t;
+        tensorListed++;
+      }
+    }
+  }
+
+  let listedByHolder = 0;
+  for (const nft of nfts) {
+    if (nft.listing || !nft.mint) continue;
+    const holderListing = detectListingByHolder(nft.holder, nft.mint);
+    if (holderListing) {
+      nft.listing = holderListing;
+      listedByHolder++;
+    }
+  }
+
+  const total = listedFromApi + tensorListed + listedByHolder;
+  console.log(
+    `Marketplace: ${listedFromApi} ME API + ${tensorListed} Tensor SDK + ${listedByHolder} holder fallback = ${total}/${nfts.length} NFTs marked as Listed`,
+  );
 }

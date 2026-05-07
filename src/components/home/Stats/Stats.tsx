@@ -1,16 +1,20 @@
 import CountUpStat from "@/components/ui/CountUpStat";
 import {
   fetchMEStats,
+  fetchTreasuryValueUSD,
   fetchValidatorStake,
+  formatTreasuryUSD,
   parseStakeCountUp,
+  TREASURY_PORTFOLIO_URL,
 } from "@/lib/collection-stats";
 
 const numCls = "text-white text-[3rem] font-bold leading-10 tabular-nums";
 
 export default async function Stats() {
-  const [meStats, validatorStake] = await Promise.all([
+  const [meStats, validatorStake, treasuryUsd] = await Promise.all([
     fetchMEStats(),
     fetchValidatorStake(),
+    fetchTreasuryValueUSD(),
   ]);
 
   const stakeData = parseStakeCountUp(validatorStake);
@@ -32,8 +36,27 @@ export default async function Stats() {
       ),
     },
     { label: "Monthly Revenue", node: <span className={numCls}>$7k</span> },
-    { label: "Treasury", node: <span className={numCls}>$357k</span> },
-    { label: "AUM", node: <span className={numCls}>$90k/y</span> },
+    {
+      label: "Treasury",
+      node: (
+        <a
+          href={TREASURY_PORTFOLIO_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`${numCls} hover:underline`}
+        >
+          {formatTreasuryUSD(treasuryUsd)}
+        </a>
+      ),
+    },
+    {
+      label: "Treasury / Chimp",
+      node: (
+        <span className={numCls}>
+          {formatTreasuryUSD(treasuryUsd !== null ? treasuryUsd / 222 : null)}
+        </span>
+      ),
+    },
     {
       label: "Floor Price",
       node:

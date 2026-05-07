@@ -3,10 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { ChimpListing } from "@/types/listing";
-
-function shortAddr(addr: string) {
-  return `${addr.slice(0, 4)}...${addr.slice(-4)}`;
-}
+import { truncateAddress } from "@/lib/utils";
 
 const rows = [
   { icon: "/assets/coin.svg", label: "Price", key: "price" as const },
@@ -30,7 +27,7 @@ export default function ListingCard({ listing, onClick, priority, hideTitle }: L
     if (key === "price") return `${listing.price.toFixed(2)} SOL`;
     if (key === "holder") {
       const addr = listing.holder ?? listing.seller;
-      return shortAddr(addr);
+      return truncateAddress(addr);
     }
     return listing[key] ?? "—";
   }

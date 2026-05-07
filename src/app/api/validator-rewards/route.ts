@@ -1,97 +1,75 @@
 import { NextResponse } from "next/server";
+import { fetchValidatorStakewiz } from "@/lib/collection-stats";
 
 export const dynamic = "force-dynamic";
 
-interface SanctumLST {
-  symbol: string;
-  mint: string;
-  name: string;
-  decimals: number;
-  logoUri: string;
-  latestApy?: number;
-  avgApy?: number;
-  tvl?: number;
-  solValue?: number;
-}
-
-interface SanctumResponse {
-  data: SanctumLST[];
-}
-
 const CHIMPSOL_MINT = "sctmZbtfE4dBNBEqBriQQVZLBrTaTjiTfKNRzKUcSLa";
 
-export async function GET() {
+interface SanctumApyResponse {
+  apys?: Record<string, number>;
+  errs?: Record<string, unknown>;
+}
+
+interface SanctumSolValueResponse {
+  solValues?: Record<string, string>;
+  errs?: Record<string, unknown>;
+}
+
+async function fetchSanctumApy(): Promise<number | null> {
   try {
-    const apiKey = process.env.SANCTUM_API_KEY;
-
-    if (!apiKey) {
-      throw new Error("Sanctum API key not configured");
-    }
-
-    const response = await fetch(
-      `https://sanctum-api.ironforge.network/lsts?apiKey=${apiKey}`,
-      {
-        headers: {
-          Accept: "application/json",
-          "User-Agent": "The Chimpions Website",
-        },
-        next: { revalidate: 28800 },
-      }
+    const res = await fetch(
+      `https://extra-api.sanctum.so/v1/apy/latest?lst=${CHIMPSOL_MINT}`,
+      { next: { revalidate: 28800 } },
     );
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch Sanctum LSTs: ${response.status}`);
-    }
-
-    const data: SanctumResponse = await response.json();
-
-    const chimpSol = data.data?.find((lst) => lst.mint === CHIMPSOL_MINT);
-
-    if (!chimpSol) {
-      throw new Error("chimpSol not found in Sanctum LST list");
-    }
-
-    return NextResponse.json(
-      {
-        apy: chimpSol.latestApy
-          ? chimpSol.latestApy < 1
-            ? chimpSol.latestApy * 100
-            : chimpSol.latestApy
-          : 6.84,
-        avgApy: chimpSol.avgApy
-          ? chimpSol.avgApy * (chimpSol.avgApy < 1 ? 100 : 1)
-          : null,
-        tvl: chimpSol.tvl,
-        solValue: chimpSol.solValue,
-        mint: chimpSol.mint,
-        symbol: chimpSol.symbol,
-      },
-      {
-        headers: {
-          "Cache-Control":
-            "public, s-maxage=28800, stale-while-revalidate=57600",
-        },
-      }
-    );
-  } catch (error) {
-    console.error("Error fetching Sanctum LST data:", error);
-
-    return NextResponse.json(
-      {
-        apy: null,
-        avgApy: null,
-        tvl: null,
-        solValue: null,
-        mint: CHIMPSOL_MINT,
-        symbol: "ChimpSol",
-        error: "Failed to fetch real-time data, using fallback",
-      },
-      {
-        status: 200,
-        headers: {
-          "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=7200",
-        },
-      }
-    );
+    if (!res.ok) return null;
+    const data = (await res.json()) as SanctumApyResponse;
+    const raw = data.apys?.[CHIMPSOL_MINT];
+    if (!raw || raw <= 0) return null;
+    return raw < 1 ? raw * 100 : raw;
+  } catch {
+    return null;
   }
+}
+
+async function fetchSanctumSolValue(): Promise<number | null> {
+  try {
+    const res = await fetch(
+      `https://extra-api.sanctum.so/v1/sol-value/current?lst=${CHIMPSOL_MINT}`,
+      { next: { revalidate: 28800 } },
+    );
+    if (!res.ok) return null;
+    const data = (await res.json()) as SanctumSolValueResponse;
+    const raw = data.solValues?.[CHIMPSOL_MINT];
+    if (!raw) return null;
+    return Number(raw) / 1_000_000_000;
+  } catch {
+    return null;
+  }
+}
+
+export async function GET() {
+  const [sanctumApy, solValue, stakewiz] = await Promise.all([
+    fetchSanctumApy(),
+    fetchSanctumSolValue(),
+    fetchValidatorStakewiz(),
+  ]);
+
+  const apy = sanctumApy ?? stakewiz?.apy_estimate ?? null;
+  const source = sanctumApy !== null ? "sanctum" : stakewiz ? "stakewiz" : null;
+
+  return NextResponse.json(
+    {
+      apy,
+      source,
+      solValue,
+      mint: CHIMPSOL_MINT,
+      symbol: "ChimpSol",
+    },
+    {
+      headers: {
+        "Cache-Control":
+          "public, s-maxage=28800, stale-while-revalidate=57600",
+      },
+    },
+  );
 }

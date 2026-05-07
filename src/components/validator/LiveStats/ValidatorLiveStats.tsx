@@ -1,53 +1,36 @@
 import CountUpStat from "@/components/ui/CountUpStat";
 import FadeUp from "@/components/ui/FadeUp";
-
-const TRILLIUM_URL =
-  "https://api.trillium.so/validator_rewards/CHiaohVV2SQCFhiYP73iQzWT6HxnZqnAZJJqAYTeLAo";
-
-interface TrilliumEpoch {
-  epoch: number;
-  delegator_compound_total_apy: number;
-  commission: number;
-  sw_uptime: number;
-  activated_stake: number;
-  skip_rate: number;
-}
-
-interface ValidatorStats {
-  apy: number | null;
-  commission: number | null;
-  uptime: number | null;
-  activatedStake: number | null;
-}
-
-async function fetchValidatorStats(): Promise<ValidatorStats> {
-  const data = await fetch(TRILLIUM_URL, { next: { revalidate: 3600 } })
-    .then((r) => (r.ok ? (r.json() as Promise<TrilliumEpoch[]>) : null))
-    .then((arr) => (Array.isArray(arr) && arr.length > 0 ? arr[0] : null))
-    .catch(() => null);
-
-  return {
-    apy: data?.delegator_compound_total_apy ?? null,
-    commission: data?.commission ?? null,
-    uptime: data?.sw_uptime ?? null,
-    activatedStake: data?.activated_stake ?? null,
-  };
-}
+import {
+  fetchValidatorStake,
+  fetchValidatorDelegators,
+  fetchValidatorStakewiz,
+} from "@/lib/collection-stats";
 
 const numCls = "text-white font-title text-[3rem] leading-10 tabular-nums";
 
 export default async function ValidatorLiveStats() {
-  const stats = await fetchValidatorStats();
+  const [stakewiz, stakeSol, delegators] = await Promise.all([
+    fetchValidatorStakewiz(),
+    fetchValidatorStake(),
+    fetchValidatorDelegators(),
+  ]);
 
-  const stakeM =
-    stats.activatedStake !== null ? stats.activatedStake / 1_000_000 : null;
+  const stakeFormat: { end: number; decimals: number; suffix: string } | null =
+    stakeSol === null
+      ? null
+      : stakeSol >= 1_000_000
+        ? { end: stakeSol / 1_000_000, decimals: 2, suffix: "M" }
+        : { end: Math.round(stakeSol / 1000), decimals: 0, suffix: "k" };
+  const apy = stakewiz?.apy_estimate ?? null;
+  const commission = stakewiz?.commission ?? null;
+  const uptime = stakewiz?.credit_ratio ?? null;
 
   const liveStats = [
     {
       label: "APY",
       node:
-        stats.apy !== null ? (
-          <CountUpStat end={stats.apy} decimals={2} suffix="%" className={numCls} />
+        apy !== null ? (
+          <CountUpStat end={apy} decimals={2} suffix="%" className={numCls} />
         ) : (
           <span className={numCls}>—</span>
         ),
@@ -55,8 +38,13 @@ export default async function ValidatorLiveStats() {
     {
       label: "Commission",
       node:
-        stats.commission !== null ? (
-          <CountUpStat end={stats.commission} decimals={0} suffix="%" className={numCls} />
+        commission !== null ? (
+          <CountUpStat
+            end={commission}
+            decimals={0}
+            suffix="%"
+            className={numCls}
+          />
         ) : (
           <span className={numCls}>—</span>
         ),
@@ -64,8 +52,8 @@ export default async function ValidatorLiveStats() {
     {
       label: "Uptime",
       node:
-        stats.uptime !== null ? (
-          <CountUpStat end={stats.uptime} decimals={2} suffix="%" className={numCls} />
+        uptime !== null ? (
+          <CountUpStat end={uptime} decimals={2} suffix="%" className={numCls} />
         ) : (
           <span className={numCls}>—</span>
         ),
@@ -73,15 +61,29 @@ export default async function ValidatorLiveStats() {
     {
       label: "Delegated SOL",
       node:
-        stakeM !== null ? (
-          <CountUpStat end={stakeM} decimals={2} suffix="M" className={numCls} />
+        stakeFormat !== null ? (
+          <CountUpStat
+            end={stakeFormat.end}
+            decimals={stakeFormat.decimals}
+            suffix={stakeFormat.suffix}
+            className={numCls}
+          />
         ) : (
           <span className={numCls}>—</span>
         ),
     },
     {
       label: "Delegators",
-      node: <CountUpStat end={28} className={numCls} />,
+      node:
+        delegators !== null ? (
+          <CountUpStat
+            end={delegators.uniqueDelegators}
+            decimals={0}
+            className={numCls}
+          />
+        ) : (
+          <span className={numCls}>—</span>
+        ),
     },
   ];
 
