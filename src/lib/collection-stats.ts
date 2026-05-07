@@ -311,5 +311,6 @@ export async function fetchTreasuryValueUSD(): Promise<number | null> {
 export function formatTreasuryUSD(usd: number | null): string {
   if (usd === null) return "—";
   if (usd >= 1_000_000) return `$${(usd / 1_000_000).toFixed(1)}M`;
-  return `$${Math.round(usd / 1000)}k`;
+  if (usd >= 1_000) return `$${Math.round(usd / 1000)}k`;
+  return `$${Math.round(usd).toLocaleString()}`;
 }

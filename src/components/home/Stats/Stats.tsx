@@ -49,7 +49,14 @@ export default async function Stats() {
         </a>
       ),
     },
-    { label: "AUM", node: <span className={numCls}>$90k/y</span> },
+    {
+      label: "Treasury / Chimp",
+      node: (
+        <span className={numCls}>
+          {formatTreasuryUSD(treasuryUsd !== null ? treasuryUsd / 222 : null)}
+        </span>
+      ),
+    },
     {
       label: "Floor Price",
       node:
