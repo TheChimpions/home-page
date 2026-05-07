@@ -15,6 +15,7 @@
   "dependencies": {
     "@coral-xyz/anchor": "^0.32.1",
     "@metaplex-foundation/mpl-token-metadata": "^3.4.0",
+    "@noble/hashes": "1.4.0",
     "@metaplex-foundation/umi": "^1.5.1",
     "@metaplex-foundation/umi-bundle-defaults": "^1.5.1",
     "@radix-ui/react-select": "^2.2.6",
@@ -48,5 +49,10 @@
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4.1.18",
     "typescript": "^5"
+  },
+  "pnpm": {
+    "overrides": {
+      "@metaplex-foundation/mpl-core>@noble/hashes": "1.4.0"
+    }
   }
 }
