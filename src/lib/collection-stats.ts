@@ -46,6 +46,9 @@ export interface HolderProfile {
 }
 
 export async function fetchMEStats(): Promise<MEStats> {
+  if (process.env.NEXT_PHASE === "phase-production-build") {
+    return { floorPrice: null, listedCount: null };
+  }
   const data = await fetch(
     `${ME_BASE}/collections/${COLLECTION}/stats`,
     { next: { revalidate: 300 } },
@@ -111,6 +114,10 @@ export async function fetchHolderStats(): Promise<HolderStats> {
 export async function fetchHoldersWithProfiles(
   limit?: number,
 ): Promise<HolderProfile[]> {
+  if (process.env.NEXT_PHASE === "phase-production-build") {
+    return [];
+  }
+
   const counts = await fetchHolderCounts();
   if (counts.size === 0) return [];
 
@@ -198,6 +205,7 @@ interface VoteAccount {
 }
 
 export async function fetchValidatorStake(): Promise<number | null> {
+  if (process.env.NEXT_PHASE === "phase-production-build") return null;
   if (!HELIUS_API_KEY) return null;
 
   const data = await fetch(
@@ -302,6 +310,9 @@ export async function fetchHeliusBalances(
 }
 
 export async function fetchTreasuryValueUSD(): Promise<number | null> {
+  if (process.env.NEXT_PHASE === "phase-production-build") {
+    return null;
+  }
   const orb = await fetchOrbPortfolioUSD(TREASURY_ADDRESS);
   if (orb !== null) return orb;
   const data = await fetchHeliusBalances(TREASURY_ADDRESS);

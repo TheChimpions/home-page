@@ -38,6 +38,7 @@ async function scrapeUser(
   _profileSig: string,
 ): Promise<string | null> {
   void _profileSig;
+  if (process.env.NEXT_PHASE === "phase-production-build") return null;
   if (!isLikelyValidUsername(username)) return null;
 
   if (consecutiveFailures >= CIRCUIT_FAILURE_THRESHOLD) {

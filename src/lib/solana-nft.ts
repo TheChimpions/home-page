@@ -48,6 +48,10 @@ let refreshStartedAt: number = 0;
 const CACHE_DURATION = 12 * 60 * 60 * 1000; // 12 hours
 
 export async function fetchAllChimpions(): Promise<ChimpionMetadata[]> {
+  if (process.env.NEXT_PHASE === "phase-production-build") {
+    return [];
+  }
+
   const fresh = cachedNFTs && Date.now() - lastFetch < CACHE_DURATION;
 
   if (fresh) {

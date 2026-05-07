@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import OurHolders from "@/components/our-holders/OurHolders/OurHolders";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Our Holders",
   description:
