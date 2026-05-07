@@ -6,12 +6,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
-import {
-  ChevronDown,
-  Wallet,
-  LayoutList,
-  Trash2,
-} from "lucide-react";
+import { ChevronDown, Wallet, LayoutList, Trash2 } from "lucide-react";
 import MobileMenu from "./MobileMenu";
 import MyListingsPanel from "./MyListingsPanel";
 
@@ -29,13 +24,13 @@ const navigation: NavEntry[] = [
     items: [
       { label: "NFT Gallery", href: "/nft-gallery" },
       { label: "Our Holders", href: "/our-holders" },
-      { label: "Chimp Swap", href: "/chimp-swap" },
+      // { label: "Chimp Swap", href: "/chimp-swap" },
       { label: "The Treehouse", href: "/the-treehouse" },
     ],
   },
   { label: "Treehouse Capital", href: "/treehouse-capital" },
   { label: "Validator", href: "/validator" },
-  { label: "Merch Store", href: "#" },
+  { label: "Merch Store", href: "https://pjf9bm-x6.myshopify.com" },
 ];
 
 const allNavItems: NavLink[] = [
@@ -241,7 +236,9 @@ export default function Header() {
 
   return (
     <>
-      <header className={`sticky top-0 z-50 bg-gray-modern-900 border-b border-gray-modern-800 transition-transform duration-300 min-[1400px]:translate-y-0 ${headerVisible ? "translate-y-0" : "-translate-y-full"}`}>
+      <header
+        className={`sticky top-0 z-50 bg-gray-modern-900 border-b border-gray-modern-800 transition-transform duration-300 min-[1400px]:translate-y-0 ${headerVisible ? "translate-y-0" : "-translate-y-full"}`}
+      >
         <div className="w-full min-[1400px]:py-2">
           <div className="max-w-480 mx-auto h-16 min-[1400px]:h-20 flex items-center justify-between relative z-10 px-4 3xl:px-20">
             <button

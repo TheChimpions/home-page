@@ -1,0 +1,39 @@
+import puppeteer, { Browser } from "puppeteer-core";
+import chromium from "@sparticuz/chromium";
+
+let browserPromise: Promise<Browser | null> | null = null;
+
+async function launchBrowser(): Promise<Browser | null> {
+  try {
+    const isServerless =
+      !!process.env.VERCEL || !!process.env.AWS_LAMBDA_FUNCTION_NAME;
+    if (isServerless) {
+      return await puppeteer.launch({
+        args: chromium.args,
+        executablePath: await chromium.executablePath(),
+        headless: true,
+      });
+    }
+    const localPath =
+      process.env.PUPPETEER_EXECUTABLE_PATH ||
+      "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
+    return await puppeteer.launch({
+      executablePath: localPath,
+      headless: true,
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    });
+  } catch (err) {
+    console.warn("Puppeteer: failed to launch browser:", err);
+    return null;
+  }
+}
+
+export async function getBrowser(): Promise<Browser | null> {
+  if (!browserPromise) browserPromise = launchBrowser();
+  const browser = await browserPromise;
+  if (!browser || !browser.connected) {
+    browserPromise = launchBrowser();
+    return browserPromise;
+  }
+  return browser;
+}

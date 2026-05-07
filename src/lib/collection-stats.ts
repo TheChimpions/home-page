@@ -7,6 +7,7 @@ import {
   type MatricaProfile,
 } from "./matrica";
 import { scrapeTwitterForProfile } from "./matrica-scraper";
+import { fetchOrbPortfolioUSD } from "./orb-scraper";
 import {
   fetchActiveListings,
   MARKETPLACE_ADDRESSES,
@@ -15,8 +16,10 @@ import {
 const ME_BASE = "https://api-mainnet.magiceden.dev/v2";
 const COLLECTION = "the_chimpions";
 
-const TRILLIUM_URL =
-  "https://api.trillium.so/validator_rewards/CHiaohVV2SQCFhiYP73iQzWT6HxnZqnAZJJqAYTeLAo";
+const VALIDATOR_PUBKEY = "2AKKnirWVZMhnzuwqpizw9SwfZjGpRFLx2zCCNtPWpbc";
+
+const TREASURY_MULTISIG = "Df7VuBkasBXHyEYUsuqQnEpDvLyZmfoxDnk932CUak2c";
+const TREASURY_CACHE_SECONDS = 24 * 60 * 60;
 
 const HELIUS_API_KEY =
   process.env.HELIUS_API_KEY || process.env.NEXT_PUBLIC_HELIUS_API_KEY;
@@ -188,13 +191,69 @@ export async function fetchHoldersWithProfiles(
   return limit ? merged.slice(0, limit) : merged;
 }
 
+interface VoteAccount {
+  votePubkey: string;
+  nodePubkey: string;
+  activatedStake: number;
+}
+
 export async function fetchValidatorStake(): Promise<number | null> {
-  const arr = await fetch(TRILLIUM_URL, { next: { revalidate: 3600 } })
+  if (!HELIUS_API_KEY) return null;
+
+  const data = await fetch(
+    `https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        id: "validator-stake",
+        method: "getVoteAccounts",
+        params: [{ votePubkey: VALIDATOR_PUBKEY }],
+      }),
+      next: { revalidate: 600 },
+    },
+  )
     .then((r) => (r.ok ? r.json() : null))
     .catch(() => null);
 
-  if (!Array.isArray(arr) || arr.length === 0) return null;
-  return arr[0].activated_stake ?? null;
+  const accounts: VoteAccount[] = [
+    ...(data?.result?.current ?? []),
+    ...(data?.result?.delinquent ?? []),
+  ];
+  let found = accounts.find((a) => a.votePubkey === VALIDATOR_PUBKEY);
+
+  if (!found) {
+    const allData = await fetch(
+      `https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          jsonrpc: "2.0",
+          id: "vote-accounts-all",
+          method: "getVoteAccounts",
+          params: [],
+        }),
+        next: { revalidate: 600 },
+      },
+    )
+      .then((r) => (r.ok ? r.json() : null))
+      .catch(() => null);
+
+    const allAccounts: VoteAccount[] = [
+      ...(allData?.result?.current ?? []),
+      ...(allData?.result?.delinquent ?? []),
+    ];
+    found = allAccounts.find(
+      (a) =>
+        a.votePubkey === VALIDATOR_PUBKEY ||
+        a.nodePubkey === VALIDATOR_PUBKEY,
+    );
+  }
+
+  if (!found) return null;
+  return found.activatedStake / 1_000_000_000;
 }
 
 export function formatSOL(lamports: number | null): string {
@@ -213,12 +272,44 @@ export function parseStakeCountUp(
   sol: number | null,
 ): { end: number; decimals: number; suffix: string } | null {
   if (sol === null) return null;
-  if (sol >= 1_000_000) return { end: sol / 1_000_000, decimals: 1, suffix: "M SOL" };
-  if (sol >= 1_000) return { end: sol / 1_000, decimals: 0, suffix: "K SOL" };
-  return { end: sol, decimals: 0, suffix: " SOL" };
+  const roundedThousands = Math.max(1, Math.round(sol / 1000));
+  return { end: roundedThousands, decimals: 0, suffix: "k" };
 }
 
 export function formatCount(n: number | null): string {
   if (n === null) return "—";
   return n.toLocaleString();
+}
+
+export const TREASURY_ADDRESS = TREASURY_MULTISIG;
+export const TREASURY_PORTFOLIO_URL = `https://orbmarkets.io/address/${TREASURY_MULTISIG}/portfolio`;
+
+interface HeliusWalletBalances {
+  totalUsdValue?: number;
+  balances?: { mint: string; symbol?: string; usdValue?: number | null }[];
+}
+
+export async function fetchHeliusBalances(
+  address: string,
+): Promise<HeliusWalletBalances | null> {
+  if (!HELIUS_API_KEY) return null;
+  return fetch(
+    `https://api.helius.xyz/v1/wallet/${address}/balances?api-key=${HELIUS_API_KEY}`,
+    { next: { revalidate: TREASURY_CACHE_SECONDS } },
+  )
+    .then((r) => (r.ok ? (r.json() as Promise<HeliusWalletBalances>) : null))
+    .catch(() => null);
+}
+
+export async function fetchTreasuryValueUSD(): Promise<number | null> {
+  const orb = await fetchOrbPortfolioUSD(TREASURY_ADDRESS);
+  if (orb !== null) return orb;
+  const data = await fetchHeliusBalances(TREASURY_ADDRESS);
+  return data?.totalUsdValue ?? null;
+}
+
+export function formatTreasuryUSD(usd: number | null): string {
+  if (usd === null) return "—";
+  if (usd >= 1_000_000) return `$${(usd / 1_000_000).toFixed(1)}M`;
+  return `$${Math.round(usd / 1000)}k`;
 }

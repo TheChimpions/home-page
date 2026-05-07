@@ -1,6 +1,5 @@
 import { unstable_cache } from "next/cache";
-import puppeteer, { Browser } from "puppeteer-core";
-import chromium from "@sparticuz/chromium";
+import { getBrowser } from "./puppeteer-browser";
 import type { MatricaProfile } from "./matrica";
 
 const REVALIDATE_SECONDS = 365 * 24 * 60 * 60;
@@ -26,43 +25,6 @@ export function profileSignature(profile: MatricaProfile | null): string {
     h = (Math.imul(31, h) + payload.charCodeAt(i)) | 0;
   }
   return (h >>> 0).toString(36);
-}
-
-let browserPromise: Promise<Browser | null> | null = null;
-
-async function launchBrowser(): Promise<Browser | null> {
-  try {
-    const isServerless =
-      !!process.env.VERCEL || !!process.env.AWS_LAMBDA_FUNCTION_NAME;
-    if (isServerless) {
-      return await puppeteer.launch({
-        args: chromium.args,
-        executablePath: await chromium.executablePath(),
-        headless: true,
-      });
-    }
-    const localPath =
-      process.env.PUPPETEER_EXECUTABLE_PATH ||
-      "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
-    return await puppeteer.launch({
-      executablePath: localPath,
-      headless: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    });
-  } catch (err) {
-    console.warn("Matrica scraper: failed to launch browser:", err);
-    return null;
-  }
-}
-
-async function getBrowser(): Promise<Browser | null> {
-  if (!browserPromise) browserPromise = launchBrowser();
-  const browser = await browserPromise;
-  if (!browser || !browser.connected) {
-    browserPromise = launchBrowser();
-    return browserPromise;
-  }
-  return browser;
 }
 
 function isLikelyValidUsername(username: string): boolean {
