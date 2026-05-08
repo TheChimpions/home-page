@@ -1,7 +1,12 @@
 import { revalidatePath, revalidateTag } from "next/cache";
-import { fetchAllChimpions, getCacheSnapshot } from "@/lib/solana-nft";
+import {
+  fetchAllChimpions,
+  getCacheSnapshot,
+  runFullEnrichment,
+} from "@/lib/solana-nft";
 import { getMatricaProfileByWallet, getMatricaUsername } from "@/lib/matrica";
 import { profileSignature } from "@/lib/matrica-scraper";
+import { inngest } from "@/inngest/client";
 import {
   clearAllScrapedTwitters,
   getAllScrapedTwitters,
@@ -15,11 +20,26 @@ export const dynamic = "force-dynamic";
 
 async function refreshMatrica() {
   "use server";
+  const isProd = process.env.VERCEL_ENV === "production";
   console.log(
-    "[cache_view] action: refreshMatrica (revalidates matrica-profile + chimpions-assembly; twitter cache survives unless its profileSignature changed)",
+    `[cache_view] action: refreshMatrica (mode=${isProd ? "inngest event" : "inline"})`,
   );
   revalidateTag("matrica-profile", "default");
-  revalidateTag("chimpions-assembly", "default");
+
+  if (isProd) {
+    await inngest.send({
+      name: "chimpions/enrichment.refresh",
+      data: {},
+    });
+    console.log(
+      "[cache_view] dispatched chimpions/enrichment.refresh event to Inngest",
+    );
+  } else {
+    const result = await runFullEnrichment();
+    console.log("[cache_view] inline enrichment result:", result);
+    revalidateTag("chimpions-assembly", "default");
+  }
+
   revalidatePath("/cache_view");
 }
 
@@ -209,15 +229,17 @@ export default async function CacheViewPage({ searchParams }: PageProps) {
           >
             Twitter .txt
           </a>
-          <form action={scrapeTwittersOnly}>
-            <button
-              type="submit"
-              className="px-4 py-2 rounded border border-electric-purple-400 bg-electric-purple-900/30 text-electric-purple-200 hover:bg-electric-purple-900/60 text-sm font-bold cursor-pointer"
-              title="Scrape Twitter handles for pending users only — Matrica untouched"
-            >
-              Scrape twitter
-            </button>
-          </form>
+          {process.env.VERCEL_ENV !== "production" && (
+            <form action={scrapeTwittersOnly}>
+              <button
+                type="submit"
+                className="px-4 py-2 rounded border border-electric-purple-400 bg-electric-purple-900/30 text-electric-purple-200 hover:bg-electric-purple-900/60 text-sm font-bold cursor-pointer"
+                title="Scrape Twitter handles for pending users only — local only (Vercel IPs are blocked by matrica)"
+              >
+                Scrape twitter
+              </button>
+            </form>
+          )}
           <form action={clearTwitterCache}>
             <button
               type="submit"
