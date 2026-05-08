@@ -1,8 +1,12 @@
 import { revalidateTag } from "next/cache";
 import { inngest } from "./client";
-import { getMatricaProfileByWallet } from "@/lib/matrica";
-import { scrapeTwitterForProfile } from "@/lib/matrica-scraper";
+import { scrapeTwitterByUsername } from "@/lib/matrica-scraper";
 import { fetchAllChimpions } from "@/lib/solana-nft";
+
+interface ScrapeUserPayload {
+  username: string;
+  sig: string;
+}
 
 export const fanoutScrapeUsers = inngest.createFunction(
   {
@@ -11,21 +15,23 @@ export const fanoutScrapeUsers = inngest.createFunction(
     triggers: [{ event: "matrica/scrape.fanout" }],
   },
   async ({ event, step }) => {
-    const wallets = (event.data?.wallets ?? []) as string[];
-    if (wallets.length === 0) {
-      console.log("[inngest] fanout: no wallets");
+    const users = (event.data?.users ?? []) as ScrapeUserPayload[];
+    if (users.length === 0) {
+      console.log("[inngest] fanout: no users");
       return { count: 0 };
     }
 
-    console.log(`[inngest] fanout: emitting ${wallets.length} per-user events`);
+    console.log(
+      `[inngest] fanout: emitting ${users.length} per-user scrape events`,
+    );
     await step.sendEvent(
       "send-per-user-events",
-      wallets.map((wallet) => ({
+      users.map((u) => ({
         name: "matrica/scrape.user",
-        data: { wallet },
+        data: u,
       })),
     );
-    return { count: wallets.length };
+    return { count: users.length };
   },
 );
 
@@ -38,21 +44,17 @@ export const scrapeUserTwitter = inngest.createFunction(
     triggers: [{ event: "matrica/scrape.user" }],
   },
   async ({ event, step }) => {
-    const wallet = event.data?.wallet as string | undefined;
-    if (!wallet) return { status: "no-wallet" };
-
-    const profile = await step.run("fetch-matrica-profile", async () => {
-      return getMatricaProfileByWallet(wallet);
-    });
-
-    const username = profile?.user?.username ?? null;
-    if (!username) {
-      console.log(`[inngest] ${wallet.slice(0, 8)}… no Matrica account`);
-      return { wallet, status: "no-matrica-account" };
+    const username = event.data?.username as string | undefined;
+    const sig = event.data?.sig as string | undefined;
+    if (!username || !sig) {
+      console.warn(
+        "[inngest] scrape.user missing username or sig — skipping",
+      );
+      return { status: "bad-payload" };
     }
 
     const handle = await step.run("scrape-twitter", async () => {
-      const result = await scrapeTwitterForProfile(profile);
+      const result = await scrapeTwitterByUsername(username, sig);
       if (result === null) {
         throw new Error(
           `Scrape returned null for ${username} — will retry with backoff`,
@@ -65,10 +67,10 @@ export const scrapeUserTwitter = inngest.createFunction(
 
     await step.sendEvent("notify-resolved", {
       name: "matrica/scrape.user.resolved",
-      data: { wallet, username, handle },
+      data: { username, handle },
     });
 
-    return { wallet, username, handle, status: "resolved" };
+    return { username, handle, status: "resolved" };
   },
 );
 
