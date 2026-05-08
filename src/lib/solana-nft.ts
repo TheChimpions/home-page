@@ -9,10 +9,7 @@ import {
   fetchActiveListings,
 } from "./marketplace-listings";
 import { fetchTensorListingsBatch } from "./tensor-listings";
-import {
-  getAllScrapedTwitters,
-  getTwitterOverrides,
-} from "./twitter-overrides";
+import { getAllScrapedTwitters } from "./twitter-overrides";
 
 interface HeliusAssetFile {
   mime?: string;
@@ -195,7 +192,6 @@ async function assembleAllNFTs(): Promise<ChimpionMetadata[]> {
     );
 
     await Promise.all([resolveHolderNames(nfts), applyListings(nfts)]);
-    await applyTwitterOverrides(nfts);
 
     console.log(
       `[cache] assembled ${nfts.length} NFTs in ${((Date.now() - t0) / 1000).toFixed(1)}s`,
@@ -319,23 +315,3 @@ async function applyListings(nfts: ChimpionMetadata[]): Promise<void> {
   );
 }
 
-async function applyTwitterOverrides(nfts: ChimpionMetadata[]): Promise<void> {
-  const overrides = await getTwitterOverrides();
-  const overrideKeys = Object.keys(overrides);
-  if (overrideKeys.length === 0) {
-    console.log("[overrides] no twitter overrides configured");
-    return;
-  }
-  let applied = 0;
-  for (const nft of nfts) {
-    if (!nft.mint) continue;
-    const handle = overrides[nft.mint];
-    if (handle) {
-      nft.holderTwitter = handle;
-      applied++;
-    }
-  }
-  console.log(
-    `[overrides] applied ${applied}/${overrideKeys.length} twitter overrides to NFTs`,
-  );
-}
