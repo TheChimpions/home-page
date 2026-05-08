@@ -102,6 +102,11 @@ async function scrapeUser(
     });
 
     consecutiveFailures = 0;
+    if (handle) {
+      console.log(`[scrape] ${username} → @${handle}`);
+    } else {
+      console.log(`[scrape] ${username} → no handle found`);
+    }
     return handle;
   } catch (err) {
     timedOut = true;
@@ -109,11 +114,11 @@ async function scrapeUser(
     if (consecutiveFailures === CIRCUIT_FAILURE_THRESHOLD) {
       circuitOpenedAt = Date.now();
       console.warn(
-        `Matrica scrape circuit opened after ${CIRCUIT_FAILURE_THRESHOLD} consecutive failures; pausing scrapes for ${CIRCUIT_COOLDOWN_MS / 1000}s`,
+        `[scrape] circuit opened after ${CIRCUIT_FAILURE_THRESHOLD} consecutive failures; pausing for ${CIRCUIT_COOLDOWN_MS / 1000}s`,
       );
     }
     console.warn(
-      `Matrica scrape ${timedOut ? "timeout" : "error"} for ${username}:`,
+      `[scrape] ${username} ${timedOut ? "timeout" : "error"}:`,
       err instanceof Error ? err.message : err,
     );
     return null;
@@ -125,7 +130,7 @@ async function scrapeUser(
 const cachedScrape = unstable_cache(
   scrapeUser,
   ["matrica-scraped-twitter-v2"],
-  { revalidate: REVALIDATE_SECONDS, tags: ["matrica-profile"] },
+  { revalidate: REVALIDATE_SECONDS, tags: ["matrica-twitter"] },
 );
 
 export async function scrapeTwitterForProfile(

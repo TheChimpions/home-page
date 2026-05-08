@@ -116,6 +116,7 @@ export async function debugOrbPortfolio(
 
 async function scrapePortfolio(address: string): Promise<number | null> {
   if (process.env.NEXT_PHASE === "phase-production-build") return null;
+  console.log(`[orb] scraping portfolio for ${address.slice(0, 8)}…`);
   const browser = await getBrowser();
   if (!browser) return null;
 
@@ -171,9 +172,14 @@ async function scrapePortfolio(address: string): Promise<number | null> {
       return null;
     });
 
+    if (value !== null) {
+      console.log(`[orb] picked $${value.toLocaleString()}`);
+    } else {
+      console.warn(`[orb] no value found in DOM`);
+    }
     return value;
   } catch (err) {
-    console.warn(`Orb portfolio scrape error for ${address}:`, err);
+    console.warn(`[orb] scrape error for ${address}:`, err);
     return null;
   } finally {
     if (page) await page.close().catch(() => {});

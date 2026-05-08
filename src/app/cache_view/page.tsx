@@ -1,28 +1,56 @@
 import { revalidatePath, revalidateTag } from "next/cache";
-import {
-  fetchAllChimpions,
-  getCacheSnapshot,
-  isRefreshing,
-  startBackgroundRefresh,
-} from "@/lib/solana-nft";
+import { fetchAllChimpions, getCacheSnapshot } from "@/lib/solana-nft";
+import { inngest } from "@/inngest/client";
 import { truncateAddress } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
-async function refreshCache() {
+async function refreshMatrica() {
   "use server";
+  console.log(
+    "[cache_view] action: refreshMatrica (revalidates matrica-profile + chimpions-assembly; twitter cache survives unless its profileSignature changed)",
+  );
   revalidateTag("matrica-profile", "default");
-  startBackgroundRefresh();
+  revalidateTag("chimpions-assembly", "default");
   revalidatePath("/cache_view");
 }
 
-function formatDuration(ms: number | null): string {
-  if (ms === null) return "—";
-  const seconds = Math.floor(ms / 1000);
-  if (seconds < 60) return `${seconds}s`;
-  const minutes = Math.floor(seconds / 60);
-  const remSeconds = seconds % 60;
-  return `${minutes}m ${remSeconds}s`;
+async function scrapeTwittersOnly() {
+  "use server";
+  console.log("[cache_view] action: scrapeTwittersOnly via Inngest");
+
+  const snapshot = await getCacheSnapshot();
+  const pending = new Set<string>();
+  for (const nft of snapshot.nfts) {
+    if (nft.holder && nft.holderName && !nft.holderTwitter) {
+      pending.add(nft.holder);
+    }
+  }
+
+  if (pending.size === 0) {
+    console.log("[cache_view] no pending users to scrape");
+    return;
+  }
+
+  await inngest.send({
+    name: "matrica/scrape.fanout",
+    data: { wallets: [...pending] },
+  });
+
+  console.log(
+    `[cache_view] queued ${pending.size} scrapes via Inngest (running in background with retries/backoff)`,
+  );
+  revalidatePath("/cache_view");
+}
+
+async function clearTwitterCache() {
+  "use server";
+  console.log(
+    "[cache_view] action: clearTwitterCache (forces re-scrape on next render)",
+  );
+  revalidateTag("matrica-twitter", "default");
+  revalidateTag("chimpions-assembly", "default");
+  revalidatePath("/cache_view");
 }
 
 interface PageProps {
@@ -31,8 +59,7 @@ interface PageProps {
 
 export default async function CacheViewPage({ searchParams }: PageProps) {
   await fetchAllChimpions();
-  const snapshot = getCacheSnapshot();
-  const refreshing = isRefreshing();
+  const snapshot = await getCacheSnapshot();
   const params = await searchParams;
   const filter = params.filter || "all";
   const query = params.q?.toLowerCase() || "";
@@ -52,9 +79,7 @@ export default async function CacheViewPage({ searchParams }: PageProps) {
   }
 
   const stats = {
-    cache: snapshot.hasCache ? "populated" : "empty",
-    age: formatDuration(snapshot.ageMs),
-    ttl: formatDuration(snapshot.ttlMs),
+    cache: snapshot.count > 0 ? "populated" : "empty",
     totalNFTs: snapshot.count,
     uniqueHolders: new Set(snapshot.nfts.map((n) => n.holder)).size,
     matricaResolved: snapshot.nfts.filter((n) => n.holderName).length,
@@ -104,26 +129,35 @@ export default async function CacheViewPage({ searchParams }: PageProps) {
           >
             Twitter .txt
           </a>
-          <form action={refreshCache}>
+          <form action={scrapeTwittersOnly}>
+            <button
+              type="submit"
+              className="px-4 py-2 rounded border border-electric-purple-400 bg-electric-purple-900/30 text-electric-purple-200 hover:bg-electric-purple-900/60 text-sm font-bold cursor-pointer"
+              title="Scrape Twitter handles for pending users only — Matrica untouched"
+            >
+              Scrape twitters
+            </button>
+          </form>
+          <form action={clearTwitterCache}>
+            <button
+              type="submit"
+              className="px-4 py-2 rounded border border-electric-purple-700 bg-gray-modern-900 text-electric-purple-300 hover:border-electric-purple-500 text-sm font-bold cursor-pointer"
+              title="Wipe Twitter cache only — Matrica untouched"
+            >
+              Clear twitter cache
+            </button>
+          </form>
+          <form action={refreshMatrica}>
             <button
               type="submit"
               className="px-4 py-2 rounded border border-aqua-marine-400 bg-aqua-marine-900/30 text-aqua-marine-200 hover:bg-aqua-marine-900/60 text-sm font-bold cursor-pointer"
+              title="Wipe Matrica + Twitter cache and refetch everything"
             >
-              Refresh cache
+              Refresh Matrica
             </button>
           </form>
         </div>
       </div>
-
-      {refreshing && (
-        <div className="mb-6 px-4 py-3 rounded border border-gold-500/60 bg-gold-500/10 text-gold-200 text-sm flex items-center gap-3">
-          <span className="inline-block size-2 rounded-full bg-gold-300 animate-pulse" />
-          <span>
-            Cache refresh running in background. Showing previous data —
-            reload in ~30s for fresh values.
-          </span>
-        </div>
-      )}
 
       <section className="mb-8">
         <h2 className="text-lg font-bold mb-2 text-aqua-marine-400">Stats</h2>

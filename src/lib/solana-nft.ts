@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache";
 import { ChimpionMetadata } from "@/types/nft";
 import {
   getMatricaProfileByWallet,
@@ -41,56 +42,26 @@ const CREATOR_ADDRESS =
   process.env.NEXT_PUBLIC_CREATOR_ADDRESS ||
   "D7hKRyCsdaaSGVGwSAgcEfkSofBb6gn68UPD3yWW59zW";
 
-let cachedNFTs: ChimpionMetadata[] | null = null;
-let lastFetch: number = 0;
-let refreshPromise: Promise<ChimpionMetadata[]> | null = null;
-let refreshStartedAt: number = 0;
-const CACHE_DURATION = 12 * 60 * 60 * 1000; // 12 hours
+const ASSEMBLY_TTL_SECONDS = 30 * 24 * 60 * 60; // 30 days
+
+const cachedAssemble = unstable_cache(
+  () => assembleAllNFTs(),
+  ["chimpions-assembly-v1"],
+  { revalidate: ASSEMBLY_TTL_SECONDS, tags: ["chimpions-assembly"] },
+);
 
 export async function fetchAllChimpions(): Promise<ChimpionMetadata[]> {
   if (process.env.NEXT_PHASE === "phase-production-build") {
+    console.log("[cache] build phase: returning []");
     return [];
   }
-
-  const fresh = cachedNFTs && Date.now() - lastFetch < CACHE_DURATION;
-
-  if (fresh) {
-    console.log("Returning cached NFTs");
-    return cachedNFTs!;
-  }
-
-  if (cachedNFTs) {
-    if (!refreshPromise) {
-      console.log("Cache stale: returning old data, refreshing in background");
-      startBackgroundRefresh();
-    }
-    return cachedNFTs;
-  }
-
-  if (!refreshPromise) startBackgroundRefresh();
-  return refreshPromise!;
+  return cachedAssemble();
 }
 
-export function startBackgroundRefresh(): void {
-  if (refreshPromise) return;
-  refreshStartedAt = Date.now();
-  refreshPromise = doFetch().finally(() => {
-    refreshPromise = null;
-  });
-}
-
-export function isRefreshing(): boolean {
-  return refreshPromise !== null;
-}
-
-export function getRefreshStartedAt(): number | null {
-  return refreshPromise ? refreshStartedAt : null;
-}
-
-async function doFetch(): Promise<ChimpionMetadata[]> {
+async function assembleAllNFTs(): Promise<ChimpionMetadata[]> {
+  const t0 = Date.now();
   try {
-    console.log("Fetching NFTs from Helius DAS API...");
-    console.log("Creator Address:", CREATOR_ADDRESS);
+    console.log(`[helius] fetching getAssetsByCreator (${CREATOR_ADDRESS})`);
 
     if (!HELIUS_API_KEY) {
       throw new Error("HELIUS_API_KEY is not configured in .env.local");
@@ -129,10 +100,12 @@ async function doFetch(): Promise<ChimpionMetadata[]> {
     }
 
     const assets = data.result?.items || [];
-    console.log(`Found ${assets.length} NFTs from Helius`);
+    console.log(
+      `[helius] returned ${assets.length} assets in ${Date.now() - t0}ms`,
+    );
 
     if (assets.length === 0) {
-      console.warn("No NFTs found. Check if the creator address is correct.");
+      console.warn("[helius] no NFTs found — creator address may be wrong");
       return [];
     }
 
@@ -216,50 +189,31 @@ async function doFetch(): Promise<ChimpionMetadata[]> {
       nft.tokenId = index + 1;
     });
 
+    console.log(
+      `[helius] assembled ${nfts.length} NFTs in ${Date.now() - t0}ms — running enrichment`,
+    );
+
     await Promise.all([resolveHolderNames(nfts), applyListings(nfts)]);
 
-    cachedNFTs = nfts;
-    lastFetch = Date.now();
-
-    console.log(`Successfully fetched and cached ${nfts.length} NFTs`);
+    console.log(
+      `[cache] assembled ${nfts.length} NFTs in ${((Date.now() - t0) / 1000).toFixed(1)}s`,
+    );
 
     return nfts;
   } catch (error) {
-    console.error("Error fetching Chimpions:", error);
-
-    if (cachedNFTs) {
-      console.log("Returning stale cache due to error");
-      return cachedNFTs;
-    }
-
-    console.log("No cache available, returning empty array");
+    console.error("[cache] assembly error:", error);
     return [];
   }
 }
 
-export function clearCache() {
-  cachedNFTs = null;
-  lastFetch = 0;
-  console.log("Cache cleared");
-}
-
-export function getCacheAgeMs(): number | null {
-  return lastFetch > 0 ? Date.now() - lastFetch : null;
-}
-
-export function getCacheSnapshot(): {
-  hasCache: boolean;
-  ageMs: number | null;
-  ttlMs: number;
+export async function getCacheSnapshot(): Promise<{
   count: number;
   nfts: ChimpionMetadata[];
-} {
+}> {
+  const nfts = await fetchAllChimpions();
   return {
-    hasCache: cachedNFTs !== null,
-    ageMs: lastFetch > 0 ? Date.now() - lastFetch : null,
-    ttlMs: CACHE_DURATION,
-    count: cachedNFTs?.length ?? 0,
-    nfts: cachedNFTs ?? [],
+    count: nfts.length,
+    nfts,
   };
 }
 
@@ -333,7 +287,11 @@ async function resolveHolderNames(nfts: ChimpionMetadata[]): Promise<void> {
 
   if (scrapesAttempted < needsScrape.length) {
     console.log(
-      `Matrica scrape: budget exhausted at ${scrapesAttempted}/${needsScrape.length} (next render will continue)`,
+      `[matrica] scrape budget exhausted at ${scrapesAttempted}/${needsScrape.length} (next render will continue)`,
+    );
+  } else if (scrapesAttempted > 0) {
+    console.log(
+      `[matrica] scraped ${scrapesAttempted}/${needsScrape.length} pending users`,
     );
   }
 
@@ -355,11 +313,12 @@ async function resolveHolderNames(nfts: ChimpionMetadata[]): Promise<void> {
     (p) => p.name !== null,
   ).length;
   console.log(
-    `Matrica: ${uniqueResolved}/${uniqueHolders.length} unique holders resolved (${nftsWithName}/${nfts.length} NFTs labeled)`,
+    `[matrica] resolved ${uniqueResolved}/${uniqueHolders.length} unique holders (${nftsWithName}/${nfts.length} NFTs labeled)`,
   );
 }
 
 async function applyListings(nfts: ChimpionMetadata[]): Promise<void> {
+  const t0 = Date.now();
   const meListings = await fetchActiveListings();
 
   let listedFromApi = 0;
@@ -401,6 +360,6 @@ async function applyListings(nfts: ChimpionMetadata[]): Promise<void> {
 
   const total = listedFromApi + tensorListed + listedByHolder;
   console.log(
-    `Marketplace: ${listedFromApi} ME API + ${tensorListed} Tensor SDK + ${listedByHolder} holder fallback = ${total}/${nfts.length} NFTs marked as Listed`,
+    `[listings] ${listedFromApi} ME + ${tensorListed} Tensor + ${listedByHolder} holder = ${total}/${nfts.length} listed (${Date.now() - t0}ms)`,
   );
 }
