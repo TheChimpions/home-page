@@ -51,7 +51,7 @@ const ASSEMBLY_TTL_SECONDS = 30 * 24 * 60 * 60; // 30 days
 
 const cachedAssemble = unstable_cache(
   () => assembleAllNFTs(),
-  ["chimpions-assembly-v1"],
+  ["chimpions-assembly-v2"],
   { revalidate: ASSEMBLY_TTL_SECONDS, tags: ["chimpions-assembly"] },
 );
 
@@ -60,7 +60,10 @@ export async function fetchAllChimpions(): Promise<ChimpionMetadata[]> {
     console.log("[cache] build phase: returning []");
     return [];
   }
-  return cachedAssemble();
+  const skeleton = await cachedAssemble();
+  const nfts = skeleton.map((n) => ({ ...n }));
+  await applyEnrichmentFromCache(nfts);
+  return nfts;
 }
 
 async function assembleAllNFTs(): Promise<ChimpionMetadata[]> {
@@ -195,13 +198,7 @@ async function assembleAllNFTs(): Promise<ChimpionMetadata[]> {
     });
 
     console.log(
-      `[helius] assembled ${nfts.length} NFTs in ${Date.now() - t0}ms — running enrichment`,
-    );
-
-    await applyEnrichmentFromCache(nfts);
-
-    console.log(
-      `[cache] assembled ${nfts.length} NFTs in ${((Date.now() - t0) / 1000).toFixed(1)}s (KV reads only)`,
+      `[helius] assembled ${nfts.length} NFT skeletons in ${Date.now() - t0}ms (no enrichment — applied per-request)`,
     );
 
     return nfts;
@@ -275,7 +272,7 @@ export async function runFullEnrichment(): Promise<{
   const t0 = Date.now();
   console.log("[enrichment] runFullEnrichment: starting");
 
-  const nfts = await fetchAllChimpions();
+  const nfts = await cachedAssemble();
   if (nfts.length === 0) {
     console.warn("[enrichment] no NFTs in cache, abort");
     return { matricaCount: 0, listingsCount: 0 };
