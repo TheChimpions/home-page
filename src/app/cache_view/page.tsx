@@ -7,6 +7,7 @@ import {
 import { getMatricaProfileByWallet, getMatricaUsername } from "@/lib/matrica";
 import { profileSignature } from "@/lib/matrica-scraper";
 import { inngest } from "@/inngest/client";
+import TwitterCell from "./TwitterCell";
 import {
   clearAllScrapedTwitters,
   getAllScrapedTwitters,
@@ -139,6 +140,17 @@ async function clearTwitterCache() {
   );
   await clearAllScrapedTwitters();
   revalidateTag("matrica-twitter", "default");
+  revalidateTag("chimpions-assembly", "default");
+  revalidatePath("/cache_view");
+}
+
+async function saveTwitterHandle(username: string, handle: string) {
+  "use server";
+  const cleaned = handle.trim().replace(/^@/, "");
+  await setScrapedTwitter(username, cleaned || null);
+  console.log(
+    `[cache_view] manual edit: @${username} → ${cleaned ? `@${cleaned}` : "(cleared)"}`,
+  );
   revalidateTag("chimpions-assembly", "default");
   revalidatePath("/cache_view");
 }
@@ -347,18 +359,11 @@ export default async function CacheViewPage({ searchParams }: PageProps) {
                     )}
                   </td>
                   <td className="p-2">
-                    {nft.holderTwitter ? (
-                      <a
-                        href={`https://x.com/${nft.holderTwitter}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-electric-purple-300 hover:underline"
-                      >
-                        @{nft.holderTwitter}
-                      </a>
-                    ) : (
-                      <span className="text-gray-modern-600">—</span>
-                    )}
+                    <TwitterCell
+                      username={nft.holderName ?? null}
+                      handle={nft.holderTwitter ?? null}
+                      saveAction={saveTwitterHandle}
+                    />
                   </td>
                   <td className="p-2">
                     {nft.listing ? (
