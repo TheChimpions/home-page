@@ -10,6 +10,13 @@ import {
 } from "./marketplace-listings";
 import { fetchTensorListingsBatch } from "./tensor-listings";
 import { getAllScrapedTwitters } from "./twitter-overrides";
+import {
+  getAllListingsByMint,
+  getAllMatricaByWallet,
+  setListingsByMint,
+  setMatricaByWallet,
+  type MatricaEntry,
+} from "./enrichment-cache";
 
 interface HeliusAssetFile {
   mime?: string;
@@ -191,10 +198,10 @@ async function assembleAllNFTs(): Promise<ChimpionMetadata[]> {
       `[helius] assembled ${nfts.length} NFTs in ${Date.now() - t0}ms — running enrichment`,
     );
 
-    await Promise.all([resolveHolderNames(nfts), applyListings(nfts)]);
+    await applyEnrichmentFromCache(nfts);
 
     console.log(
-      `[cache] assembled ${nfts.length} NFTs in ${((Date.now() - t0) / 1000).toFixed(1)}s`,
+      `[cache] assembled ${nfts.length} NFTs in ${((Date.now() - t0) / 1000).toFixed(1)}s (KV reads only)`,
     );
 
     return nfts;
@@ -215,103 +222,130 @@ export async function getCacheSnapshot(): Promise<{
   };
 }
 
-async function resolveHolderNames(nfts: ChimpionMetadata[]): Promise<void> {
+async function applyEnrichmentFromCache(
+  nfts: ChimpionMetadata[],
+): Promise<void> {
+  const [matricaByWallet, listingsByMint, scrapedByUsername] = await Promise.all([
+    getAllMatricaByWallet(),
+    getAllListingsByMint(),
+    getAllScrapedTwitters(),
+  ]);
+
+  let nftsWithName = 0;
+  let nftsWithTwitter = 0;
+  let nftsWithListing = 0;
+
+  for (const nft of nfts) {
+    if (nft.holder) {
+      const entry = matricaByWallet[nft.holder];
+      if (entry?.username) {
+        nft.holderName = entry.username;
+        nftsWithName++;
+        const handle = scrapedByUsername[entry.username];
+        if (handle) {
+          nft.holderTwitter = handle;
+          nftsWithTwitter++;
+        }
+      }
+    }
+    if (nft.mint) {
+      const listing = listingsByMint[nft.mint];
+      if (listing) {
+        nft.listing = listing;
+        nftsWithListing++;
+      } else if (nft.holder) {
+        const holderListing = detectListingByHolder(nft.holder, nft.mint);
+        if (holderListing) {
+          nft.listing = holderListing;
+          nftsWithListing++;
+        }
+      }
+    }
+  }
+
+  console.log(
+    `[enrichment] applied from KV: ${nftsWithName} usernames, ${nftsWithTwitter} twitters, ${nftsWithListing} listings`,
+  );
+}
+
+export async function runFullEnrichment(): Promise<{
+  matricaCount: number;
+  listingsCount: number;
+}> {
+  const t0 = Date.now();
+  console.log("[enrichment] runFullEnrichment: starting");
+
+  const nfts = await fetchAllChimpions();
+  if (nfts.length === 0) {
+    console.warn("[enrichment] no NFTs in cache, abort");
+    return { matricaCount: 0, listingsCount: 0 };
+  }
+
   const uniqueHolders = Array.from(
     new Set(
       nfts
-        .map((nft) => nft.holder)
+        .map((n) => n.holder)
         .filter((h): h is string => !!h && h !== "Unknown"),
     ),
   );
 
+  const matricaEntries: Record<string, MatricaEntry> = {};
   const API_CONCURRENCY = 8;
-  const usernameByHolder = new Map<string, string | null>();
-
-  let apiCursor = 0;
+  let cursor = 0;
   await Promise.all(
     Array.from(
       { length: Math.min(API_CONCURRENCY, uniqueHolders.length) },
       async () => {
         while (true) {
-          const i = apiCursor++;
+          const i = cursor++;
           if (i >= uniqueHolders.length) return;
           const wallet = uniqueHolders[i];
           const profile = await getMatricaProfileByWallet(wallet);
-          usernameByHolder.set(wallet, getMatricaUsername(profile));
+          const username = getMatricaUsername(profile);
+          matricaEntries[wallet] = {
+            username,
+            userId: profile?.user?.id ?? null,
+          };
         }
       },
     ),
   );
-
-  const scrapedByUsername = await getAllScrapedTwitters();
-
-  let nftsWithName = 0;
-  let nftsWithTwitter = 0;
-  for (const nft of nfts) {
-    if (!nft.holder) continue;
-    const username = usernameByHolder.get(nft.holder);
-    if (!username) continue;
-    nft.holderName = username;
-    nftsWithName++;
-    const handle = scrapedByUsername[username];
-    if (handle) {
-      nft.holderTwitter = handle;
-      nftsWithTwitter++;
-    }
-  }
-
-  const uniqueResolved = [...usernameByHolder.values()].filter(
-    (n) => n !== null,
+  await setMatricaByWallet(matricaEntries);
+  const matricaCount = Object.values(matricaEntries).filter(
+    (e) => e.username !== null,
   ).length;
   console.log(
-    `[matrica] resolved ${uniqueResolved}/${uniqueHolders.length} unique holders (${nftsWithName} NFTs labeled, ${nftsWithTwitter} w/ twitter from KV)`,
+    `[enrichment] matrica: ${matricaCount}/${uniqueHolders.length} resolved → KV`,
   );
-}
 
-async function applyListings(nfts: ChimpionMetadata[]): Promise<void> {
-  const t0 = Date.now();
   const meListings = await fetchActiveListings();
+  const listings: Record<string, NonNullable<ChimpionMetadata["listing"]>> = {};
 
-  let listedFromApi = 0;
-  for (const nft of nfts) {
-    if (!nft.mint) continue;
-    const apiListing = meListings.get(nft.mint);
-    if (apiListing) {
-      nft.listing = apiListing;
-      listedFromApi++;
-    }
+  for (const [mint, listing] of meListings.entries()) {
+    listings[mint] = listing;
   }
 
   const tensorCandidates = nfts
-    .filter((n) => !n.listing && n.mint)
+    .filter((n) => n.mint && !listings[n.mint])
     .map((n) => n.mint!);
 
-  let tensorListed = 0;
   if (tensorCandidates.length > 0) {
     const tensorListings = await fetchTensorListingsBatch(tensorCandidates);
-    for (const nft of nfts) {
-      if (nft.listing || !nft.mint) continue;
-      const t = tensorListings.get(nft.mint);
-      if (t) {
-        nft.listing = t;
-        tensorListed++;
-      }
+    for (const [mint, listing] of tensorListings.entries()) {
+      listings[mint] = listing;
     }
   }
 
-  let listedByHolder = 0;
-  for (const nft of nfts) {
-    if (nft.listing || !nft.mint) continue;
-    const holderListing = detectListingByHolder(nft.holder, nft.mint);
-    if (holderListing) {
-      nft.listing = holderListing;
-      listedByHolder++;
-    }
-  }
-
-  const total = listedFromApi + tensorListed + listedByHolder;
+  await setListingsByMint(listings);
+  const listingsCount = Object.keys(listings).length;
   console.log(
-    `[listings] ${listedFromApi} ME + ${tensorListed} Tensor + ${listedByHolder} holder = ${total}/${nfts.length} listed (${Date.now() - t0}ms)`,
+    `[enrichment] listings: ${listingsCount} → KV`,
   );
+
+  console.log(
+    `[enrichment] runFullEnrichment done in ${((Date.now() - t0) / 1000).toFixed(1)}s`,
+  );
+
+  return { matricaCount, listingsCount };
 }
 

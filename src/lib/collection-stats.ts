@@ -1,11 +1,6 @@
 import { unstable_cache } from "next/cache";
-import {
-  getMatricaProfileByWallet,
-  getMatricaDisplayName,
-  getMatricaPfp,
-  type MatricaProfile,
-} from "./matrica";
 import { getAllScrapedTwitters } from "./twitter-overrides";
+import { getAllMatricaByWallet } from "./enrichment-cache";
 import { fetchOrbPortfolioUSD } from "./orb-scraper";
 import {
   fetchActiveListings,
@@ -140,35 +135,18 @@ async function assembleHoldersWithProfiles(): Promise<HolderProfile[]> {
     `[holders] ${counts.size} unique wallets (incl marketplaces filtered)`,
   );
 
-  const wallets = [...counts.entries()];
-  const profileByWallet = new Map<string, MatricaProfile | null>();
-
-  const CONCURRENCY = 8;
-  let cursor = 0;
-  await Promise.all(
-    Array.from(
-      { length: Math.min(CONCURRENCY, wallets.length) },
-      async () => {
-        while (true) {
-          const i = cursor++;
-          if (i >= wallets.length) return;
-          const [wallet] = wallets[i];
-          const profile = await getMatricaProfileByWallet(wallet);
-          profileByWallet.set(wallet, profile);
-        }
-      },
-    ),
-  );
-
-  const scrapedByUsername = await getAllScrapedTwitters();
+  const [matricaByWallet, scrapedByUsername] = await Promise.all([
+    getAllMatricaByWallet(),
+    getAllScrapedTwitters(),
+  ]);
 
   const grouped = new Map<string, HolderProfile>();
   const standalone: HolderProfile[] = [];
 
-  for (const [wallet, count] of wallets) {
-    const profile = profileByWallet.get(wallet) ?? null;
-    const userId = profile?.user?.id;
-    const username = getMatricaDisplayName(profile);
+  for (const [wallet, count] of counts.entries()) {
+    const entry = matricaByWallet[wallet];
+    const userId = entry?.userId ?? null;
+    const username = entry?.username ?? null;
 
     if (userId && username) {
       const existing = grouped.get(userId);
@@ -180,7 +158,7 @@ async function assembleHoldersWithProfiles(): Promise<HolderProfile[]> {
           count,
           username,
           twitter: scrapedByUsername[username] ?? null,
-          pfp: getMatricaPfp(profile),
+          pfp: null,
         });
       }
     } else {
@@ -200,7 +178,7 @@ async function assembleHoldersWithProfiles(): Promise<HolderProfile[]> {
   );
   const withTwitter = merged.filter((h) => h.twitter).length;
   console.log(
-    `[holders] ${merged.length} merged (${groupedHolders.length} matrica + ${standalone.length} wallet-only, ${withTwitter} w/ twitter from KV) in ${((Date.now() - t0) / 1000).toFixed(1)}s`,
+    `[holders] ${merged.length} merged (${groupedHolders.length} matrica + ${standalone.length} wallet-only, ${withTwitter} w/ twitter from KV) in ${((Date.now() - t0) / 1000).toFixed(1)}s — KV reads only`,
   );
   return merged;
 }

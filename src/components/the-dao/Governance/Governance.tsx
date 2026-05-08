@@ -15,7 +15,6 @@ const councilMembers: Member[] = [
   { name: "Katsu", imageSrc: "/team/TheRocker-Katsu.gif" },
   { name: "Dasein", imageSrc: "/team/TheStatic-Dasein.gif" },
   { name: "Utopia", imageSrc: "/team/TheSinged-Utopia.gif" },
-  { name: "Bip", imageSrc: "/team/TheJuror-Bip.gif" },
   { name: "Kev", imageSrc: "/team/TheGrunt-Kev.gif" },
 ];
 
