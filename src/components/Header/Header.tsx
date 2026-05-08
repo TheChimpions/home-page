@@ -30,7 +30,7 @@ const navigation: NavEntry[] = [
   },
   { label: "Treehouse Capital", href: "/treehouse-capital" },
   { label: "Validator", href: "/validator" },
-  { label: "Merch Store", href: "https://pjf9bm-x6.myshopify.com" },
+  // { label: "Merch Store", href: "https://pjf9bm-x6.myshopify.com" },
 ];
 
 const allNavItems: NavLink[] = [
@@ -42,7 +42,7 @@ const allNavItems: NavLink[] = [
   { label: "The Treehouse", href: "/the-treehouse" },
   { label: "Treehouse Capital", href: "/treehouse-capital" },
   { label: "Validator", href: "/validator" },
-  { label: "Merch Store", href: "#" },
+  // { label: "Merch Store", href: "#" },
 ];
 
 function NavDropdown({
