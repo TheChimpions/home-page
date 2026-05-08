@@ -33,7 +33,8 @@ export const scrapeUserTwitter = inngest.createFunction(
   {
     id: "scrape-twitter-user",
     retries: 4,
-    concurrency: { limit: 2, key: "global" },
+    concurrency: { limit: 1, key: "global" },
+    throttle: { limit: 1, period: "8s", key: "global" },
     triggers: [{ event: "matrica/scrape.user" }],
   },
   async ({ event, step }) => {
