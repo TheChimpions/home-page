@@ -1,5 +1,10 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 import { fetchAllChimpions, getCacheSnapshot } from "@/lib/solana-nft";
+import {
+  getMatricaProfileByWallet,
+  getMatricaUsername,
+} from "@/lib/matrica";
+import { profileSignature } from "@/lib/matrica-scraper";
 import { inngest } from "@/inngest/client";
 import { truncateAddress } from "@/lib/utils";
 
@@ -20,25 +25,39 @@ async function scrapeTwittersOnly() {
   console.log("[cache_view] action: scrapeTwittersOnly via Inngest");
 
   const snapshot = await getCacheSnapshot();
-  const pending = new Set<string>();
+  const pendingWallets = new Set<string>();
   for (const nft of snapshot.nfts) {
     if (nft.holder && nft.holderName && !nft.holderTwitter) {
-      pending.add(nft.holder);
+      pendingWallets.add(nft.holder);
     }
   }
 
-  if (pending.size === 0) {
+  if (pendingWallets.size === 0) {
     console.log("[cache_view] no pending users to scrape");
+    return;
+  }
+
+  const users = new Map<string, { username: string; sig: string }>();
+  for (const wallet of pendingWallets) {
+    const profile = await getMatricaProfileByWallet(wallet);
+    const username = getMatricaUsername(profile);
+    if (!username) continue;
+    if (users.has(username)) continue;
+    users.set(username, { username, sig: profileSignature(profile) });
+  }
+
+  if (users.size === 0) {
+    console.log("[cache_view] no Matrica usernames among pending wallets");
     return;
   }
 
   await inngest.send({
     name: "matrica/scrape.fanout",
-    data: { wallets: [...pending] },
+    data: { users: [...users.values()] },
   });
 
   console.log(
-    `[cache_view] queued ${pending.size} scrapes via Inngest (running in background with retries/backoff)`,
+    `[cache_view] queued ${users.size} matrica usernames for scrape (from ${pendingWallets.size} pending wallets)`,
   );
   revalidatePath("/cache_view");
 }

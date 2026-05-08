@@ -133,6 +133,13 @@ const cachedScrape = unstable_cache(
   { revalidate: REVALIDATE_SECONDS, tags: ["matrica-twitter"] },
 );
 
+export async function scrapeTwitterByUsername(
+  username: string,
+  sig: string,
+): Promise<string | null> {
+  return cachedScrape(username, sig);
+}
+
 export async function scrapeTwitterForProfile(
   profile: MatricaProfile | null,
 ): Promise<string | null> {
