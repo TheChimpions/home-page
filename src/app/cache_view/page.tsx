@@ -1,16 +1,16 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 import { fetchAllChimpions, getCacheSnapshot } from "@/lib/solana-nft";
-import {
-  getMatricaProfileByWallet,
-  getMatricaUsername,
-} from "@/lib/matrica";
+import { getMatricaProfileByWallet, getMatricaUsername } from "@/lib/matrica";
 import { profileSignature } from "@/lib/matrica-scraper";
 import {
   clearAllScrapedTwitters,
   clearAllTwitterOverrides,
   getAllScrapedTwitters,
+  getStorageBackend,
   getTwitterOverrides,
+  setScrapedTwitter,
 } from "@/lib/twitter-overrides";
+import { scrapeTwitterByUsername } from "@/lib/matrica-scraper";
 import { inngest } from "@/inngest/client";
 import { truncateAddress } from "@/lib/utils";
 
@@ -28,7 +28,10 @@ async function refreshMatrica() {
 
 async function scrapeTwittersOnly() {
   "use server";
-  console.log("[cache_view] action: scrapeTwittersOnly via Inngest");
+  const isProd = process.env.VERCEL_ENV === "production";
+  console.log(
+    `[cache_view] action: scrapeTwittersOnly (mode=${isProd ? "inngest" : "inline"})`,
+  );
 
   const snapshot = await getCacheSnapshot();
   const pendingWallets = new Set<string>();
@@ -57,14 +60,63 @@ async function scrapeTwittersOnly() {
     return;
   }
 
-  await inngest.send({
-    name: "matrica/scrape.fanout",
-    data: { users: [...users.values()] },
-  });
+  if (isProd) {
+    await inngest.send({
+      name: "matrica/scrape.fanout",
+      data: { users: [...users.values()] },
+    });
+    console.log(
+      `[cache_view] queued ${users.size} matrica usernames for scrape (from ${pendingWallets.size} pending wallets)`,
+    );
+  } else {
+    const userList = [...users.values()];
+    const CONCURRENCY = 4;
+    const BUDGET_MS = 50_000;
+    const start = Date.now();
+    let cursor = 0;
+    let attempted = 0;
+    let resolved = 0;
+    let nullResults = 0;
+    let errors = 0;
 
-  console.log(
-    `[cache_view] queued ${users.size} matrica usernames for scrape (from ${pendingWallets.size} pending wallets)`,
-  );
+    console.log(
+      `[inline-scrape] starting (pending=${userList.length}, concurrency=${CONCURRENCY}, budget=${BUDGET_MS / 1000}s)`,
+    );
+
+    await Promise.all(
+      Array.from(
+        { length: Math.min(CONCURRENCY, userList.length) },
+        async () => {
+          while (true) {
+            if (Date.now() - start > BUDGET_MS) return;
+            const i = cursor++;
+            if (i >= userList.length) return;
+            const { username, sig } = userList[i];
+            attempted++;
+            try {
+              const handle = await scrapeTwitterByUsername(username, sig);
+              await setScrapedTwitter(username, handle);
+              if (handle === null) nullResults++;
+              else resolved++;
+            } catch (err) {
+              errors++;
+              console.warn(
+                `[inline-scrape] ${username} error:`,
+                err instanceof Error ? err.message : err,
+              );
+            }
+          }
+        },
+      ),
+    );
+
+    const elapsed = ((Date.now() - start) / 1000).toFixed(1);
+    console.log(
+      `[inline-scrape] done: resolved=${resolved} no-twitter=${nullResults} errors=${errors} attempted=${attempted}/${userList.length} pending elapsed=${elapsed}s`,
+    );
+    revalidateTag("chimpions-assembly", "default");
+  }
+
   revalidatePath("/cache_view");
 }
 
@@ -123,6 +175,7 @@ export default async function CacheViewPage({ searchParams }: PageProps) {
 
   const stats = {
     cache: snapshot.count > 0 ? "populated" : "empty",
+    storage: getStorageBackend(),
     overrides: overrideCount,
     scrapedHits: scrapedHits,
     scrapedNulls: scrapedNulls,
@@ -181,7 +234,7 @@ export default async function CacheViewPage({ searchParams }: PageProps) {
               className="px-4 py-2 rounded border border-electric-purple-400 bg-electric-purple-900/30 text-electric-purple-200 hover:bg-electric-purple-900/60 text-sm font-bold cursor-pointer"
               title="Scrape Twitter handles for pending users only — Matrica untouched"
             >
-              Scrape twitters
+              Scrape twitter
             </button>
           </form>
           <form action={clearTwitterCache}>

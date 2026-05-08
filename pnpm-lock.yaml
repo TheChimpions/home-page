@@ -56,6 +56,9 @@ importers:
       '@tensor-oss/tcomp-sdk':
         specifier: ^6.0.0
         version: 6.0.0(@noble/hashes@1.4.0)(bufferutil@4.1.0)(chai@5.3.3)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@6.0.6)
+      '@upstash/redis':
+        specifier: ^1.38.0
+        version: 1.38.0
       '@vercel/kv':
         specifier: ^3.0.0
         version: 3.0.0
