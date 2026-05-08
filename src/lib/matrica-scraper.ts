@@ -130,7 +130,7 @@ async function scrapeUser(
 const cachedScrape = unstable_cache(
   scrapeUser,
   ["matrica-scraped-twitter-v2"],
-  { revalidate: REVALIDATE_SECONDS, tags: ["matrica-profile"] },
+  { revalidate: REVALIDATE_SECONDS, tags: ["matrica-twitter"] },
 );
 
 export async function scrapeTwitterForProfile(

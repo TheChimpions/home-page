@@ -8,7 +8,7 @@ function escapeCSV(value: string): string {
 
 export async function GET(request: NextRequest) {
   await fetchAllChimpions();
-  const snapshot = getCacheSnapshot();
+  const snapshot = await getCacheSnapshot();
   const type = request.nextUrl.searchParams.get("type") || "full";
   const format = request.nextUrl.searchParams.get("format") || "csv";
   const isCsv = format === "csv";

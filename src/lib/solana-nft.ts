@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache";
 import { ChimpionMetadata } from "@/types/nft";
 import {
   getMatricaProfileByWallet,
@@ -41,69 +42,23 @@ const CREATOR_ADDRESS =
   process.env.NEXT_PUBLIC_CREATOR_ADDRESS ||
   "D7hKRyCsdaaSGVGwSAgcEfkSofBb6gn68UPD3yWW59zW";
 
-let cachedNFTs: ChimpionMetadata[] | null = null;
-let lastFetch: number = 0;
-let refreshPromise: Promise<ChimpionMetadata[]> | null = null;
-let refreshStartedAt: number = 0;
-const CACHE_DURATION = 12 * 60 * 60 * 1000; // 12 hours
+const ASSEMBLY_TTL_SECONDS = 30 * 24 * 60 * 60; // 30 days
+
+const cachedAssemble = unstable_cache(
+  () => assembleAllNFTs(),
+  ["chimpions-assembly-v1"],
+  { revalidate: ASSEMBLY_TTL_SECONDS, tags: ["chimpions-assembly"] },
+);
 
 export async function fetchAllChimpions(): Promise<ChimpionMetadata[]> {
   if (process.env.NEXT_PHASE === "phase-production-build") {
     console.log("[cache] build phase: returning []");
     return [];
   }
-
-  const fresh = cachedNFTs && Date.now() - lastFetch < CACHE_DURATION;
-
-  if (fresh) {
-    const ageMin = Math.floor((Date.now() - lastFetch) / 60_000);
-    console.log(
-      `[cache] HIT (fresh, age=${ageMin}m, count=${cachedNFTs!.length})`,
-    );
-    return cachedNFTs!;
-  }
-
-  if (cachedNFTs) {
-    if (!refreshPromise) {
-      const ageMin = Math.floor((Date.now() - lastFetch) / 60_000);
-      console.log(
-        `[cache] STALE (age=${ageMin}m, count=${cachedNFTs.length}) → returning stale + background refresh`,
-      );
-      startBackgroundRefresh();
-    } else {
-      console.log("[cache] STALE → returning stale (refresh already in flight)");
-    }
-    return cachedNFTs;
-  }
-
-  console.log("[cache] EMPTY → blocking on first fetch");
-  if (!refreshPromise) startBackgroundRefresh();
-  return refreshPromise!;
+  return cachedAssemble();
 }
 
-export function startBackgroundRefresh(): void {
-  if (refreshPromise) {
-    console.log("[refresh] skip (already in flight)");
-    return;
-  }
-  refreshStartedAt = Date.now();
-  console.log("[refresh] starting background refresh");
-  refreshPromise = doFetch().finally(() => {
-    const ms = Date.now() - refreshStartedAt;
-    console.log(`[refresh] complete in ${(ms / 1000).toFixed(1)}s`);
-    refreshPromise = null;
-  });
-}
-
-export function isRefreshing(): boolean {
-  return refreshPromise !== null;
-}
-
-export function getRefreshStartedAt(): number | null {
-  return refreshPromise ? refreshStartedAt : null;
-}
-
-async function doFetch(): Promise<ChimpionMetadata[]> {
+async function assembleAllNFTs(): Promise<ChimpionMetadata[]> {
   const t0 = Date.now();
   try {
     console.log(`[helius] fetching getAssetsByCreator (${CREATOR_ADDRESS})`);
@@ -240,113 +195,26 @@ async function doFetch(): Promise<ChimpionMetadata[]> {
 
     await Promise.all([resolveHolderNames(nfts), applyListings(nfts)]);
 
-    cachedNFTs = nfts;
-    lastFetch = Date.now();
-
     console.log(
-      `[cache] populated: ${nfts.length} NFTs in ${((Date.now() - t0) / 1000).toFixed(1)}s`,
+      `[cache] assembled ${nfts.length} NFTs in ${((Date.now() - t0) / 1000).toFixed(1)}s`,
     );
 
     return nfts;
   } catch (error) {
-    console.error("[cache] fetch error:", error);
-
-    if (cachedNFTs) {
-      console.log("[cache] returning stale due to error");
-      return cachedNFTs;
-    }
-
-    console.log("[cache] no fallback available, returning []");
+    console.error("[cache] assembly error:", error);
     return [];
   }
 }
 
-export function clearCache() {
-  const had = cachedNFTs !== null;
-  cachedNFTs = null;
-  lastFetch = 0;
-  console.log(`[cache] cleared (had=${had})`);
-}
-
-export function getCacheAgeMs(): number | null {
-  return lastFetch > 0 ? Date.now() - lastFetch : null;
-}
-
-export function getCacheSnapshot(): {
-  hasCache: boolean;
-  ageMs: number | null;
-  ttlMs: number;
+export async function getCacheSnapshot(): Promise<{
   count: number;
   nfts: ChimpionMetadata[];
-} {
+}> {
+  const nfts = await fetchAllChimpions();
   return {
-    hasCache: cachedNFTs !== null,
-    ageMs: lastFetch > 0 ? Date.now() - lastFetch : null,
-    ttlMs: CACHE_DURATION,
-    count: cachedNFTs?.length ?? 0,
-    nfts: cachedNFTs ?? [],
+    count: nfts.length,
+    nfts,
   };
-}
-
-export async function scrapePendingTwitters(opts: {
-  budgetMs?: number;
-} = {}): Promise<{ total: number; attempted: number; resolved: number }> {
-  if (!cachedNFTs) return { total: 0, attempted: 0, resolved: 0 };
-
-  const targets = new Map<string, ChimpionMetadata[]>();
-  for (const nft of cachedNFTs) {
-    if (!nft.holder || !nft.holderName || nft.holderTwitter) continue;
-    const list = targets.get(nft.holder) ?? [];
-    list.push(nft);
-    targets.set(nft.holder, list);
-  }
-
-  const wallets = [...targets.keys()];
-  const total = wallets.length;
-  if (total === 0) {
-    console.log("[scrape-twitters] no pending users");
-    return { total: 0, attempted: 0, resolved: 0 };
-  }
-
-  const SCRAPE_CONCURRENCY = 2;
-  const budgetMs = opts.budgetMs ?? 50_000;
-  const startedAt = Date.now();
-  let cursor = 0;
-  let attempted = 0;
-  let resolved = 0;
-
-  console.log(
-    `[scrape-twitters] starting (pending=${total}, budget=${budgetMs / 1000}s, concurrency=${SCRAPE_CONCURRENCY})`,
-  );
-
-  await Promise.all(
-    Array.from(
-      { length: Math.min(SCRAPE_CONCURRENCY, wallets.length) },
-      async () => {
-        while (true) {
-          if (Date.now() - startedAt > budgetMs) return;
-          const i = cursor++;
-          if (i >= wallets.length) return;
-          const wallet = wallets[i];
-          attempted++;
-          const profile = await getMatricaProfileByWallet(wallet);
-          const handle = await scrapeTwitterForProfile(profile);
-          if (handle) {
-            const nfts = targets.get(wallet) ?? [];
-            for (const nft of nfts) nft.holderTwitter = handle;
-            resolved++;
-          }
-        }
-      },
-    ),
-  );
-
-  const elapsed = ((Date.now() - startedAt) / 1000).toFixed(1);
-  console.log(
-    `[scrape-twitters] done: resolved=${resolved} attempted=${attempted} pending_remaining=${total - attempted} elapsed=${elapsed}s`,
-  );
-
-  return { total, attempted, resolved };
 }
 
 async function resolveHolderNames(nfts: ChimpionMetadata[]): Promise<void> {

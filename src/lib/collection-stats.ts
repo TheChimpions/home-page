@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache";
 import {
   getMatricaProfileByWallet,
   getMatricaDisplayName,
@@ -112,13 +113,25 @@ export async function fetchHolderStats(): Promise<HolderStats> {
   };
 }
 
+const HOLDERS_TTL_SECONDS = 30 * 24 * 60 * 60;
+
+const cachedHoldersAssemble = unstable_cache(
+  () => assembleHoldersWithProfiles(),
+  ["holders-assembly-v1"],
+  { revalidate: HOLDERS_TTL_SECONDS, tags: ["chimpions-assembly"] },
+);
+
 export async function fetchHoldersWithProfiles(
   limit?: number,
 ): Promise<HolderProfile[]> {
   if (process.env.NEXT_PHASE === "phase-production-build") {
     return [];
   }
+  const all = await cachedHoldersAssemble();
+  return limit ? all.slice(0, limit) : all;
+}
 
+async function assembleHoldersWithProfiles(): Promise<HolderProfile[]> {
   const t0 = Date.now();
   const counts = await fetchHolderCounts();
   if (counts.size === 0) {
@@ -210,7 +223,7 @@ export async function fetchHoldersWithProfiles(
   console.log(
     `[holders] ${merged.length} merged (${groupedHolders.length} matrica + ${standalone.length} wallet-only, ${withTwitter} w/ twitter) in ${((Date.now() - t0) / 1000).toFixed(1)}s`,
   );
-  return limit ? merged.slice(0, limit) : merged;
+  return merged;
 }
 
 interface VoteAccount {
