@@ -2,6 +2,7 @@ import { revalidateTag } from "next/cache";
 import { inngest } from "./client";
 import { scrapeTwitterByUsername } from "@/lib/matrica-scraper";
 import { fetchAllChimpions } from "@/lib/solana-nft";
+import { setScrapedTwitter } from "@/lib/twitter-overrides";
 
 interface ScrapeUserPayload {
   username: string;
@@ -54,16 +55,19 @@ export const scrapeUserTwitter = inngest.createFunction(
     }
 
     const handle = await step.run("scrape-twitter", async () => {
-      const result = await scrapeTwitterByUsername(username, sig);
-      if (result === null) {
-        throw new Error(
-          `Scrape returned null for ${username} — will retry with backoff`,
-        );
-      }
-      return result;
+      return scrapeTwitterByUsername(username, sig);
     });
 
-    console.log(`[inngest] ${username} → @${handle}`);
+    await step.run("persist-to-kv", async () => {
+      await setScrapedTwitter(username, handle);
+    });
+
+    if (handle === null) {
+      console.log(`[inngest] ${username} → no twitter (persisted, will not retry)`);
+      return { username, handle: null, status: "no-twitter" };
+    }
+
+    console.log(`[inngest] ${username} → @${handle} (persisted to KV)`);
 
     await step.sendEvent("notify-resolved", {
       name: "matrica/scrape.user.resolved",

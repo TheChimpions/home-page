@@ -2,7 +2,6 @@ import { unstable_cache } from "next/cache";
 import { getBrowser } from "./puppeteer-browser";
 import type { MatricaProfile } from "./matrica";
 
-const REVALIDATE_SECONDS = 365 * 24 * 60 * 60;
 const NAV_TIMEOUT_MS = 5000;
 const CONTENT_TIMEOUT_MS = 4000;
 const CIRCUIT_FAILURE_THRESHOLD = 3;
@@ -14,17 +13,7 @@ const CIRCUIT_COOLDOWN_MS = 5 * 60 * 1000;
 export function profileSignature(profile: MatricaProfile | null): string {
   if (!profile?.user) return "none";
   const u = profile.user;
-  const payload = JSON.stringify({
-    id: u.id ?? null,
-    username: u.username ?? null,
-    about: u.profile?.about ?? null,
-    pfp: u.profile?.pfp ?? null,
-  });
-  let h = 0;
-  for (let i = 0; i < payload.length; i++) {
-    h = (Math.imul(31, h) + payload.charCodeAt(i)) | 0;
-  }
-  return (h >>> 0).toString(36);
+  return `${u.id ?? "no-id"}|${u.username ?? "no-username"}`;
 }
 
 function isLikelyValidUsername(username: string): boolean {
@@ -103,9 +92,9 @@ async function scrapeUser(
 
     consecutiveFailures = 0;
     if (handle) {
-      console.log(`[scrape] ${username} → @${handle}`);
+      console.log(`[scrape] ${username} → @${handle} (cached forever)`);
     } else {
-      console.log(`[scrape] ${username} → no handle found`);
+      console.log(`[scrape] ${username} → no twitter found (cached forever)`);
     }
     return handle;
   } catch (err) {
@@ -118,10 +107,10 @@ async function scrapeUser(
       );
     }
     console.warn(
-      `[scrape] ${username} ${timedOut ? "timeout" : "error"}:`,
+      `[scrape] ${username} transient ${timedOut ? "timeout" : "error"} (will be retried):`,
       err instanceof Error ? err.message : err,
     );
-    return null;
+    throw err instanceof Error ? err : new Error(String(err));
   } finally {
     if (page) await page.close().catch(() => {});
   }
@@ -129,8 +118,8 @@ async function scrapeUser(
 
 const cachedScrape = unstable_cache(
   scrapeUser,
-  ["matrica-scraped-twitter-v2"],
-  { revalidate: REVALIDATE_SECONDS, tags: ["matrica-twitter"] },
+  ["matrica-scraped-twitter-v3"],
+  { revalidate: false, tags: ["matrica-twitter"] },
 );
 
 export async function scrapeTwitterByUsername(
@@ -144,5 +133,9 @@ export async function scrapeTwitterForProfile(
   profile: MatricaProfile | null,
 ): Promise<string | null> {
   if (!profile?.user?.username) return null;
-  return cachedScrape(profile.user.username, profileSignature(profile));
+  try {
+    return await cachedScrape(profile.user.username, profileSignature(profile));
+  } catch {
+    return null;
+  }
 }
