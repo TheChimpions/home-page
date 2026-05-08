@@ -6,6 +6,7 @@
     "src/app/page.tsx": { "maxDuration": 60 },
     "src/app/api/orb-debug/route.ts": { "maxDuration": 60 },
     "src/app/api/cache-export/route.ts": { "maxDuration": 60 },
-    "src/app/api/inngest/route.ts": { "maxDuration": 60 }
+    "src/app/api/inngest/route.ts": { "maxDuration": 60 },
+    "src/app/api/upload-twitters/route.ts": { "maxDuration": 60 }
   }
 }

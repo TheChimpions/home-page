@@ -1,10 +1,16 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 import { fetchAllChimpions, getCacheSnapshot } from "@/lib/solana-nft";
-import {
-  getMatricaProfileByWallet,
-  getMatricaUsername,
-} from "@/lib/matrica";
+import { getMatricaProfileByWallet, getMatricaUsername } from "@/lib/matrica";
 import { profileSignature } from "@/lib/matrica-scraper";
+import {
+  clearAllScrapedTwitters,
+  clearAllTwitterOverrides,
+  getAllScrapedTwitters,
+  getStorageBackend,
+  getTwitterOverrides,
+  setScrapedTwitter,
+} from "@/lib/twitter-overrides";
+import { scrapeTwitterByUsername } from "@/lib/matrica-scraper";
 import { inngest } from "@/inngest/client";
 import { truncateAddress } from "@/lib/utils";
 
@@ -22,7 +28,10 @@ async function refreshMatrica() {
 
 async function scrapeTwittersOnly() {
   "use server";
-  console.log("[cache_view] action: scrapeTwittersOnly via Inngest");
+  const isProd = process.env.VERCEL_ENV === "production";
+  console.log(
+    `[cache_view] action: scrapeTwittersOnly (mode=${isProd ? "inngest" : "inline"})`,
+  );
 
   const snapshot = await getCacheSnapshot();
   const pendingWallets = new Set<string>();
@@ -51,23 +60,81 @@ async function scrapeTwittersOnly() {
     return;
   }
 
-  await inngest.send({
-    name: "matrica/scrape.fanout",
-    data: { users: [...users.values()] },
-  });
+  if (isProd) {
+    await inngest.send({
+      name: "matrica/scrape.fanout",
+      data: { users: [...users.values()] },
+    });
+    console.log(
+      `[cache_view] queued ${users.size} matrica usernames for scrape (from ${pendingWallets.size} pending wallets)`,
+    );
+  } else {
+    const userList = [...users.values()];
+    const CONCURRENCY = 4;
+    const BUDGET_MS = 50_000;
+    const start = Date.now();
+    let cursor = 0;
+    let attempted = 0;
+    let resolved = 0;
+    let nullResults = 0;
+    let errors = 0;
 
-  console.log(
-    `[cache_view] queued ${users.size} matrica usernames for scrape (from ${pendingWallets.size} pending wallets)`,
-  );
+    console.log(
+      `[inline-scrape] starting (pending=${userList.length}, concurrency=${CONCURRENCY}, budget=${BUDGET_MS / 1000}s)`,
+    );
+
+    await Promise.all(
+      Array.from(
+        { length: Math.min(CONCURRENCY, userList.length) },
+        async () => {
+          while (true) {
+            if (Date.now() - start > BUDGET_MS) return;
+            const i = cursor++;
+            if (i >= userList.length) return;
+            const { username, sig } = userList[i];
+            attempted++;
+            try {
+              const handle = await scrapeTwitterByUsername(username, sig);
+              await setScrapedTwitter(username, handle);
+              if (handle === null) nullResults++;
+              else resolved++;
+            } catch (err) {
+              errors++;
+              console.warn(
+                `[inline-scrape] ${username} error:`,
+                err instanceof Error ? err.message : err,
+              );
+            }
+          }
+        },
+      ),
+    );
+
+    const elapsed = ((Date.now() - start) / 1000).toFixed(1);
+    console.log(
+      `[inline-scrape] done: resolved=${resolved} no-twitter=${nullResults} errors=${errors} attempted=${attempted}/${userList.length} pending elapsed=${elapsed}s`,
+    );
+    revalidateTag("chimpions-assembly", "default");
+  }
+
   revalidatePath("/cache_view");
 }
 
 async function clearTwitterCache() {
   "use server";
   console.log(
-    "[cache_view] action: clearTwitterCache (forces re-scrape on next render)",
+    "[cache_view] action: clearTwitterCache (wipes KV + matrica-twitter unstable_cache)",
   );
+  await clearAllScrapedTwitters();
   revalidateTag("matrica-twitter", "default");
+  revalidateTag("chimpions-assembly", "default");
+  revalidatePath("/cache_view");
+}
+
+async function clearOverrides() {
+  "use server";
+  console.log("[cache_view] action: clearOverrides");
+  await clearAllTwitterOverrides();
   revalidateTag("chimpions-assembly", "default");
   revalidatePath("/cache_view");
 }
@@ -79,6 +146,15 @@ interface PageProps {
 export default async function CacheViewPage({ searchParams }: PageProps) {
   await fetchAllChimpions();
   const snapshot = await getCacheSnapshot();
+  const overrides = await getTwitterOverrides();
+  const overrideCount = Object.keys(overrides).length;
+  const scrapedTwitters = await getAllScrapedTwitters();
+  const scrapedHits = Object.values(scrapedTwitters).filter(
+    (v) => v !== null,
+  ).length;
+  const scrapedNulls = Object.values(scrapedTwitters).filter(
+    (v) => v === null,
+  ).length;
   const params = await searchParams;
   const filter = params.filter || "all";
   const query = params.q?.toLowerCase() || "";
@@ -99,6 +175,10 @@ export default async function CacheViewPage({ searchParams }: PageProps) {
 
   const stats = {
     cache: snapshot.count > 0 ? "populated" : "empty",
+    storage: getStorageBackend(),
+    overrides: overrideCount,
+    scrapedHits: scrapedHits,
+    scrapedNulls: scrapedNulls,
     totalNFTs: snapshot.count,
     uniqueHolders: new Set(snapshot.nfts.map((n) => n.holder)).size,
     matricaResolved: snapshot.nfts.filter((n) => n.holderName).length,
@@ -154,7 +234,7 @@ export default async function CacheViewPage({ searchParams }: PageProps) {
               className="px-4 py-2 rounded border border-electric-purple-400 bg-electric-purple-900/30 text-electric-purple-200 hover:bg-electric-purple-900/60 text-sm font-bold cursor-pointer"
               title="Scrape Twitter handles for pending users only — Matrica untouched"
             >
-              Scrape twitters
+              Scrape twitter
             </button>
           </form>
           <form action={clearTwitterCache}>
@@ -177,6 +257,49 @@ export default async function CacheViewPage({ searchParams }: PageProps) {
           </form>
         </div>
       </div>
+
+      <section className="mb-6 border border-gray-modern-800 rounded p-4 bg-gray-modern-900/50">
+        <h2 className="text-lg font-bold mb-2 text-gold-300">
+          Twitter overrides ({overrideCount} active)
+        </h2>
+        <p className="text-gray-modern-400 text-sm mb-3">
+          Upload CSV with at least <code>mint</code> and{" "}
+          <code>holderTwitter</code> columns. Overrides take priority over
+          Matrica/scraped values. Re-upload your{" "}
+          <code>chimpions-cache.csv</code> after editing the holderTwitter
+          column.
+        </p>
+        <form
+          action="/api/upload-twitters"
+          method="POST"
+          encType="multipart/form-data"
+          className="flex flex-wrap items-center gap-3"
+        >
+          <input
+            type="file"
+            name="file"
+            accept=".csv,text/csv"
+            required
+            className="text-sm text-gray-modern-300 file:mr-3 file:px-3 file:py-1 file:rounded file:border-0 file:bg-gold-500/20 file:text-gold-200 file:hover:bg-gold-500/30 file:cursor-pointer"
+          />
+          <button
+            type="submit"
+            className="px-4 py-2 rounded border border-gold-400 bg-gold-900/30 text-gold-200 hover:bg-gold-900/60 text-sm font-bold cursor-pointer"
+          >
+            Upload CSV
+          </button>
+        </form>
+        {overrideCount > 0 && (
+          <form action={clearOverrides} className="mt-3">
+            <button
+              type="submit"
+              className="px-3 py-1 rounded border border-red-700 bg-gray-modern-900 text-red-300 hover:border-red-500 text-xs font-bold cursor-pointer"
+            >
+              Clear all {overrideCount} overrides
+            </button>
+          </form>
+        )}
+      </section>
 
       <section className="mb-8">
         <h2 className="text-lg font-bold mb-2 text-aqua-marine-400">Stats</h2>

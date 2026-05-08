@@ -2,16 +2,17 @@ import { unstable_cache } from "next/cache";
 import { ChimpionMetadata } from "@/types/nft";
 import {
   getMatricaProfileByWallet,
-  getMatricaDisplayName,
-  getMatricaTwitterHandle,
   getMatricaUsername,
 } from "./matrica";
-import { scrapeTwitterForProfile } from "./matrica-scraper";
 import {
   detectListingByHolder,
   fetchActiveListings,
 } from "./marketplace-listings";
 import { fetchTensorListingsBatch } from "./tensor-listings";
+import {
+  getAllScrapedTwitters,
+  getTwitterOverrides,
+} from "./twitter-overrides";
 
 interface HeliusAssetFile {
   mime?: string;
@@ -194,6 +195,7 @@ async function assembleAllNFTs(): Promise<ChimpionMetadata[]> {
     );
 
     await Promise.all([resolveHolderNames(nfts), applyListings(nfts)]);
+    await applyTwitterOverrides(nfts);
 
     console.log(
       `[cache] assembled ${nfts.length} NFTs in ${((Date.now() - t0) / 1000).toFixed(1)}s`,
@@ -227,14 +229,7 @@ async function resolveHolderNames(nfts: ChimpionMetadata[]): Promise<void> {
   );
 
   const API_CONCURRENCY = 8;
-  const profileByHolder = new Map<
-    string,
-    { name: string | null; twitter: string | null }
-  >();
-  const needsScrape: {
-    wallet: string;
-    profile: Awaited<ReturnType<typeof getMatricaProfileByWallet>>;
-  }[] = [];
+  const usernameByHolder = new Map<string, string | null>();
 
   let apiCursor = 0;
   await Promise.all(
@@ -246,74 +241,34 @@ async function resolveHolderNames(nfts: ChimpionMetadata[]): Promise<void> {
           if (i >= uniqueHolders.length) return;
           const wallet = uniqueHolders[i];
           const profile = await getMatricaProfileByWallet(wallet);
-          const username = getMatricaUsername(profile);
-          const aboutTwitter = getMatricaTwitterHandle(profile);
-          profileByHolder.set(wallet, {
-            name: getMatricaDisplayName(profile),
-            twitter: aboutTwitter,
-          });
-          if (!aboutTwitter && username) {
-            needsScrape.push({ wallet, profile });
-          }
+          usernameByHolder.set(wallet, getMatricaUsername(profile));
         }
       },
     ),
   );
 
-  const SCRAPE_CONCURRENCY = 2;
-  const SCRAPE_BUDGET_MS = 15_000;
-  const scrapeStart = Date.now();
-  let scrapeCursor = 0;
-  let scrapesAttempted = 0;
-  await Promise.all(
-    Array.from(
-      { length: Math.min(SCRAPE_CONCURRENCY, needsScrape.length) },
-      async () => {
-        while (true) {
-          if (Date.now() - scrapeStart > SCRAPE_BUDGET_MS) return;
-          const i = scrapeCursor++;
-          if (i >= needsScrape.length) return;
-          const { wallet, profile } = needsScrape[i];
-          scrapesAttempted++;
-          const handle = await scrapeTwitterForProfile(profile);
-          if (handle) {
-            const entry = profileByHolder.get(wallet);
-            if (entry) entry.twitter = handle;
-          }
-        }
-      },
-    ),
-  );
-
-  if (scrapesAttempted < needsScrape.length) {
-    console.log(
-      `[matrica] scrape budget exhausted at ${scrapesAttempted}/${needsScrape.length} (next render will continue)`,
-    );
-  } else if (scrapesAttempted > 0) {
-    console.log(
-      `[matrica] scraped ${scrapesAttempted}/${needsScrape.length} pending users`,
-    );
-  }
+  const scrapedByUsername = await getAllScrapedTwitters();
 
   let nftsWithName = 0;
+  let nftsWithTwitter = 0;
   for (const nft of nfts) {
     if (!nft.holder) continue;
-    const entry = profileByHolder.get(nft.holder);
-    if (!entry) continue;
-    if (entry.name) {
-      nft.holderName = entry.name;
-      nftsWithName++;
-    }
-    if (entry.twitter) {
-      nft.holderTwitter = entry.twitter;
+    const username = usernameByHolder.get(nft.holder);
+    if (!username) continue;
+    nft.holderName = username;
+    nftsWithName++;
+    const handle = scrapedByUsername[username];
+    if (handle) {
+      nft.holderTwitter = handle;
+      nftsWithTwitter++;
     }
   }
 
-  const uniqueResolved = [...profileByHolder.values()].filter(
-    (p) => p.name !== null,
+  const uniqueResolved = [...usernameByHolder.values()].filter(
+    (n) => n !== null,
   ).length;
   console.log(
-    `[matrica] resolved ${uniqueResolved}/${uniqueHolders.length} unique holders (${nftsWithName}/${nfts.length} NFTs labeled)`,
+    `[matrica] resolved ${uniqueResolved}/${uniqueHolders.length} unique holders (${nftsWithName} NFTs labeled, ${nftsWithTwitter} w/ twitter from KV)`,
   );
 }
 
@@ -361,5 +316,26 @@ async function applyListings(nfts: ChimpionMetadata[]): Promise<void> {
   const total = listedFromApi + tensorListed + listedByHolder;
   console.log(
     `[listings] ${listedFromApi} ME + ${tensorListed} Tensor + ${listedByHolder} holder = ${total}/${nfts.length} listed (${Date.now() - t0}ms)`,
+  );
+}
+
+async function applyTwitterOverrides(nfts: ChimpionMetadata[]): Promise<void> {
+  const overrides = await getTwitterOverrides();
+  const overrideKeys = Object.keys(overrides);
+  if (overrideKeys.length === 0) {
+    console.log("[overrides] no twitter overrides configured");
+    return;
+  }
+  let applied = 0;
+  for (const nft of nfts) {
+    if (!nft.mint) continue;
+    const handle = overrides[nft.mint];
+    if (handle) {
+      nft.holderTwitter = handle;
+      applied++;
+    }
+  }
+  console.log(
+    `[overrides] applied ${applied}/${overrideKeys.length} twitter overrides to NFTs`,
   );
 }

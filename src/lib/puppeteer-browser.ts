@@ -9,7 +9,8 @@ let browserPromise: Promise<Browser | null> | null = null;
 async function launchBrowser(): Promise<Browser | null> {
   try {
     const isServerless =
-      !!process.env.VERCEL || !!process.env.AWS_LAMBDA_FUNCTION_NAME;
+      process.platform === "linux" &&
+      !!process.env.AWS_LAMBDA_FUNCTION_NAME;
     if (isServerless) {
       return await puppeteer.launch({
         args: chromium.args,

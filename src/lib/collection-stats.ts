@@ -2,12 +2,10 @@ import { unstable_cache } from "next/cache";
 import {
   getMatricaProfileByWallet,
   getMatricaDisplayName,
-  getMatricaTwitterHandle,
   getMatricaPfp,
-  getMatricaUsername,
   type MatricaProfile,
 } from "./matrica";
-import { scrapeTwitterForProfile } from "./matrica-scraper";
+import { getAllScrapedTwitters } from "./twitter-overrides";
 import { fetchOrbPortfolioUSD } from "./orb-scraper";
 import {
   fetchActiveListings,
@@ -162,6 +160,8 @@ async function assembleHoldersWithProfiles(): Promise<HolderProfile[]> {
     ),
   );
 
+  const scrapedByUsername = await getAllScrapedTwitters();
+
   const grouped = new Map<string, HolderProfile>();
   const standalone: HolderProfile[] = [];
 
@@ -179,7 +179,7 @@ async function assembleHoldersWithProfiles(): Promise<HolderProfile[]> {
           wallet,
           count,
           username,
-          twitter: getMatricaTwitterHandle(profile),
+          twitter: scrapedByUsername[username] ?? null,
           pfp: getMatricaPfp(profile),
         });
       }
@@ -195,33 +195,12 @@ async function assembleHoldersWithProfiles(): Promise<HolderProfile[]> {
   }
 
   const groupedHolders = [...grouped.values()];
-  const SCRAPE_CONCURRENCY = 2;
-  const SCRAPE_BUDGET_MS = 15_000;
-  const scrapeStart = Date.now();
-  let scrapeCursor = 0;
-  await Promise.all(
-    Array.from(
-      { length: Math.min(SCRAPE_CONCURRENCY, groupedHolders.length) },
-      async () => {
-        while (true) {
-          if (Date.now() - scrapeStart > SCRAPE_BUDGET_MS) return;
-          const i = scrapeCursor++;
-          if (i >= groupedHolders.length) return;
-          const h = groupedHolders[i];
-          if (h.twitter) continue;
-          const profile = profileByWallet.get(h.wallet) ?? null;
-          h.twitter = await scrapeTwitterForProfile(profile);
-        }
-      },
-    ),
-  );
-
   const merged = [...groupedHolders, ...standalone].sort(
     (a, b) => b.count - a.count,
   );
   const withTwitter = merged.filter((h) => h.twitter).length;
   console.log(
-    `[holders] ${merged.length} merged (${groupedHolders.length} matrica + ${standalone.length} wallet-only, ${withTwitter} w/ twitter) in ${((Date.now() - t0) / 1000).toFixed(1)}s`,
+    `[holders] ${merged.length} merged (${groupedHolders.length} matrica + ${standalone.length} wallet-only, ${withTwitter} w/ twitter from KV) in ${((Date.now() - t0) / 1000).toFixed(1)}s`,
   );
   return merged;
 }
