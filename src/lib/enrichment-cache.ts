@@ -80,15 +80,21 @@ export async function getAllMatricaByWallet(): Promise<
 export async function setMatricaByWallet(
   entries: Record<string, MatricaEntry>,
 ): Promise<void> {
-  const count = Object.keys(entries).length;
-  if (count === 0) return;
   const redis = getRedis();
   if (redis) {
-    await redis.hset(KV_MATRICA, entries);
+    const existingKeys = await redis.hkeys(KV_MATRICA);
+    const newKeys = new Set(Object.keys(entries));
+    const toRemove = existingKeys.filter((k) => !newKeys.has(k));
+
+    if (newKeys.size > 0) {
+      await redis.hset(KV_MATRICA, entries);
+    }
+    if (toRemove.length > 0) {
+      await redis.hdel(KV_MATRICA, ...toRemove);
+    }
     return;
   }
-  const existing = await readLocalFile<MatricaEntry>(LOCAL_MATRICA_FILE);
-  await writeLocalFile(LOCAL_MATRICA_FILE, { ...existing, ...entries });
+  await writeLocalFile(LOCAL_MATRICA_FILE, entries);
 }
 
 export async function clearAllMatrica(): Promise<void> {
@@ -122,12 +128,16 @@ export async function setListingsByMint(
 ): Promise<void> {
   const redis = getRedis();
   if (redis) {
-    if (Object.keys(entries).length === 0) {
-      await redis.del(KV_LISTINGS);
-      return;
+    const existingKeys = await redis.hkeys(KV_LISTINGS);
+    const newKeys = new Set(Object.keys(entries));
+    const toRemove = existingKeys.filter((k) => !newKeys.has(k));
+
+    if (newKeys.size > 0) {
+      await redis.hset(KV_LISTINGS, entries);
     }
-    await redis.del(KV_LISTINGS);
-    await redis.hset(KV_LISTINGS, entries);
+    if (toRemove.length > 0) {
+      await redis.hdel(KV_LISTINGS, ...toRemove);
+    }
     return;
   }
   await writeLocalFile(LOCAL_LISTINGS_FILE, entries);
