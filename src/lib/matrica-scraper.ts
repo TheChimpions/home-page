@@ -1,4 +1,3 @@
-import { unstable_cache } from "next/cache";
 import { getBrowser } from "./puppeteer-browser";
 import type { MatricaProfile } from "./matrica";
 
@@ -22,11 +21,9 @@ function isLikelyValidUsername(username: string): boolean {
   return /^[A-Za-z0-9_]+$/.test(username);
 }
 
-async function scrapeUser(
+export async function scrapeTwitterByUsername(
   username: string,
-  _profileSig: string,
 ): Promise<string | null> {
-  void _profileSig;
   if (process.env.NEXT_PHASE === "phase-production-build") return null;
   if (!isLikelyValidUsername(username)) return null;
 
@@ -92,9 +89,9 @@ async function scrapeUser(
 
     consecutiveFailures = 0;
     if (handle) {
-      console.log(`[scrape] ${username} → @${handle} (cached forever)`);
+      console.log(`[scrape] ${username} → @${handle}`);
     } else {
-      console.log(`[scrape] ${username} → no twitter found (cached forever)`);
+      console.log(`[scrape] ${username} → no twitter found`);
     }
     return handle;
   } catch (err) {
@@ -116,26 +113,3 @@ async function scrapeUser(
   }
 }
 
-const cachedScrape = unstable_cache(
-  scrapeUser,
-  ["matrica-scraped-twitter-v3"],
-  { revalidate: false, tags: ["matrica-twitter"] },
-);
-
-export async function scrapeTwitterByUsername(
-  username: string,
-  sig: string,
-): Promise<string | null> {
-  return cachedScrape(username, sig);
-}
-
-export async function scrapeTwitterForProfile(
-  profile: MatricaProfile | null,
-): Promise<string | null> {
-  if (!profile?.user?.username) return null;
-  try {
-    return await cachedScrape(profile.user.username, profileSignature(profile));
-  } catch {
-    return null;
-  }
-}

@@ -19,7 +19,7 @@ const councilMembers: Member[] = [
 ];
 
 const executiveTeam: Member[] = [
-  { name: "Tuxr", role: "CTO", imageSrc: "/team/TheBionic-tuxr.gif" },
+  { name: "Tuxr", role: "CTO", imageSrc: "/team/firestarter-tuxr.gif" },
   { name: "Max", role: "CEO", imageSrc: "/team/TheOriginal-Max.gif" },
   { name: "Jota", role: "CBO", imageSrc: "/team/TheMeathead-jota.gif" },
 ];
@@ -67,8 +67,8 @@ export default function Governance() {
           >
             <p className="text-center text-white text-[2.5rem]">Council</p>
             <div className="hidden lg:flex flex-col gap-6">
-              <div className="grid grid-cols-5 gap-8">
-                {councilMembers.slice(0, 5).map((member, i) => (
+              <div className="grid grid-cols-4 gap-8">
+                {councilMembers.map((member, i) => (
                   <FadeUp key={member.name} delay={i * 80}>
                     <div className="flex flex-col items-center gap-4">
                       <div className="relative w-full aspect-square overflow-hidden rounded-sm">
@@ -89,8 +89,8 @@ export default function Governance() {
                 ))}
               </div>
 
-              <div className="grid grid-cols-4 gap-8 px-[10%]">
-                {councilMembers.slice(5).map((member, i) => (
+              {/*<div className="grid grid-cols-4 gap-8 px-[10%]">
+                {councilMembers.slice(4).map((member, i) => (
                   <FadeUp key={member.name} delay={i * 80}>
                     <div className="flex flex-col items-center gap-4">
                       <div className="relative w-full aspect-square overflow-hidden rounded-sm">
@@ -109,7 +109,7 @@ export default function Governance() {
                     </div>
                   </FadeUp>
                 ))}
-              </div>
+              </div>*/}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 lg:hidden">
