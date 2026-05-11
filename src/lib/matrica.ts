@@ -1,8 +1,5 @@
-import { unstable_cache } from "next/cache";
-
 const MATRICA_API_KEY = process.env.MATRICA_API_KEY;
 const MATRICA_BASE = "https://api.matrica.io/v1";
-const REVALIDATE_SECONDS = 7 * 24 * 60 * 60;
 
 export interface MatricaProfile {
   id?: string;
@@ -18,10 +15,11 @@ export interface MatricaProfile {
   network?: { symbol?: string; name?: string };
 }
 
-let loggedFirstHit = false;
 let warnedNoApiKey = false;
 
-async function fetchProfile(wallet: string): Promise<MatricaProfile | null> {
+export async function getMatricaProfileByWallet(
+  wallet: string,
+): Promise<MatricaProfile | null> {
   if (!MATRICA_API_KEY) {
     if (!warnedNoApiKey) {
       console.warn("MATRICA_API_KEY is not set; skipping Matrica lookups");
@@ -45,12 +43,6 @@ async function fetchProfile(wallet: string): Promise<MatricaProfile | null> {
     return null;
   }
 }
-
-export const getMatricaProfileByWallet = unstable_cache(
-  fetchProfile,
-  ["matrica-wallet-profile-v1"],
-  { revalidate: REVALIDATE_SECONDS, tags: ["matrica-profile"] },
-);
 
 export function getMatricaDisplayName(
   profile: MatricaProfile | null,

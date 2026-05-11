@@ -1,11 +1,10 @@
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidatePath } from "next/cache";
 import {
   fetchAllChimpions,
   getCacheSnapshot,
   runFullEnrichment,
 } from "@/lib/solana-nft";
 import { getMatricaProfileByWallet, getMatricaUsername } from "@/lib/matrica";
-import { profileSignature } from "@/lib/matrica-scraper";
 import { inngest } from "@/inngest/client";
 import TwitterCell from "./TwitterCell";
 import {
@@ -25,7 +24,6 @@ async function refreshMatrica() {
   console.log(
     `[cache_view] action: refreshMatrica (mode=${isProd ? "inngest event" : "inline"})`,
   );
-  revalidateTag("matrica-profile", "default");
 
   if (isProd) {
     await inngest.send({
@@ -38,7 +36,6 @@ async function refreshMatrica() {
   } else {
     const result = await runFullEnrichment();
     console.log("[cache_view] inline enrichment result:", result);
-    revalidateTag("chimpions-assembly", "default");
   }
 
   revalidatePath("/cache_view");
@@ -70,21 +67,25 @@ async function scrapeTwittersOnly() {
     return;
   }
 
-  const users = new Map<string, { username: string; sig: string }>();
+  const scrapedByUsername = await getAllScrapedTwitters();
+  const usernames = new Set<string>();
   for (const wallet of pendingWallets) {
     const profile = await getMatricaProfileByWallet(wallet);
     const username = getMatricaUsername(profile);
     if (!username) continue;
-    if (users.has(username)) continue;
-    users.set(username, { username, sig: profileSignature(profile) });
+    usernames.add(username);
   }
 
-  if (users.size === 0) {
+  if (usernames.size === 0) {
     console.log("[cache_view] no Matrica usernames among pending wallets");
     return;
   }
 
-  const userList = [...users.values()];
+  const userList = [...usernames];
+  const priorNulls = userList.filter(
+    (u) => u in scrapedByUsername && scrapedByUsername[u] === null,
+  ).length;
+  const neverScraped = userList.length - priorNulls;
   const CONCURRENCY = 4;
   const BUDGET_MS = 50_000;
   const start = Date.now();
@@ -95,7 +96,7 @@ async function scrapeTwittersOnly() {
   let errors = 0;
 
   console.log(
-    `[inline-scrape] starting (pending=${userList.length}, concurrency=${CONCURRENCY}, budget=${BUDGET_MS / 1000}s)`,
+    `[inline-scrape] starting (pending=${userList.length}: ${neverScraped} new + ${priorNulls} prior-null retry, concurrency=${CONCURRENCY}, budget=${BUDGET_MS / 1000}s)`,
   );
 
   await Promise.all(
@@ -106,10 +107,10 @@ async function scrapeTwittersOnly() {
           if (Date.now() - start > BUDGET_MS) return;
           const i = cursor++;
           if (i >= userList.length) return;
-          const { username, sig } = userList[i];
+          const username = userList[i];
           attempted++;
           try {
-            const handle = await scrapeTwitterByUsername(username, sig);
+            const handle = await scrapeTwitterByUsername(username);
             await setScrapedTwitter(username, handle);
             if (handle === null) nullResults++;
             else resolved++;
@@ -129,18 +130,13 @@ async function scrapeTwittersOnly() {
   console.log(
     `[inline-scrape] done: resolved=${resolved} no-twitter=${nullResults} errors=${errors} attempted=${attempted}/${userList.length} pending elapsed=${elapsed}s`,
   );
-  revalidateTag("chimpions-assembly", "default");
   revalidatePath("/cache_view");
 }
 
 async function clearTwitterCache() {
   "use server";
-  console.log(
-    "[cache_view] action: clearTwitterCache (wipes KV + matrica-twitter unstable_cache)",
-  );
+  console.log("[cache_view] action: clearTwitterCache (wipes KV)");
   await clearAllScrapedTwitters();
-  revalidateTag("matrica-twitter", "default");
-  revalidateTag("chimpions-assembly", "default");
   revalidatePath("/cache_view");
 }
 
@@ -151,7 +147,6 @@ async function saveTwitterHandle(username: string, handle: string) {
   console.log(
     `[cache_view] manual edit: @${username} → ${cleaned ? `@${cleaned}` : "(cleared)"}`,
   );
-  revalidateTag("chimpions-assembly", "default");
   revalidatePath("/cache_view");
 }
 

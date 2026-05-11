@@ -106,12 +106,15 @@ export async function fetchHolderStats(): Promise<HolderStats> {
   };
 }
 
-const HOLDERS_TTL_SECONDS = 30 * 24 * 60 * 60;
+const HOLDER_COUNTS_TTL_SECONDS = 30 * 24 * 60 * 60;
 
-const cachedHoldersAssemble = unstable_cache(
-  () => assembleHoldersWithProfiles(),
-  ["holders-assembly-v1"],
-  { revalidate: HOLDERS_TTL_SECONDS, tags: ["chimpions-assembly"] },
+const cachedHolderCounts = unstable_cache(
+  async (): Promise<[string, number][]> => {
+    const m = await fetchHolderCounts();
+    return Array.from(m.entries());
+  },
+  ["holder-counts-v1"],
+  { revalidate: HOLDER_COUNTS_TTL_SECONDS, tags: ["holder-counts"] },
 );
 
 export async function fetchHoldersWithProfiles(
@@ -120,20 +123,18 @@ export async function fetchHoldersWithProfiles(
   if (process.env.NEXT_PHASE === "phase-production-build") {
     return [];
   }
-  const all = await cachedHoldersAssemble();
+  const all = await assembleHoldersWithProfiles();
   return limit ? all.slice(0, limit) : all;
 }
 
 async function assembleHoldersWithProfiles(): Promise<HolderProfile[]> {
   const t0 = Date.now();
-  const counts = await fetchHolderCounts();
-  if (counts.size === 0) {
+  const countEntries = await cachedHolderCounts();
+  if (countEntries.length === 0) {
     console.warn("[holders] fetchHolderCounts returned empty");
     return [];
   }
-  console.log(
-    `[holders] ${counts.size} unique wallets (incl marketplaces filtered)`,
-  );
+  const counts = new Map(countEntries);
 
   const [matricaByWallet, scrapedByUsername] = await Promise.all([
     getAllMatricaByWallet(),
