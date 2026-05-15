@@ -148,18 +148,20 @@ async function assembleHoldersWithProfiles(): Promise<HolderProfile[]> {
     const entry = matricaByWallet[wallet];
     const userId = entry?.userId ?? null;
     const username = entry?.username ?? null;
+    const pfp = entry?.pfp ?? null;
 
     if (userId && username) {
       const existing = grouped.get(userId);
       if (existing) {
         existing.count += count;
+        if (!existing.pfp && pfp) existing.pfp = pfp;
       } else {
         grouped.set(userId, {
           wallet,
           count,
           username,
           twitter: scrapedByUsername[username] ?? null,
-          pfp: null,
+          pfp,
         });
       }
     } else {

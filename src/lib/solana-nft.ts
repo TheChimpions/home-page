@@ -3,6 +3,7 @@ import { ChimpionMetadata } from "@/types/nft";
 import {
   getMatricaProfileByWallet,
   getMatricaUsername,
+  getMatricaPfp,
 } from "./matrica";
 import {
   detectListingByHolder,
@@ -302,6 +303,7 @@ export async function runFullEnrichment(): Promise<{
           matricaEntries[wallet] = {
             username,
             userId: profile?.user?.id ?? null,
+            pfp: getMatricaPfp(profile),
           };
         }
       },
