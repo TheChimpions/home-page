@@ -1,11 +1,8 @@
-import CountUpStat from "@/components/ui/CountUpStat";
 import FadeUp from "@/components/ui/FadeUp";
-import { fetchMEStats, fetchHolderStats } from "@/lib/collection-stats";
-
-const numCls = "text-[4rem] font-bold leading-12 text-white tabular-nums";
 
 const modelColumns = [
   {
+    heading: "Founders/Companies",
     numberClassName: "bg-[#d6dfd3] text-gray-modern-900",
     cardClassName: "bg-[#212F49]",
     items: [
@@ -27,6 +24,7 @@ const modelColumns = [
     ],
   },
   {
+    heading: "Investors",
     numberClassName: "bg-aqua-marine-500 text-gray-modern-950",
     cardClassName: "bg-[#212F49]",
     items: [
@@ -49,93 +47,37 @@ const modelColumns = [
   },
 ];
 
-export default async function TreehouseCapitalFeeModel() {
-  const [meStats, holderStats] = await Promise.all([
-    fetchMEStats(),
-    fetchHolderStats(),
-  ]);
-
-  const floorSOL =
-    meStats.floorPrice !== null ? meStats.floorPrice / 1_000_000_000 : null;
-
-  const feeStats = [
-    {
-      label: "Unique holders",
-      node:
-        holderStats.uniqueHolders !== null ? (
-          <CountUpStat end={holderStats.uniqueHolders} className={numCls} />
-        ) : (
-          <span className={numCls}>—</span>
-        ),
-    },
-    {
-      label: "Floor Price",
-      node:
-        floorSOL !== null ? (
-          <CountUpStat
-            end={floorSOL}
-            decimals={1}
-            suffix=" SOL"
-            className={numCls}
-          />
-        ) : (
-          <span className={numCls}>—</span>
-        ),
-    },
-    {
-      label: "Whales (5+ NFTs)",
-      node:
-        holderStats.whales !== null ? (
-          <CountUpStat end={holderStats.whales} className={numCls} />
-        ) : (
-          <span className={numCls}>—</span>
-        ),
-    },
-  ];
-
+export default function TreehouseCapitalWhy() {
   return (
     <section className="mx-auto flex w-full flex-col gap-13">
-      <div className="flex flex-col gap-12">
-        <h2 className="text-center font-title text-[2.5rem] leading-10 text-white sm:text-[3rem] sm:leading-11">
-          Fee{" "}
-          <span
-            className="animate-gradient-flow"
-            style={
-              {
-                background:
-                  "linear-gradient(90deg, #eeb411 0%, #f8d063 25%, #eeb411 50%, #f8d063 75%, #eeb411 100%)",
-                backgroundSize: "200% 100%",
-                backgroundClip: "text",
-                WebkitBackgroundClip: "text",
-                color: "transparent",
-                WebkitTextFillColor: "transparent",
-              } as React.CSSProperties
-            }
-          >
-            Model
-          </span>
-        </h2>
-
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-          {feeStats.map((stat) => (
-            <article
-              key={stat.label}
-              className="text-center flex flex-col gap-4"
-            >
-              <div className="flex justify-center">{stat.node}</div>
-              <p className="mt-1 text-xl leading-5 text-gray-modern-400">
-                {stat.label}
-              </p>
-            </article>
-          ))}
-        </div>
-      </div>
+      <h2 className="text-center font-title text-[2.5rem] leading-10 text-white sm:text-[3rem] sm:leading-11">
+        Why{" "}
+        <span
+          className="animate-gradient-flow"
+          style={
+            {
+              background:
+                "linear-gradient(90deg, #eeb411 0%, #f8d063 25%, #eeb411 50%, #f8d063 75%, #eeb411 100%)",
+              backgroundSize: "200% 100%",
+              backgroundClip: "text",
+              WebkitBackgroundClip: "text",
+              color: "transparent",
+              WebkitTextFillColor: "transparent",
+            } as React.CSSProperties
+          }
+        >
+          Treehouse Capital
+        </span>
+      </h2>
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {modelColumns.map((column, columnIndex) => (
           <article
             key={columnIndex}
             className={`rounded-md border border-gray-modern-700 p-6 lg:p-10 shadow-[0_0_18px_rgba(0,0,0,0.25)] ${column.cardClassName}`}
           >
+            <h3 className="mb-8 font-title text-[2.5rem] leading-10 text-white">
+              {column.heading}
+            </h3>
             <div className="flex flex-col gap-10 md:gap-20">
               {column.items.map((item, itemIndex) => (
                 <FadeUp key={item.title} delay={itemIndex * 150}>
@@ -146,9 +88,9 @@ export default async function TreehouseCapitalFeeModel() {
                       {itemIndex + 1}
                     </div>
                     <div>
-                      <h3 className="text-[2rem] leading-8 text-white font-bold">
+                      <h4 className="text-[2rem] leading-8 text-white font-bold">
                         {item.title}
-                      </h3>
+                      </h4>
                       <p className="mt-1 text-xl leading-5 text-gray-modern-400">
                         {item.description}
                       </p>

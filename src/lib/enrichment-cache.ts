@@ -9,6 +9,7 @@ const KV_LISTINGS = "chimpions:enrichment:listings:by-mint";
 export interface MatricaEntry {
   username: string | null;
   userId: string | null;
+  pfp: string | null;
 }
 
 function getRedisCreds(): { url: string; token: string } | null {
