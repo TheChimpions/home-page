@@ -6,11 +6,10 @@ import {
   fetchActiveListings,
   MARKETPLACE_ADDRESSES,
 } from "./marketplace-listings";
+import { VALIDATOR_PUBKEY } from "./validator";
 
 const ME_BASE = "https://api-mainnet.magiceden.dev/v2";
 const COLLECTION = "the_chimpions";
-
-const VALIDATOR_PUBKEY = "2AKKnirWVZMhnzuwqpizw9SwfZjGpRFLx2zCCNtPWpbc";
 
 const TREASURY_MULTISIG = "Df7VuBkasBXHyEYUsuqQnEpDvLyZmfoxDnk932CUak2c";
 const TREASURY_CACHE_SECONDS = 24 * 60 * 60;
