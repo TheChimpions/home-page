@@ -383,7 +383,7 @@ interface StakewizValidator {
   apy_estimate: number;
   commission: number;
   delinquent: boolean;
-  uptime?: number;
+  uptime: number;
 }
 
 export async function fetchValidatorStakewiz(): Promise<StakewizValidator | null> {
@@ -405,7 +405,7 @@ export async function fetchValidatorStakewiz(): Promise<StakewizValidator | null
     console.warn("[stakewiz] no data returned");
   } else {
     console.log(
-      `[stakewiz] apy=${data.apy_estimate?.toFixed(2)}% credit_ratio=${data.credit_ratio?.toFixed(2)}% commission=${data.commission}%`,
+      `[stakewiz] apy=${data.apy_estimate?.toFixed(2)}% uptime=${data.uptime?.toFixed(2)}% commission=${data.commission}%`,
     );
   }
   return data;

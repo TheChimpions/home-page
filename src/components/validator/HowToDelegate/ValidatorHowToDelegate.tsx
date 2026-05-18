@@ -100,9 +100,7 @@ export default function ValidatorHowToDelegate() {
                   </div>
 
                   <h3 className="text-white font-bold text-[2rem] leading-9">
-                    Stake directly
-                    <br />
-                    in your wallet
+                    Stake directly in your wallet
                   </h3>
                 </div>
 
