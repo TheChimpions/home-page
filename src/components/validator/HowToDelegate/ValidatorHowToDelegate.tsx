@@ -111,14 +111,6 @@ export default function ValidatorHowToDelegate() {
                     </li>
                   ))}
                 </ol>
-
-                <Image
-                  src="/assets/arrow-down.png"
-                  alt=""
-                  width={89}
-                  height={34}
-                  className="pointer-events-none absolute left-18 top-full hidden h-104 w-auto lg:block"
-                />
               </div>
             </article>
           </div>
