@@ -4,6 +4,7 @@ import Image from "next/image";
 import { toast } from "sonner";
 import StakeTerminal from "@/components/validator/StakeTerminal/StakeTerminal";
 import FadeUp from "@/components/ui/FadeUp";
+import { VALIDATOR_PUBKEY } from "@/lib/validator";
 
 const walletSteps = [
   "Open Phantom, Backpack, Solflare, etc.",
@@ -18,15 +19,13 @@ const chimpsolBenefits = [
   "Liquid and tradeable",
 ];
 
-const validatorAddress = "2AKNir1uW2Hmnzuuqpizu9SuFzj2GpRFLx2cCChtPUpbc";
-
 export default function ValidatorHowToDelegate() {
   const handleCopyAddress = async () => {
     let didCopy = false;
 
     try {
       if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(validatorAddress);
+        await navigator.clipboard.writeText(VALIDATOR_PUBKEY);
         didCopy = true;
       }
     } catch {
@@ -35,7 +34,7 @@ export default function ValidatorHowToDelegate() {
 
     if (!didCopy && typeof document !== "undefined") {
       const textarea = document.createElement("textarea");
-      textarea.value = validatorAddress;
+      textarea.value = VALIDATOR_PUBKEY;
       textarea.setAttribute("readonly", "");
       textarea.style.position = "absolute";
       textarea.style.left = "-9999px";
@@ -100,9 +99,7 @@ export default function ValidatorHowToDelegate() {
                   </div>
 
                   <h3 className="text-white font-bold text-[2rem] leading-9">
-                    Stake directly
-                    <br />
-                    in your wallet
+                    Stake directly in your wallet
                   </h3>
                 </div>
 
@@ -113,21 +110,54 @@ export default function ValidatorHowToDelegate() {
                     </li>
                   ))}
                 </ol>
-
-                <Image
-                  src="/assets/arrow-down.png"
-                  alt=""
-                  width={89}
-                  height={34}
-                  className="pointer-events-none absolute left-18 top-full hidden h-104 w-auto lg:block"
-                />
               </div>
             </article>
           </div>
         </FadeUp>
 
-        <div className="mx-auto h-px w-full bg-gray-modern-800" />
+        <FadeUp delay={0}>
+          <article className="rounded-md border border-gray-modern-800 bg-gray-modern-800/90 px-6 py-6 sm:px-6 w-full mx-auto text-center">
+            <div className="flex flex-col gap-6">
+              <h3 className="text-center text-white font-bold text-[1.5rem] leading-5">
+                Our{" "}
+                <span
+                  className="animate-gradient-flow"
+                  style={
+                    {
+                      background:
+                        "linear-gradient(90deg, #11EEB4 0%, #b9feeb 25%, #11EEB4 50%, #b9feeb 75%, #11EEB4 100%)",
+                      backgroundSize: "200% 100%",
+                      backgroundClip: "text",
+                      WebkitBackgroundClip: "text",
+                      color: "transparent",
+                      WebkitTextFillColor: "transparent",
+                    } as React.CSSProperties
+                  }
+                >
+                  validator address
+                </span>
+              </h3>
 
+              <button
+                type="button"
+                onClick={handleCopyAddress}
+                className="w-full rounded-sm border border-gray-modern-900 bg-gray-modern-900 px-3 py-3 cursor-pointer transition-colors hover:border-gray-modern-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aqua-marine-500/70"
+                aria-label="Copy validator address"
+              >
+                <p className="text-center text-gray-modern-300 text-xl tracking-tight break-all">
+                  {VALIDATOR_PUBKEY}
+                </p>
+              </button>
+
+              <p className="text-center text-gray-modern-500 text-lg leading-5">
+                Copy this address when staking through command line or supported
+                wallets
+              </p>
+            </div>
+          </article>
+        </FadeUp>
+
+        <div className="mx-auto h-px w-full bg-gray-modern-800" />
         <FadeUp delay={150} className="w-full">
           <div className="mx-auto grid w-full grid-cols-1 gap-6 lg:grid-cols-[1fr_1.3fr] lg:items-start mb-6">
             <article className="rounded-md border border-gray-modern-800 bg-gray-modern-900 p-6 md:p-9 shadow-[0_0_18px_rgba(0,0,0,0.25)]">
@@ -168,48 +198,6 @@ export default function ValidatorHowToDelegate() {
           </div>
         </FadeUp>
       </div>
-
-      <FadeUp delay={0}>
-        <article className="rounded-md border border-gray-modern-800 bg-gray-modern-800/90 px-6 py-6 sm:px-6 w-full mx-auto text-center">
-          <div className="flex flex-col gap-6">
-            <h3 className="text-center text-white font-bold text-[1.5rem] leading-5">
-              Our{" "}
-              <span
-                className="animate-gradient-flow"
-                style={
-                  {
-                    background:
-                      "linear-gradient(90deg, #11EEB4 0%, #b9feeb 25%, #11EEB4 50%, #b9feeb 75%, #11EEB4 100%)",
-                    backgroundSize: "200% 100%",
-                    backgroundClip: "text",
-                    WebkitBackgroundClip: "text",
-                    color: "transparent",
-                    WebkitTextFillColor: "transparent",
-                  } as React.CSSProperties
-                }
-              >
-                validator address
-              </span>
-            </h3>
-
-            <button
-              type="button"
-              onClick={handleCopyAddress}
-              className="w-full rounded-sm border border-gray-modern-900 bg-gray-modern-900 px-3 py-3 cursor-pointer transition-colors hover:border-gray-modern-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aqua-marine-500/70"
-              aria-label="Copy validator address"
-            >
-              <p className="text-center text-gray-modern-300 text-xl tracking-tight break-all">
-                {validatorAddress}
-              </p>
-            </button>
-
-            <p className="text-center text-gray-modern-500 text-lg leading-5">
-              Copy this address when staking through command line or supported
-              wallets
-            </p>
-          </div>
-        </article>
-      </FadeUp>
     </section>
   );
 }

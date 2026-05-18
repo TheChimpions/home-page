@@ -6,11 +6,10 @@ import {
   fetchActiveListings,
   MARKETPLACE_ADDRESSES,
 } from "./marketplace-listings";
+import { VALIDATOR_PUBKEY } from "./validator";
 
 const ME_BASE = "https://api-mainnet.magiceden.dev/v2";
 const COLLECTION = "the_chimpions";
-
-const VALIDATOR_PUBKEY = "2AKKnirWVZMhnzuwqpizw9SwfZjGpRFLx2zCCNtPWpbc";
 
 const TREASURY_MULTISIG = "Df7VuBkasBXHyEYUsuqQnEpDvLyZmfoxDnk932CUak2c";
 const TREASURY_CACHE_SECONDS = 24 * 60 * 60;
@@ -385,7 +384,7 @@ interface StakewizValidator {
   apy_estimate: number;
   commission: number;
   delinquent: boolean;
-  uptime?: number;
+  uptime: number;
 }
 
 export async function fetchValidatorStakewiz(): Promise<StakewizValidator | null> {
@@ -407,7 +406,7 @@ export async function fetchValidatorStakewiz(): Promise<StakewizValidator | null
     console.warn("[stakewiz] no data returned");
   } else {
     console.log(
-      `[stakewiz] apy=${data.apy_estimate?.toFixed(2)}% credit_ratio=${data.credit_ratio?.toFixed(2)}% commission=${data.commission}%`,
+      `[stakewiz] apy=${data.apy_estimate?.toFixed(2)}% uptime=${data.uptime?.toFixed(2)}% commission=${data.commission}%`,
     );
   }
   return data;

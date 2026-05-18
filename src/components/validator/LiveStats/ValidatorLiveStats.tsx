@@ -23,7 +23,7 @@ export default async function ValidatorLiveStats() {
         : { end: Math.round(stakeSol / 1000), decimals: 0, suffix: "k" };
   const apy = stakewiz?.apy_estimate ?? null;
   const commission = stakewiz?.commission ?? null;
-  const uptime = stakewiz?.credit_ratio ?? null;
+  const uptime = stakewiz?.uptime ?? null;
 
   const liveStats = [
     {
