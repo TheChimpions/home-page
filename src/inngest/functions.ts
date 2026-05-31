@@ -1,5 +1,5 @@
 import { inngest } from "./client";
-import { runFullEnrichment } from "@/lib/solana-nft";
+import { runFullEnrichment, runProvenanceEnrichment } from "@/lib/solana-nft";
 
 export const refreshEnrichmentCron = inngest.createFunction(
   {
@@ -21,6 +21,20 @@ export const enrichOnDemand = inngest.createFunction(
   async ({ step }) => {
     console.log("[inngest] event-triggered enrichment");
     const result = await step.run("enrich", async () => runFullEnrichment());
+    return { status: "refreshed", ...result };
+  },
+);
+
+export const provenanceRefresh = inngest.createFunction(
+  {
+    id: "provenance-refresh",
+    triggers: [{ event: "chimpions/provenance.refresh" }],
+  },
+  async ({ step }) => {
+    console.log("[inngest] event-triggered provenance refresh");
+    const result = await step.run("provenance", async () =>
+      runProvenanceEnrichment(),
+    );
     return { status: "refreshed", ...result };
   },
 );
