@@ -16,6 +16,20 @@ function stop(e: React.MouseEvent) {
   e.stopPropagation();
 }
 
+/** Gold crown shown when a holder has owned the chimp since mint. */
+function Crown({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+      className={className}
+    >
+      <path d="M3 7.5l4 3 5-6 5 6 4-3-1.6 10.5H4.6L3 7.5zM4.9 19.5h14.2v1.7H4.9z" />
+    </svg>
+  );
+}
+
 function formatAcquired(ts: number | null): string | null {
   if (!ts) return null;
   return new Date(ts * 1000).toLocaleDateString(undefined, {
@@ -31,6 +45,8 @@ interface NFTCardProps {
 export default function NFTCard({ nft }: NFTCardProps) {
   const [flipped, setFlipped] = useState(false);
   const provenance = nft.provenance ?? [];
+  // A single owner in the chain means the current holder has held since mint.
+  const heldSinceMint = provenance.length === 1;
 
   return (
     <div className="[perspective:1200px] transition-transform duration-300 hover:-translate-y-1">
@@ -134,7 +150,14 @@ export default function NFTCard({ nft }: NFTCardProps) {
                     <span className="text-white text-xl">{detail.label}:</span>
                   </div>
                   <div className="flex flex-col items-end min-w-0">
-                    {firstLineNode}
+                    <div className="flex items-center gap-1 min-w-0 max-w-full">
+                      {detail.value === "holder" && heldSinceMint && (
+                        <span title="Held since mint" className="flex shrink-0">
+                          <Crown className="size-4 text-gold-400" />
+                        </span>
+                      )}
+                      {firstLineNode}
+                    </div>
                     {restLine && (
                       <span
                         className="text-white text-xl truncate max-w-full text-right"
@@ -237,11 +260,20 @@ export default function NFTCard({ nft }: NFTCardProps) {
                         </span>
                       )}
                     </div>
-                    {owner.current && (
-                      <span className="shrink-0 rounded-full bg-electric-purple-500/20 px-2 py-0.5 text-xs font-medium text-electric-purple-300">
-                        Current
-                      </span>
-                    )}
+                    {owner.current &&
+                      (heldSinceMint ? (
+                        <span
+                          title="Held since mint"
+                          className="flex shrink-0 items-center gap-1 rounded-full bg-gold-500/20 px-2 py-0.5 text-xs font-medium text-gold-300"
+                        >
+                          <Crown className="size-3" />
+                          Since mint
+                        </span>
+                      ) : (
+                        <span className="shrink-0 rounded-full bg-electric-purple-500/20 px-2 py-0.5 text-xs font-medium text-electric-purple-300">
+                          Current
+                        </span>
+                      ))}
                   </li>
                 );
               })}
