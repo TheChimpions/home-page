@@ -5,6 +5,19 @@ export interface NFTListing {
   seller: string;
 }
 
+export interface ProvenanceOwner {
+  /** Wallet address of this owner. */
+  wallet: string;
+  /** Matrica username, when the wallet is linked to a Matrica profile. */
+  username: string | null;
+  /** Matrica profile picture, when available. */
+  pfp: string | null;
+  /** Unix timestamp (seconds) this owner acquired the NFT, when known. */
+  acquiredAt: number | null;
+  /** True for the present owner (first entry in the newest-first list). */
+  current: boolean;
+}
+
 export interface ChimpionMetadata {
   tokenId: number;
   mint?: string;
@@ -22,6 +35,8 @@ export interface ChimpionMetadata {
   holderTwitter?: string;
   listing?: NFTListing;
   artist?: string;
+  /** Ownership history (newest owner first), reconstructed from on-chain transfers. */
+  provenance?: ProvenanceOwner[];
 }
 
 export interface NFTFilters {

@@ -14,10 +14,13 @@ import { getAllScrapedTwitters } from "./twitter-overrides";
 import {
   getAllListingsByMint,
   getAllMatricaByWallet,
+  getAllProvenanceByMint,
   setListingsByMint,
   setMatricaByWallet,
+  setProvenanceByMint,
   type MatricaEntry,
 } from "./enrichment-cache";
+import { fetchProvenanceBatch } from "./provenance";
 
 interface HeliusAssetFile {
   mime?: string;
@@ -223,15 +226,18 @@ export async function getCacheSnapshot(): Promise<{
 async function applyEnrichmentFromCache(
   nfts: ChimpionMetadata[],
 ): Promise<void> {
-  const [matricaByWallet, listingsByMint, scrapedByUsername] = await Promise.all([
-    getAllMatricaByWallet(),
-    getAllListingsByMint(),
-    getAllScrapedTwitters(),
-  ]);
+  const [matricaByWallet, listingsByMint, scrapedByUsername, provenanceByMint] =
+    await Promise.all([
+      getAllMatricaByWallet(),
+      getAllListingsByMint(),
+      getAllScrapedTwitters(),
+      getAllProvenanceByMint(),
+    ]);
 
   let nftsWithName = 0;
   let nftsWithTwitter = 0;
   let nftsWithListing = 0;
+  let nftsWithProvenance = 0;
 
   for (const nft of nfts) {
     if (nft.holder) {
@@ -258,17 +264,37 @@ async function applyEnrichmentFromCache(
           nftsWithListing++;
         }
       }
+
+      const steps = provenanceByMint[nft.mint];
+      if (steps && steps.length > 0) {
+        // Stored oldest-first; expose newest-first and join Matrica identity.
+        const lastIdx = steps.length - 1;
+        nft.provenance = steps
+          .map((step, idx) => {
+            const entry = matricaByWallet[step.wallet];
+            return {
+              wallet: step.wallet,
+              username: entry?.username ?? null,
+              pfp: entry?.pfp ?? null,
+              acquiredAt: step.acquiredAt ?? null,
+              current: idx === lastIdx,
+            };
+          })
+          .reverse();
+        nftsWithProvenance++;
+      }
     }
   }
 
   console.log(
-    `[enrichment] applied from KV: ${nftsWithName} usernames, ${nftsWithTwitter} twitters, ${nftsWithListing} listings`,
+    `[enrichment] applied from KV: ${nftsWithName} usernames, ${nftsWithTwitter} twitters, ${nftsWithListing} listings, ${nftsWithProvenance} provenance`,
   );
 }
 
 export async function runFullEnrichment(): Promise<{
   matricaCount: number;
   listingsCount: number;
+  provenanceCount: number;
 }> {
   const t0 = Date.now();
   console.log("[enrichment] runFullEnrichment: starting");
@@ -276,16 +302,31 @@ export async function runFullEnrichment(): Promise<{
   const nfts = await cachedAssemble();
   if (nfts.length === 0) {
     console.warn("[enrichment] no NFTs in cache, abort");
-    return { matricaCount: 0, listingsCount: 0 };
+    return { matricaCount: 0, listingsCount: 0, provenanceCount: 0 };
   }
 
-  const uniqueHolders = Array.from(
-    new Set(
-      nfts
-        .map((n) => n.holder)
-        .filter((h): h is string => !!h && h !== "Unknown"),
-    ),
+  // Reconstruct ownership history from on-chain transfers before resolving
+  // Matrica, so every past owner (not just current holders) gets a username.
+  const mints = nfts
+    .map((n) => n.mint)
+    .filter((m): m is string => !!m);
+  const provenanceByMint = await fetchProvenanceBatch(mints);
+  await setProvenanceByMint(provenanceByMint);
+  const provenanceCount = Object.values(provenanceByMint).filter(
+    (steps) => steps.length > 0,
+  ).length;
+  console.log(
+    `[enrichment] provenance: ${provenanceCount}/${mints.length} chains → KV`,
   );
+
+  const walletSet = new Set<string>();
+  for (const n of nfts) {
+    if (n.holder && n.holder !== "Unknown") walletSet.add(n.holder);
+  }
+  for (const steps of Object.values(provenanceByMint)) {
+    for (const step of steps) walletSet.add(step.wallet);
+  }
+  const uniqueHolders = Array.from(walletSet);
 
   const matricaEntries: Record<string, MatricaEntry> = {};
   const API_CONCURRENCY = 8;
@@ -345,6 +386,6 @@ export async function runFullEnrichment(): Promise<{
     `[enrichment] runFullEnrichment done in ${((Date.now() - t0) / 1000).toFixed(1)}s`,
   );
 
-  return { matricaCount, listingsCount };
+  return { matricaCount, listingsCount, provenanceCount };
 }
 

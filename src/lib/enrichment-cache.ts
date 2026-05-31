@@ -5,11 +5,22 @@ import type { NFTListing } from "@/types/nft";
 
 const KV_MATRICA = "chimpions:enrichment:matrica:by-wallet";
 const KV_LISTINGS = "chimpions:enrichment:listings:by-mint";
+const KV_PROVENANCE = "chimpions:enrichment:provenance:by-mint";
 
 export interface MatricaEntry {
   username: string | null;
   userId: string | null;
   pfp: string | null;
+}
+
+/**
+ * One step in a chimp's ownership history. Usernames/pfps are not stored here —
+ * they're joined at read time from the matrica-by-wallet table so there is a
+ * single source of truth for wallet → Matrica identity.
+ */
+export interface ProvenanceStep {
+  wallet: string;
+  acquiredAt: number | null;
 }
 
 function getRedisCreds(): { url: string; token: string } | null {
@@ -37,6 +48,7 @@ function getRedis(): Redis | null {
 const LOCAL_DIR = path.join(process.cwd(), ".next", "cache", "chimpions");
 const LOCAL_MATRICA_FILE = path.join(LOCAL_DIR, "matrica-by-wallet.json");
 const LOCAL_LISTINGS_FILE = path.join(LOCAL_DIR, "listings-by-mint.json");
+const LOCAL_PROVENANCE_FILE = path.join(LOCAL_DIR, "provenance-by-mint.json");
 
 async function readLocalFile<T = string>(
   filepath: string,
@@ -150,5 +162,53 @@ export async function clearAllListings(): Promise<void> {
     await redis.del(KV_LISTINGS);
   } else {
     await writeLocalFile(LOCAL_LISTINGS_FILE, {});
+  }
+}
+
+export async function getAllProvenanceByMint(): Promise<
+  Record<string, ProvenanceStep[]>
+> {
+  const redis = getRedis();
+  if (redis) {
+    try {
+      const raw =
+        (await redis.hgetall<Record<string, ProvenanceStep[]>>(
+          KV_PROVENANCE,
+        )) ?? {};
+      return raw;
+    } catch (err) {
+      console.warn("[enrichment-cache] failed to read provenance KV:", err);
+      return {};
+    }
+  }
+  return readLocalFile<ProvenanceStep[]>(LOCAL_PROVENANCE_FILE);
+}
+
+export async function setProvenanceByMint(
+  entries: Record<string, ProvenanceStep[]>,
+): Promise<void> {
+  const redis = getRedis();
+  if (redis) {
+    const existingKeys = await redis.hkeys(KV_PROVENANCE);
+    const newKeys = new Set(Object.keys(entries));
+    const toRemove = existingKeys.filter((k) => !newKeys.has(k));
+
+    if (newKeys.size > 0) {
+      await redis.hset(KV_PROVENANCE, entries);
+    }
+    if (toRemove.length > 0) {
+      await redis.hdel(KV_PROVENANCE, ...toRemove);
+    }
+    return;
+  }
+  await writeLocalFile(LOCAL_PROVENANCE_FILE, entries);
+}
+
+export async function clearAllProvenance(): Promise<void> {
+  const redis = getRedis();
+  if (redis) {
+    await redis.del(KV_PROVENANCE);
+  } else {
+    await writeLocalFile(LOCAL_PROVENANCE_FILE, {});
   }
 }
