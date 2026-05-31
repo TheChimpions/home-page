@@ -31,12 +31,19 @@ export interface HolderStats {
   whales: number | null;
 }
 
+export interface HolderNFT {
+  id: string;
+  name: string | null;
+  image: string | null;
+}
+
 export interface HolderProfile {
   wallet: string;
   count: number;
   username: string | null;
   twitter: string | null;
   pfp: string | null;
+  nfts: HolderNFT[];
 }
 
 export async function fetchMEStats(): Promise<MEStats> {
@@ -56,7 +63,26 @@ export async function fetchMEStats(): Promise<MEStats> {
   };
 }
 
-async function fetchHolderCounts(): Promise<Map<string, number>> {
+interface HeliusAsset {
+  id: string;
+  content?: {
+    metadata?: { name?: string };
+    links?: { image?: string };
+    files?: { uri?: string; cdn_uri?: string }[];
+  };
+  ownership?: { owner?: string };
+}
+
+function assetImage(asset: HeliusAsset): string | null {
+  return (
+    asset.content?.links?.image ||
+    asset.content?.files?.[0]?.cdn_uri ||
+    asset.content?.files?.[0]?.uri ||
+    null
+  );
+}
+
+async function fetchHolderAssets(): Promise<Map<string, HolderNFT[]>> {
   if (!HELIUS_API_KEY) return new Map();
 
   const [data, listings] = await Promise.all([
@@ -81,18 +107,24 @@ async function fetchHolderCounts(): Promise<Map<string, number>> {
     fetchActiveListings(),
   ]);
 
-  const assets: { id: string; ownership?: { owner?: string } }[] =
-    data?.result?.items ?? [];
+  const assets: HeliusAsset[] = data?.result?.items ?? [];
 
-  const counts = new Map<string, number>();
+  const byOwner = new Map<string, HolderNFT[]>();
   for (const asset of assets) {
     const listing = listings.get(asset.id);
     const owner = listing?.seller || asset.ownership?.owner;
     if (!owner) continue;
     if (MARKETPLACE_ADDRESSES.has(owner)) continue;
-    counts.set(owner, (counts.get(owner) ?? 0) + 1);
+    const nft: HolderNFT = {
+      id: asset.id,
+      name: asset.content?.metadata?.name ?? null,
+      image: assetImage(asset),
+    };
+    const owned = byOwner.get(owner);
+    if (owned) owned.push(nft);
+    else byOwner.set(owner, [nft]);
   }
-  return counts;
+  return byOwner;
 }
 
 export async function fetchHolderStats(): Promise<HolderStats> {
@@ -107,12 +139,12 @@ export async function fetchHolderStats(): Promise<HolderStats> {
 
 const HOLDER_COUNTS_TTL_SECONDS = 30 * 24 * 60 * 60;
 
-const cachedHolderCounts = unstable_cache(
-  async (): Promise<[string, number][]> => {
-    const m = await fetchHolderCounts();
+const cachedHolderAssets = unstable_cache(
+  async (): Promise<[string, HolderNFT[]][]> => {
+    const m = await fetchHolderAssets();
     return Array.from(m.entries());
   },
-  ["holder-counts-v1"],
+  ["holder-assets-v1"],
   { revalidate: HOLDER_COUNTS_TTL_SECONDS, tags: ["holder-counts"] },
 );
 
@@ -128,12 +160,12 @@ export async function fetchHoldersWithProfiles(
 
 async function assembleHoldersWithProfiles(): Promise<HolderProfile[]> {
   const t0 = Date.now();
-  const countEntries = await cachedHolderCounts();
-  if (countEntries.length === 0) {
-    console.warn("[holders] fetchHolderCounts returned empty");
+  const assetEntries = await cachedHolderAssets();
+  if (assetEntries.length === 0) {
+    console.warn("[holders] fetchHolderAssets returned empty");
     return [];
   }
-  const counts = new Map(countEntries);
+  const assetsByWallet = new Map(assetEntries);
 
   const [matricaByWallet, scrapedByUsername] = await Promise.all([
     getAllMatricaByWallet(),
@@ -143,7 +175,8 @@ async function assembleHoldersWithProfiles(): Promise<HolderProfile[]> {
   const grouped = new Map<string, HolderProfile>();
   const standalone: HolderProfile[] = [];
 
-  for (const [wallet, count] of counts.entries()) {
+  for (const [wallet, nfts] of assetsByWallet.entries()) {
+    const count = nfts.length;
     const entry = matricaByWallet[wallet];
     const userId = entry?.userId ?? null;
     const username = entry?.username ?? null;
@@ -153,6 +186,7 @@ async function assembleHoldersWithProfiles(): Promise<HolderProfile[]> {
       const existing = grouped.get(userId);
       if (existing) {
         existing.count += count;
+        existing.nfts.push(...nfts);
         if (!existing.pfp && pfp) existing.pfp = pfp;
       } else {
         grouped.set(userId, {
@@ -161,6 +195,7 @@ async function assembleHoldersWithProfiles(): Promise<HolderProfile[]> {
           username,
           twitter: scrapedByUsername[username] ?? null,
           pfp,
+          nfts: [...nfts],
         });
       }
     } else {
@@ -170,6 +205,7 @@ async function assembleHoldersWithProfiles(): Promise<HolderProfile[]> {
         username: null,
         twitter: null,
         pfp: null,
+        nfts,
       });
     }
   }
