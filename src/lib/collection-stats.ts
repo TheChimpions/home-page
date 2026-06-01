@@ -6,12 +6,14 @@ import {
   fetchActiveListings,
   MARKETPLACE_ADDRESSES,
 } from "./marketplace-listings";
+import { fetchProgramAccounts } from "./program-accounts";
+import { CHIAO_TREASURY } from "./known-wallets";
 import { VALIDATOR_PUBKEY } from "./validator";
 
 const ME_BASE = "https://api-mainnet.magiceden.dev/v2";
 const COLLECTION = "the_chimpions";
 
-const TREASURY_MULTISIG = "Df7VuBkasBXHyEYUsuqQnEpDvLyZmfoxDnk932CUak2c";
+const TREASURY_MULTISIG = CHIAO_TREASURY;
 const TREASURY_CACHE_SECONDS = 24 * 60 * 60;
 const TREASURY_USD_FALLBACK = 140000;
 
@@ -109,19 +111,36 @@ async function fetchHolderAssets(): Promise<Map<string, HolderNFT[]>> {
 
   const assets: HeliusAsset[] = data?.result?.items ?? [];
 
-  const byOwner = new Map<string, HolderNFT[]>();
+  // Resolve each asset's effective owner (the real seller for listed NFTs).
+  const owned: { owner: string; nft: HolderNFT }[] = [];
   for (const asset of assets) {
     const listing = listings.get(asset.id);
     const owner = listing?.seller || asset.ownership?.owner;
     if (!owner) continue;
+    owned.push({
+      owner,
+      nft: {
+        id: asset.id,
+        name: asset.content?.metadata?.name ?? null,
+        image: assetImage(asset),
+      },
+    });
+  }
+
+  // Drop NFTs parked in marketplace escrows or any other program-owned account
+  // (PDAs/escrows aren't real holders). The known-marketplace set is a cheap
+  // fast-path; on-chain program detection covers everything else.
+  const programAccounts = await fetchProgramAccounts(
+    owned.map((o) => o.owner).filter((o) => !MARKETPLACE_ADDRESSES.has(o)),
+  );
+
+  const byOwner = new Map<string, HolderNFT[]>();
+  for (const { owner, nft } of owned) {
+    if (owner === TREASURY_MULTISIG) continue; // project treasury, not a holder
     if (MARKETPLACE_ADDRESSES.has(owner)) continue;
-    const nft: HolderNFT = {
-      id: asset.id,
-      name: asset.content?.metadata?.name ?? null,
-      image: assetImage(asset),
-    };
-    const owned = byOwner.get(owner);
-    if (owned) owned.push(nft);
+    if (programAccounts.has(owner)) continue;
+    const list = byOwner.get(owner);
+    if (list) list.push(nft);
     else byOwner.set(owner, [nft]);
   }
   return byOwner;

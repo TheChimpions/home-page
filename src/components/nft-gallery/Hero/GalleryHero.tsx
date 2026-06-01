@@ -12,8 +12,6 @@ const tribeOptions = [
   "Proletariat",
 ];
 
-const typeOptions = ["All Types", "1/1"];
-
 interface GalleryHeroProps {
   filters: NFTFilters;
   onFiltersChange: (filters: NFTFilters) => void;
@@ -27,8 +25,13 @@ export default function GalleryHero({
     onFiltersChange({ ...filters, tribe: value || undefined });
   };
 
-  const handleTypeChange = (value: string) => {
-    onFiltersChange({ ...filters, type: value || undefined });
+  const handleHeldSinceMintChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    onFiltersChange({
+      ...filters,
+      heldSinceMint: e.target.checked || undefined,
+    });
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -77,12 +80,15 @@ export default function GalleryHero({
             icon="/assets/tribe.svg"
           />
 
-          <CustomSelect
-            value={filters.type || ""}
-            onChange={handleTypeChange}
-            options={typeOptions}
-            icon="/assets/type.svg"
-          />
+          <label className="flex w-full cursor-pointer select-none items-center gap-3 rounded-sm border border-gray-modern-800 bg-gray-modern-950 px-4 py-4 text-xl text-white transition-colors hover:border-gray-modern-600 sm:w-auto">
+            <input
+              type="checkbox"
+              checked={!!filters.heldSinceMint}
+              onChange={handleHeldSinceMintChange}
+              className="size-5 shrink-0 cursor-pointer accent-aqua-marine-400"
+            />
+            Held Since Mint
+          </label>
         </div>
 
         <div className="relative w-full xl:w-125  flex flex-row items-center">

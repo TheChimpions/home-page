@@ -14,10 +14,13 @@ import { getAllScrapedTwitters } from "./twitter-overrides";
 import {
   getAllListingsByMint,
   getAllMatricaByWallet,
+  getAllProvenanceByMint,
   setListingsByMint,
   setMatricaByWallet,
+  setProvenanceByMint,
   type MatricaEntry,
 } from "./enrichment-cache";
+import { fetchProvenanceBatch } from "./provenance";
 
 interface HeliusAssetFile {
   mime?: string;
@@ -223,15 +226,18 @@ export async function getCacheSnapshot(): Promise<{
 async function applyEnrichmentFromCache(
   nfts: ChimpionMetadata[],
 ): Promise<void> {
-  const [matricaByWallet, listingsByMint, scrapedByUsername] = await Promise.all([
-    getAllMatricaByWallet(),
-    getAllListingsByMint(),
-    getAllScrapedTwitters(),
-  ]);
+  const [matricaByWallet, listingsByMint, scrapedByUsername, provenanceByMint] =
+    await Promise.all([
+      getAllMatricaByWallet(),
+      getAllListingsByMint(),
+      getAllScrapedTwitters(),
+      getAllProvenanceByMint(),
+    ]);
 
   let nftsWithName = 0;
   let nftsWithTwitter = 0;
   let nftsWithListing = 0;
+  let nftsWithProvenance = 0;
 
   for (const nft of nfts) {
     if (nft.holder) {
@@ -258,57 +264,120 @@ async function applyEnrichmentFromCache(
           nftsWithListing++;
         }
       }
+
+      const steps = provenanceByMint[nft.mint];
+      if (steps && steps.length > 0) {
+        // Stored oldest-first; join Matrica identity, then collapse consecutive
+        // steps owned by the same Matrica user. provenance.ts already drops
+        // consecutive wallet dups, but a single user can move a chimp between
+        // their own wallets — those should read as one owner, not several.
+        const enriched = steps.map((step) => {
+          const entry = matricaByWallet[step.wallet];
+          return {
+            wallet: step.wallet,
+            username: entry?.username ?? null,
+            pfp: entry?.pfp ?? null,
+            acquiredAt: step.acquiredAt ?? null,
+            userId: entry?.userId ?? null,
+          };
+        });
+
+        const identityKey = (s: (typeof enriched)[number]) =>
+          s.userId ?? s.username ?? s.wallet;
+
+        const collapsed: typeof enriched = [];
+        for (const step of enriched) {
+          const prev = collapsed[collapsed.length - 1];
+          if (prev && identityKey(prev) === identityKey(step)) {
+            // Keep the earliest acquisition (prev) but adopt a resolved
+            // identity/pfp if the first wallet in the run lacked one.
+            if (!prev.username && step.username) {
+              prev.username = step.username;
+              prev.pfp = step.pfp;
+            }
+            continue;
+          }
+          collapsed.push({ ...step });
+        }
+
+        // Expose newest-first for display.
+        const lastIdx = collapsed.length - 1;
+        nft.provenance = collapsed
+          .map((step, idx) => ({
+            wallet: step.wallet,
+            username: step.username,
+            pfp: step.pfp,
+            acquiredAt: step.acquiredAt,
+            current: idx === lastIdx,
+          }))
+          .reverse();
+        nftsWithProvenance++;
+      }
     }
   }
 
   console.log(
-    `[enrichment] applied from KV: ${nftsWithName} usernames, ${nftsWithTwitter} twitters, ${nftsWithListing} listings`,
+    `[enrichment] applied from KV: ${nftsWithName} usernames, ${nftsWithTwitter} twitters, ${nftsWithListing} listings, ${nftsWithProvenance} provenance`,
   );
 }
 
-export async function runFullEnrichment(): Promise<{
-  matricaCount: number;
-  listingsCount: number;
-}> {
-  const t0 = Date.now();
-  console.log("[enrichment] runFullEnrichment: starting");
-
-  const nfts = await cachedAssemble();
-  if (nfts.length === 0) {
-    console.warn("[enrichment] no NFTs in cache, abort");
-    return { matricaCount: 0, listingsCount: 0 };
-  }
-
-  const uniqueHolders = Array.from(
-    new Set(
-      nfts
-        .map((n) => n.holder)
-        .filter((h): h is string => !!h && h !== "Unknown"),
-    ),
-  );
-
-  const matricaEntries: Record<string, MatricaEntry> = {};
+/** Resolve a set of wallets to Matrica identities with bounded concurrency. */
+async function resolveMatricaForWallets(
+  wallets: string[],
+): Promise<Record<string, MatricaEntry>> {
+  const entries: Record<string, MatricaEntry> = {};
   const API_CONCURRENCY = 8;
   let cursor = 0;
   await Promise.all(
-    Array.from(
-      { length: Math.min(API_CONCURRENCY, uniqueHolders.length) },
-      async () => {
-        while (true) {
-          const i = cursor++;
-          if (i >= uniqueHolders.length) return;
-          const wallet = uniqueHolders[i];
-          const profile = await getMatricaProfileByWallet(wallet);
-          const username = getMatricaUsername(profile);
-          matricaEntries[wallet] = {
-            username,
-            userId: profile?.user?.id ?? null,
-            pfp: getMatricaPfp(profile),
-          };
-        }
-      },
-    ),
+    Array.from({ length: Math.min(API_CONCURRENCY, wallets.length) }, async () => {
+      while (true) {
+        const i = cursor++;
+        if (i >= wallets.length) return;
+        const wallet = wallets[i];
+        const profile = await getMatricaProfileByWallet(wallet);
+        entries[wallet] = {
+          username: getMatricaUsername(profile),
+          userId: profile?.user?.id ?? null,
+          pfp: getMatricaPfp(profile),
+        };
+      }
+    }),
   );
+  return entries;
+}
+
+/**
+ * Fetch on-chain provenance for every chimp, store it, then resolve Matrica
+ * for the union of current holders and all historical owners. Returns the
+ * stored maps so callers can compute counts. Shared by the full enrichment
+ * job and the provenance-only refresh.
+ */
+async function refreshProvenanceAndOwners(nfts: ChimpionMetadata[]): Promise<{
+  provenanceByMint: Record<string, Awaited<ReturnType<typeof fetchProvenanceBatch>>[string]>;
+  matricaEntries: Record<string, MatricaEntry>;
+}> {
+  // Reconstruct ownership history from on-chain transfers before resolving
+  // Matrica, so every past owner (not just current holders) gets a username.
+  const mints = nfts.map((n) => n.mint).filter((m): m is string => !!m);
+  const provenanceByMint = await fetchProvenanceBatch(mints);
+  await setProvenanceByMint(provenanceByMint);
+  const provenanceCount = Object.values(provenanceByMint).filter(
+    (steps) => steps.length > 0,
+  ).length;
+  console.log(
+    `[enrichment] provenance: ${provenanceCount}/${mints.length} chains → KV`,
+  );
+
+  const walletSet = new Set<string>();
+  for (const n of nfts) {
+    if (n.holder && n.holder !== "Unknown") walletSet.add(n.holder);
+  }
+  for (const steps of Object.values(provenanceByMint)) {
+    for (const step of steps) walletSet.add(step.wallet);
+  }
+  const uniqueHolders = Array.from(walletSet);
+
+  const matricaEntries = await resolveMatricaForWallets(uniqueHolders);
   await setMatricaByWallet(matricaEntries);
   const matricaCount = Object.values(matricaEntries).filter(
     (e) => e.username !== null,
@@ -316,6 +385,63 @@ export async function runFullEnrichment(): Promise<{
   console.log(
     `[enrichment] matrica: ${matricaCount}/${uniqueHolders.length} resolved → KV`,
   );
+
+  return { provenanceByMint, matricaEntries };
+}
+
+/**
+ * Provenance-focused refresh: ownership history + Matrica identities only
+ * (skips marketplace listings). Used by the manual /api/provenance trigger.
+ */
+export async function runProvenanceEnrichment(): Promise<{
+  matricaCount: number;
+  provenanceCount: number;
+}> {
+  const t0 = Date.now();
+  console.log("[enrichment] runProvenanceEnrichment: starting");
+
+  const nfts = await cachedAssemble();
+  if (nfts.length === 0) {
+    console.warn("[enrichment] no NFTs in cache, abort");
+    return { matricaCount: 0, provenanceCount: 0 };
+  }
+
+  const { provenanceByMint, matricaEntries } =
+    await refreshProvenanceAndOwners(nfts);
+
+  console.log(
+    `[enrichment] runProvenanceEnrichment done in ${((Date.now() - t0) / 1000).toFixed(1)}s`,
+  );
+
+  return {
+    matricaCount: Object.values(matricaEntries).filter((e) => e.username).length,
+    provenanceCount: Object.values(provenanceByMint).filter((s) => s.length > 0)
+      .length,
+  };
+}
+
+export async function runFullEnrichment(): Promise<{
+  matricaCount: number;
+  listingsCount: number;
+  provenanceCount: number;
+}> {
+  const t0 = Date.now();
+  console.log("[enrichment] runFullEnrichment: starting");
+
+  const nfts = await cachedAssemble();
+  if (nfts.length === 0) {
+    console.warn("[enrichment] no NFTs in cache, abort");
+    return { matricaCount: 0, listingsCount: 0, provenanceCount: 0 };
+  }
+
+  const { provenanceByMint, matricaEntries } =
+    await refreshProvenanceAndOwners(nfts);
+  const provenanceCount = Object.values(provenanceByMint).filter(
+    (steps) => steps.length > 0,
+  ).length;
+  const matricaCount = Object.values(matricaEntries).filter(
+    (e) => e.username !== null,
+  ).length;
 
   const meListings = await fetchActiveListings();
   const listings: Record<string, NonNullable<ChimpionMetadata["listing"]>> = {};
@@ -345,6 +471,6 @@ export async function runFullEnrichment(): Promise<{
     `[enrichment] runFullEnrichment done in ${((Date.now() - t0) / 1000).toFixed(1)}s`,
   );
 
-  return { matricaCount, listingsCount };
+  return { matricaCount, listingsCount, provenanceCount };
 }
 

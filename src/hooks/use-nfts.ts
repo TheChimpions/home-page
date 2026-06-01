@@ -22,7 +22,7 @@ async function fetchNFTs(
   const params = new URLSearchParams({
     page: page.toString(),
     ...(filters.tribe && { tribe: filters.tribe }),
-    ...(filters.type && { type: filters.type }),
+    ...(filters.heldSinceMint && { heldSinceMint: "true" }),
     ...(filters.search && { search: filters.search }),
   });
 
