@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const page = parseInt(searchParams.get("page") || "1");
     const tribe = searchParams.get("tribe") || undefined;
-    const type = searchParams.get("type") || undefined;
+    const heldSinceMint = searchParams.get("heldSinceMint") === "true";
     const search = searchParams.get("search") || undefined;
 
     const allNFTs = await fetchAllChimpions();
@@ -22,10 +22,9 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    if (type) {
-      filtered = filtered.filter(
-        (nft) => nft.type?.toLowerCase() === type.toLowerCase(),
-      );
+    if (heldSinceMint) {
+      // Held since mint = the current holder is the only owner in the chain.
+      filtered = filtered.filter((nft) => nft.provenance?.length === 1);
     }
 
     if (search) {

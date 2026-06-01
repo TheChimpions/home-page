@@ -41,7 +41,8 @@ export interface ChimpionMetadata {
 
 export interface NFTFilters {
   tribe?: string;
-  type?: string;
+  /** When true, only show chimps the current holder has held since mint. */
+  heldSinceMint?: boolean;
   search?: string;
 }
 

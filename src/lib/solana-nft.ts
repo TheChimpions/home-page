@@ -267,19 +267,49 @@ async function applyEnrichmentFromCache(
 
       const steps = provenanceByMint[nft.mint];
       if (steps && steps.length > 0) {
-        // Stored oldest-first; expose newest-first and join Matrica identity.
-        const lastIdx = steps.length - 1;
-        nft.provenance = steps
-          .map((step, idx) => {
-            const entry = matricaByWallet[step.wallet];
-            return {
-              wallet: step.wallet,
-              username: entry?.username ?? null,
-              pfp: entry?.pfp ?? null,
-              acquiredAt: step.acquiredAt ?? null,
-              current: idx === lastIdx,
-            };
-          })
+        // Stored oldest-first; join Matrica identity, then collapse consecutive
+        // steps owned by the same Matrica user. provenance.ts already drops
+        // consecutive wallet dups, but a single user can move a chimp between
+        // their own wallets — those should read as one owner, not several.
+        const enriched = steps.map((step) => {
+          const entry = matricaByWallet[step.wallet];
+          return {
+            wallet: step.wallet,
+            username: entry?.username ?? null,
+            pfp: entry?.pfp ?? null,
+            acquiredAt: step.acquiredAt ?? null,
+            userId: entry?.userId ?? null,
+          };
+        });
+
+        const identityKey = (s: (typeof enriched)[number]) =>
+          s.userId ?? s.username ?? s.wallet;
+
+        const collapsed: typeof enriched = [];
+        for (const step of enriched) {
+          const prev = collapsed[collapsed.length - 1];
+          if (prev && identityKey(prev) === identityKey(step)) {
+            // Keep the earliest acquisition (prev) but adopt a resolved
+            // identity/pfp if the first wallet in the run lacked one.
+            if (!prev.username && step.username) {
+              prev.username = step.username;
+              prev.pfp = step.pfp;
+            }
+            continue;
+          }
+          collapsed.push({ ...step });
+        }
+
+        // Expose newest-first for display.
+        const lastIdx = collapsed.length - 1;
+        nft.provenance = collapsed
+          .map((step, idx) => ({
+            wallet: step.wallet,
+            username: step.username,
+            pfp: step.pfp,
+            acquiredAt: step.acquiredAt,
+            current: idx === lastIdx,
+          }))
           .reverse();
         nftsWithProvenance++;
       }

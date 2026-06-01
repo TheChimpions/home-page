@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { ChimpionMetadata } from "@/types/nft";
 import { truncateAddress } from "@/lib/utils";
+import { getWalletLabel } from "@/lib/known-wallets";
 import HolderAvatar from "@/components/our-holders/HolderAvatar";
 
 const details = [
@@ -87,8 +88,11 @@ export default function NFTCard({ nft }: NFTCardProps) {
                 nft[detail.value as keyof typeof nft] || "Unknown",
               );
               if (detail.value === "holder") {
+                const holderLabel = getWalletLabel(nft.holder);
                 if (nft.listing) {
                   raw = "Listed";
+                } else if (holderLabel) {
+                  raw = holderLabel;
                 } else if (nft.holderName) {
                   raw = `@${nft.holderName}`;
                 } else {
@@ -228,12 +232,16 @@ export default function NFTCard({ nft }: NFTCardProps) {
           ) : (
             <ol className="-mr-1 flex flex-1 flex-col gap-2 overflow-y-auto pr-1">
               {provenance.map((owner, idx) => {
-                const display = owner.username
-                  ? `@${owner.username}`
-                  : truncateAddress(owner.wallet);
-                const href = owner.username
-                  ? `https://matrica.io/user/${owner.username}`
-                  : `https://solscan.io/account/${owner.wallet}`;
+                const label = getWalletLabel(owner.wallet);
+                const display =
+                  label ??
+                  (owner.username
+                    ? `@${owner.username}`
+                    : truncateAddress(owner.wallet));
+                const href =
+                  !label && owner.username
+                    ? `https://matrica.io/user/${owner.username}`
+                    : `https://solscan.io/account/${owner.wallet}`;
                 const acquired = formatAcquired(owner.acquiredAt);
                 return (
                   <li
