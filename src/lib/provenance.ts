@@ -1,5 +1,5 @@
 import { MARKETPLACE_ADDRESSES } from "./marketplace-listings";
-import { fetchProgramAccounts } from "./program-accounts";
+import { isEscrowOrProgramAccount } from "./program-accounts";
 import type { ProvenanceStep } from "./enrichment-cache";
 
 const HELIUS_API_KEY = process.env.HELIUS_API_KEY;
@@ -86,16 +86,10 @@ export async function fetchProvenanceForMint(
   // Helius returns newest-first within and across pages; order oldest-first.
   events.sort((a, b) => a.ts - b.ts);
 
-  // Escrow/program-owned accounts aren't real owners. Known marketplaces are a
-  // cheap fast-path; on-chain program detection catches any other escrow PDA.
-  const programAccounts = await fetchProgramAccounts(
-    events.map((e) => e.wallet).filter((w) => !MARKETPLACE_ADDRESSES.has(w)),
-  );
-
   const chain: ProvenanceStep[] = [];
   for (const e of events) {
-    if (MARKETPLACE_ADDRESSES.has(e.wallet)) continue; // skip escrows
-    if (programAccounts.has(e.wallet)) continue; // skip other program accounts
+    if (MARKETPLACE_ADDRESSES.has(e.wallet)) continue; // skip known marketplaces
+    if (isEscrowOrProgramAccount(e.wallet)) continue; // skip escrow/PDA hops
     const last = chain[chain.length - 1];
     if (last && last.wallet === e.wallet) continue; // collapse consecutive dups
     chain.push({ wallet: e.wallet, acquiredAt: e.ts ?? null });

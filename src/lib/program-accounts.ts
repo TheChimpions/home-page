@@ -1,74 +1,35 @@
-const HELIUS_API_KEY =
-  process.env.HELIUS_API_KEY || process.env.NEXT_PUBLIC_HELIUS_API_KEY;
+import { PublicKey } from "@solana/web3.js";
+import { getWalletLabel } from "./known-wallets";
 
-// A normal user wallet is owned by the System Program. Marketplace escrows and
-// other on-chain accounts are PDAs owned by their program (or are executable
-// programs themselves), so the account owner is the discriminator.
-const SYSTEM_PROGRAM = "11111111111111111111111111111111";
+// A real, user-controlled wallet is a valid ed25519 keypair, so its address
+// lies ON the curve. Program-derived accounts — marketplace listing escrows,
+// PDAs, associated token accounts — are deliberately OFF the curve. Unlike an
+// on-chain account-owner lookup, this holds even after the escrow account is
+// closed and its rent reclaimed (a closed escrow returns null from the RPC and
+// would otherwise be mistaken for a normal wallet).
+const onCurveCache = new Map<string, boolean>();
 
-// getMultipleAccounts accepts up to 100 pubkeys per call.
-const BATCH_SIZE = 100;
-
-// Resolved across the process so repeated checks for the same address (common
-// when many provenance chains share escrows/wallets) don't re-hit the RPC.
-const isProgramCache = new Map<string, boolean>();
-
-interface RpcAccount {
-  owner?: string;
-  executable?: boolean;
+function isOnCurve(address: string): boolean {
+  const cached = onCurveCache.get(address);
+  if (cached !== undefined) return cached;
+  let result: boolean;
+  try {
+    result = PublicKey.isOnCurve(new PublicKey(address).toBytes());
+  } catch {
+    result = false; // unparseable address → treat as non-wallet
+  }
+  onCurveCache.set(address, result);
+  return result;
 }
 
 /**
- * Given a list of wallet addresses, return the subset that are program-owned
- * accounts (marketplace escrows, PDAs, executables) rather than real,
- * user-controlled wallets. Addresses that don't exist on-chain are treated as
- * normal wallets — a fresh keypair that only ever received an NFT may have no
- * lamport-funded account, and dropping it would hide a genuine holder.
+ * True when an address is a program-derived/escrow account rather than a real
+ * user wallet (off the ed25519 curve).
  *
- * Failures default to "not a program account" so a transient RPC error never
- * silently removes real holders/owners.
+ * Known labeled wallets are exempt — e.g. the Chiao treasury is a Squads vault
+ * (an off-curve PDA) that we still want to surface as a genuine owner.
  */
-export async function fetchProgramAccounts(
-  addresses: string[],
-): Promise<Set<string>> {
-  const programAccounts = new Set<string>();
-  if (!HELIUS_API_KEY || addresses.length === 0) return programAccounts;
-
-  const unique = [...new Set(addresses)];
-  const toLookup = unique.filter((a) => !isProgramCache.has(a));
-
-  for (let i = 0; i < toLookup.length; i += BATCH_SIZE) {
-    const batch = toLookup.slice(i, i + BATCH_SIZE);
-    const data = await fetch(
-      `https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          jsonrpc: "2.0",
-          id: "program-account-check",
-          method: "getMultipleAccounts",
-          // dataSlice 0 bytes: we only need owner/executable, not the payload.
-          params: [batch, { encoding: "base64", dataSlice: { offset: 0, length: 0 } }],
-        }),
-        next: { revalidate: 3600 },
-      },
-    )
-      .then((r) => (r.ok ? r.json() : null))
-      .catch(() => null);
-
-    const values: (RpcAccount | null)[] = data?.result?.value ?? [];
-    batch.forEach((addr, idx) => {
-      const acc = values[idx];
-      // Missing account / failed lookup → treat as a normal wallet (safe default).
-      const isProgram =
-        !!acc && (acc.executable === true || acc.owner !== SYSTEM_PROGRAM);
-      isProgramCache.set(addr, isProgram);
-    });
-  }
-
-  for (const addr of unique) {
-    if (isProgramCache.get(addr)) programAccounts.add(addr);
-  }
-  return programAccounts;
+export function isEscrowOrProgramAccount(address: string): boolean {
+  if (getWalletLabel(address)) return false; // known, legitimate owner
+  return !isOnCurve(address);
 }

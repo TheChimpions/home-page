@@ -8,6 +8,7 @@ import {
 import {
   detectListingByHolder,
   fetchActiveListings,
+  MARKETPLACE_ADDRESSES,
 } from "./marketplace-listings";
 import { fetchTensorListingsBatch } from "./tensor-listings";
 import { getAllScrapedTwitters } from "./twitter-overrides";
@@ -21,6 +22,7 @@ import {
   type MatricaEntry,
 } from "./enrichment-cache";
 import { fetchProvenanceBatch } from "./provenance";
+import { isEscrowOrProgramAccount } from "./program-accounts";
 
 interface HeliusAssetFile {
   mime?: string;
@@ -265,7 +267,14 @@ async function applyEnrichmentFromCache(
         }
       }
 
-      const steps = provenanceByMint[nft.mint];
+      const rawSteps = provenanceByMint[nft.mint];
+      // Drop escrow/PDA hops at read time too, so chains stored before this
+      // filtering existed are cleaned without waiting for a provenance rebuild.
+      const steps = rawSteps?.filter(
+        (s) =>
+          !MARKETPLACE_ADDRESSES.has(s.wallet) &&
+          !isEscrowOrProgramAccount(s.wallet),
+      );
       if (steps && steps.length > 0) {
         // Stored oldest-first; join Matrica identity, then collapse consecutive
         // steps owned by the same Matrica user. provenance.ts already drops
