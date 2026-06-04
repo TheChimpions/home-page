@@ -2,6 +2,7 @@
 
 import { CheckCircle2, Copy, ExternalLink, X } from "lucide-react";
 import toast from "react-hot-toast";
+import { orbTxUrl } from "@/lib/utils";
 
 interface SwapToastProps {
   sig: string;
@@ -74,13 +75,13 @@ export function SwapToast({ sig }: SwapToastProps) {
           <span className="mt-1">Copy Signature</span>
         </button>
         <a
-          href={`https://solscan.io/tx/${sig}`}
+          href={orbTxUrl(sig)}
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-2 text-[14px] justify-center flex-1 px-3 py-2 hover:bg-gray-modern-800 text-xs text-gray-modern-300 transition-colors"
         >
           <ExternalLink className="w-4 h-4" />
-          <span className="mt-1">SolScan Link</span>
+          <span className="mt-1">Orb Link</span>
         </a>
       </div>
     </div>

@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { ChimpionMetadata } from "@/types/nft";
-import { truncateAddress } from "@/lib/utils";
+import { truncateAddress, orbAddressUrl } from "@/lib/utils";
 import { getWalletLabel } from "@/lib/known-wallets";
 import HolderAvatar from "@/components/our-holders/HolderAvatar";
 
@@ -241,7 +241,7 @@ export default function NFTCard({ nft }: NFTCardProps) {
                 const href =
                   !label && owner.username
                     ? `https://matrica.io/user/${owner.username}`
-                    : `https://solscan.io/account/${owner.wallet}`;
+                    : orbAddressUrl(owner.wallet);
                 const acquired = formatAcquired(owner.acquiredAt);
                 return (
                   <li

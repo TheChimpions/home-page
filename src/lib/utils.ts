@@ -19,3 +19,16 @@ export function truncateAddress(address?: string | null): string {
   if (address.length <= 11) return address;
   return `${address.slice(0, 4)}...${address.slice(-4)}`;
 }
+
+// Orb is our explorer of record for accounts and transactions.
+const ORB_BASE = "https://orbmarkets.io";
+
+/** Orb explorer link for a wallet/account pubkey. */
+export function orbAddressUrl(pubkey: string): string {
+  return `${ORB_BASE}/address/${pubkey}`;
+}
+
+/** Orb explorer link for a transaction signature. */
+export function orbTxUrl(signature: string): string {
+  return `${ORB_BASE}/tx/${signature}`;
+}
