@@ -5,6 +5,7 @@ import ValidatorHowItWorks from "../HowItWorks/ValidatorHowItWorks";
 import ValidatorWhyStake from "../WhyStake/ValidatorWhyStake";
 import ValidatorDefiIntegration from "../DefiIntegration/ValidatorDefiIntegration";
 import ValidatorHowToDelegate from "../HowToDelegate/ValidatorHowToDelegate";
+import ValidatorPerch from "../Perch/ValidatorPerch";
 
 export default function Validator() {
   return (
@@ -45,6 +46,7 @@ export default function Validator() {
         <ValidatorWhyStake />
         <ValidatorDefiIntegration />
         <ValidatorHowToDelegate />
+        <ValidatorPerch />
       </div>
     </section>
   );
