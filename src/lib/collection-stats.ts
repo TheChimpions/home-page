@@ -1,4 +1,5 @@
 import { unstable_cache } from "next/cache";
+import { PublicKey } from "@solana/web3.js";
 import { getAllScrapedTwitters } from "./twitter-overrides";
 import { getAllMatricaByWallet } from "./enrichment-cache";
 import { fetchOrbPortfolioUSD } from "./orb-scraper";
@@ -231,6 +232,54 @@ interface VoteAccount {
   votePubkey: string;
   nodePubkey: string;
   activatedStake: number;
+  /** Legacy u8 percent field — deprecated, truncates fractional rates. */
+  commission?: number;
+  /** Commission as u16 basis points: 500 = 5%. */
+  inflationRewardsCommissionBps?: number;
+  /** [epoch, credits, previousCredits] for the last few epochs. */
+  epochCredits?: [number, number, number][];
+}
+
+async function heliusRpc<T>(
+  id: string,
+  method: string,
+  params: unknown[],
+  revalidate: number,
+): Promise<T | null> {
+  if (!HELIUS_API_KEY) return null;
+  const data = await fetch(
+    `https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ jsonrpc: "2.0", id, method, params }),
+      next: { revalidate },
+    },
+  )
+    .then((r) => (r.ok ? r.json() : null))
+    .catch((err) => {
+      console.warn(`[rpc] ${method} failed:`, err);
+      return null;
+    });
+
+  if (data?.error) {
+    console.warn(`[rpc] ${method} returned error:`, data.error);
+    return null;
+  }
+  return (data?.result as T) ?? null;
+}
+
+/**
+ * Vote-account commission is now stored on chain as u16 basis points. The old
+ * u8 `commission` percent field is still echoed by RPC but is deprecated and
+ * rounds fractional rates, so prefer the bps field when the node returns it.
+ */
+function voteAccountCommissionPercent(va: VoteAccount): number | null {
+  if (typeof va.inflationRewardsCommissionBps === "number") {
+    return va.inflationRewardsCommissionBps / 100;
+  }
+  if (typeof va.commission === "number") return va.commission;
+  return null;
 }
 
 const STAKE_PROGRAM = "Stake11111111111111111111111111111111111111";
@@ -240,86 +289,114 @@ interface RpcStakeAccount {
   account: { data: [string, string]; lamports: number };
 }
 
-let cachedVoteAccount: VoteAccount | null = null;
-let voteAccountCachedAt = 0;
+interface VoteAccountsSnapshot {
+  validator: VoteAccount;
+  delinquent: boolean;
+  /** Best per-epoch vote credits earned by any validator, the uptime baseline. */
+  bestCreditsByEpoch: Map<number, number>;
+}
+
+let cachedSnapshot: VoteAccountsSnapshot | null = null;
+let snapshotCachedAt = 0;
 const VOTE_ACCOUNT_TTL_MS = 10 * 60 * 1000;
 
-async function getValidatorVoteAccount(): Promise<VoteAccount | null> {
-  if (
-    cachedVoteAccount &&
-    Date.now() - voteAccountCachedAt < VOTE_ACCOUNT_TTL_MS
-  ) {
-    return cachedVoteAccount;
+function creditsEarnedInEpoch(va: VoteAccount, epoch: number): number {
+  for (const [e, credits, previous] of va.epochCredits ?? []) {
+    if (e === epoch) return credits - previous;
+  }
+  return 0;
+}
+
+/**
+ * Fetches every vote account in one call. VALIDATOR_PUBKEY may be either the
+ * identity or the vote address, and the full list doubles as the network
+ * baseline for uptime, so there is nothing to gain from a filtered request.
+ */
+async function getVoteAccountsSnapshot(): Promise<VoteAccountsSnapshot | null> {
+  if (cachedSnapshot && Date.now() - snapshotCachedAt < VOTE_ACCOUNT_TTL_MS) {
+    return cachedSnapshot;
   }
   if (!HELIUS_API_KEY) {
     console.warn("[validator] HELIUS_API_KEY not set");
     return null;
   }
 
-  const data = await fetch(
-    `https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        jsonrpc: "2.0",
-        id: "vote-accounts",
-        method: "getVoteAccounts",
-        params: [{ votePubkey: VALIDATOR_PUBKEY }],
-      }),
-      next: { revalidate: 600 },
-    },
-  )
-    .then((r) => (r.ok ? r.json() : null))
-    .catch(() => null);
+  const result = await heliusRpc<{
+    current: VoteAccount[];
+    delinquent: VoteAccount[];
+  }>("vote-accounts", "getVoteAccounts", [], 600);
 
-  let accounts: VoteAccount[] = [
-    ...(data?.result?.current ?? []),
-    ...(data?.result?.delinquent ?? []),
-  ];
-  let found = accounts.find((a) => a.votePubkey === VALIDATOR_PUBKEY);
+  const current = result?.current ?? [];
+  const delinquent = result?.delinquent ?? [];
+  const matches = (a: VoteAccount) =>
+    a.votePubkey === VALIDATOR_PUBKEY || a.nodePubkey === VALIDATOR_PUBKEY;
 
-  if (!found) {
-    const allData = await fetch(
-      `https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`,
+  const validator = current.find(matches) ?? delinquent.find(matches);
+  if (!validator) {
+    console.warn(`[validator] vote account NOT FOUND for ${VALIDATOR_PUBKEY}`);
+    return null;
+  }
+
+  const bestCreditsByEpoch = new Map<number, number>();
+  for (const account of [...current, ...delinquent]) {
+    for (const [epoch, credits, previous] of account.epochCredits ?? []) {
+      const earned = credits - previous;
+      if (earned > (bestCreditsByEpoch.get(epoch) ?? 0)) {
+        bestCreditsByEpoch.set(epoch, earned);
+      }
+    }
+  }
+
+  cachedSnapshot = {
+    validator,
+    delinquent: delinquent.some(matches),
+    bestCreditsByEpoch,
+  };
+  snapshotCachedAt = Date.now();
+  console.log(
+    `[validator] vote account resolved (vote=${validator.votePubkey.slice(0, 8)}…, node=${validator.nodePubkey.slice(0, 8)}…, ${current.length + delinquent.length} validators)`,
+  );
+  return cachedSnapshot;
+}
+
+async function getValidatorVoteAccount(): Promise<VoteAccount | null> {
+  return (await getVoteAccountsSnapshot())?.validator ?? null;
+}
+
+let cachedStakeAccounts: RpcStakeAccount[] | null = null;
+let stakeAccountsCachedAt = 0;
+const STAKE_ACCOUNTS_TTL_MS = 60 * 60 * 1000;
+
+async function getDelegatedStakeAccounts(
+  votePubkey: string,
+): Promise<RpcStakeAccount[]> {
+  if (
+    cachedStakeAccounts &&
+    Date.now() - stakeAccountsCachedAt < STAKE_ACCOUNTS_TTL_MS
+  ) {
+    return cachedStakeAccounts;
+  }
+
+  const accounts = await heliusRpc<RpcStakeAccount[]>(
+    "stake-accounts",
+    "getProgramAccounts",
+    [
+      STAKE_PROGRAM,
       {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          jsonrpc: "2.0",
-          id: "vote-accounts-all",
-          method: "getVoteAccounts",
-          params: [],
-        }),
-        next: { revalidate: 600 },
+        encoding: "base64",
+        filters: [
+          { dataSize: 200 },
+          { memcmp: { offset: 124, bytes: votePubkey } },
+        ],
       },
-    )
-      .then((r) => (r.ok ? r.json() : null))
-      .catch(() => null);
+    ],
+    3600,
+  );
 
-    accounts = [
-      ...(allData?.result?.current ?? []),
-      ...(allData?.result?.delinquent ?? []),
-    ];
-    found = accounts.find(
-      (a) =>
-        a.votePubkey === VALIDATOR_PUBKEY ||
-        a.nodePubkey === VALIDATOR_PUBKEY,
-    );
-  }
-
-  if (found) {
-    cachedVoteAccount = found;
-    voteAccountCachedAt = Date.now();
-    console.log(
-      `[validator] vote account resolved (vote=${found.votePubkey.slice(0, 8)}…, node=${found.nodePubkey.slice(0, 8)}…)`,
-    );
-  } else {
-    console.warn(
-      `[validator] vote account NOT FOUND for ${VALIDATOR_PUBKEY}`,
-    );
-  }
-  return found ?? null;
+  if (!accounts) return [];
+  cachedStakeAccounts = accounts;
+  stakeAccountsCachedAt = Date.now();
+  return accounts;
 }
 
 export async function fetchValidatorDelegators(): Promise<{
@@ -339,43 +416,7 @@ export async function fetchValidatorDelegators(): Promise<{
   }
   const votePubkey = va.votePubkey;
 
-  const data = await fetch(
-    `https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        jsonrpc: "2.0",
-        id: "stake-accounts",
-        method: "getProgramAccounts",
-        params: [
-          STAKE_PROGRAM,
-          {
-            encoding: "base64",
-            filters: [
-              { dataSize: 200 },
-              { memcmp: { offset: 124, bytes: votePubkey } },
-            ],
-          },
-        ],
-      }),
-      next: { revalidate: 3600 },
-    },
-  )
-    .then((r) => (r.ok ? r.json() : null))
-    .catch((err) => {
-      console.warn("[validator] getProgramAccounts(stake) failed:", err);
-      return null;
-    });
-
-  if (data?.error) {
-    console.warn(
-      "[validator] getProgramAccounts(stake) returned error:",
-      data.error,
-    );
-  }
-
-  const accounts: RpcStakeAccount[] = data?.result ?? [];
+  const accounts = await getDelegatedStakeAccounts(votePubkey);
   if (accounts.length === 0) {
     console.warn(
       `[validator] 0 stake accounts found (vote=${votePubkey.slice(0, 8)}…)`,
@@ -418,40 +459,270 @@ export async function fetchValidatorStake(): Promise<number | null> {
   return sol;
 }
 
-interface StakewizValidator {
-  identity: string;
-  vote_identity: string;
-  credit_ratio: number;
-  skip_rate: number;
-  apy_estimate: number;
-  commission: number;
+export interface ValidatorChainStats {
+  /** Commission percent, e.g. 5 for 5%. */
+  commission: number | null;
+  /** Vote credits earned as a percent of the best validator's, recent epochs. */
+  uptime: number | null;
+  /** Annualized percent return to a delegator, inflation + MEV, net of commission. */
+  apyEstimate: number | null;
+  /** Inflation rewards only. */
+  stakingApy: number | null;
+  /** Jito MEV tips only; null if the validator does not run Jito. */
+  mevApy: number | null;
   delinquent: boolean;
-  uptime: number;
 }
 
-export async function fetchValidatorStakewiz(): Promise<StakewizValidator | null> {
-  if (process.env.NEXT_PHASE === "phase-production-build") return null;
-  const va = await getValidatorVoteAccount();
-  if (!va) return null;
+interface EpochInfo {
+  epoch: number;
+  absoluteSlot: number;
+  slotIndex: number;
+  slotsInEpoch: number;
+}
 
-  const data = await fetch(
-    `https://api.stakewiz.com/validator/${va.votePubkey}`,
-    { next: { revalidate: 3600 } },
-  )
-    .then((r) => (r.ok ? (r.json() as Promise<StakewizValidator>) : null))
-    .catch((err) => {
-      console.warn("[stakewiz] fetch failed:", err);
-      return null;
-    });
+interface InflationReward {
+  epoch: number;
+  amount: number;
+  postBalance: number;
+}
 
-  if (!data) {
-    console.warn("[stakewiz] no data returned");
-  } else {
-    console.log(
-      `[stakewiz] apy=${data.apy_estimate?.toFixed(2)}% uptime=${data.uptime?.toFixed(2)}% commission=${data.commission}%`,
+const SECONDS_PER_YEAR = 365.25 * 24 * 60 * 60;
+/** Only used if block times are unavailable; mainnet runs slightly slower. */
+const TARGET_SLOT_SECONDS = 0.4;
+/** Epochs of vote credits to average uptime over. */
+const UPTIME_EPOCHS = 4;
+/** Stake accounts sampled when measuring realized rewards. */
+const APY_SAMPLE_SIZE = 25;
+
+/**
+ * Epoch-boundary slots are often skipped, and a single leader owns four
+ * consecutive slots, so step past whole leader windows when looking for a block.
+ */
+async function fetchBlockTimeNear(slot: number): Promise<number | null> {
+  for (const offset of [0, 4, 8, 16, 32]) {
+    const time = await heliusRpc<number>(
+      "block-time",
+      "getBlockTime",
+      [slot + offset],
+      86400,
     );
+    if (typeof time === "number") return time;
   }
-  return data;
+  return null;
+}
+
+/**
+ * Measures how long the previous epoch actually took rather than assuming the
+ * 400ms target slot time — mainnet currently runs closer to 415ms, which is a
+ * ~4% swing in the compounded APY.
+ */
+async function fetchEpochsPerYear(epochInfo: EpochInfo): Promise<number> {
+  const firstSlot = epochInfo.absoluteSlot - epochInfo.slotIndex;
+  const [epochStart, previousEpochStart] = await Promise.all([
+    fetchBlockTimeNear(firstSlot),
+    fetchBlockTimeNear(firstSlot - epochInfo.slotsInEpoch),
+  ]);
+
+  if (epochStart && previousEpochStart && epochStart > previousEpochStart) {
+    return SECONDS_PER_YEAR / (epochStart - previousEpochStart);
+  }
+  return SECONDS_PER_YEAR / (epochInfo.slotsInEpoch * TARGET_SLOT_SECONDS);
+}
+
+/**
+ * Per-epoch return from inflation rewards actually paid to delegators, which
+ * already accounts for commission, skipped slots and missed votes.
+ */
+async function fetchInflationRate(
+  votePubkey: string,
+  epoch: number,
+): Promise<number | null> {
+  // Largest accounts first: dust accounts are usually mid-activation and their
+  // rewards round badly against a tiny principal.
+  const sample = (await getDelegatedStakeAccounts(votePubkey))
+    .slice()
+    .sort((a, b) => b.account.lamports - a.account.lamports)
+    .slice(0, APY_SAMPLE_SIZE)
+    .map((a) => a.pubkey);
+  if (sample.length === 0) return null;
+
+  const rewards = await heliusRpc<(InflationReward | null)[]>(
+    "inflation-reward",
+    "getInflationReward",
+    [sample, { epoch }],
+    3600,
+  );
+  if (!rewards) return null;
+
+  const rates: number[] = [];
+  for (const reward of rewards) {
+    if (!reward || reward.amount <= 0) continue;
+    const principal = reward.postBalance - reward.amount;
+    if (principal <= 0) continue;
+    rates.push(reward.amount / principal);
+  }
+  return dominantRate(rates);
+}
+
+/** Rates within 0.1% of each other count as the same rate. */
+const RATE_CLUSTER_TOLERANCE = 1.001;
+
+/**
+ * Every fully-activated stake account earns an identical rate, so the true rate
+ * is the densest cluster: stake still warming up lands below it, and accounts
+ * partially withdrawn mid-epoch report a principal that is too small, landing
+ * above it. Plain min/max/average would pick up those artifacts.
+ */
+function dominantRate(rates: number[]): number | null {
+  if (rates.length === 0) return null;
+
+  const sorted = [...rates].sort((a, b) => a - b);
+  let bestCount = 0;
+  let bestRate = sorted[0];
+  for (let start = 0; start < sorted.length; start++) {
+    let end = start;
+    while (
+      end + 1 < sorted.length &&
+      sorted[end + 1] <= sorted[start] * RATE_CLUSTER_TOLERANCE
+    ) {
+      end++;
+    }
+    if (end - start + 1 > bestCount) {
+      bestCount = end - start + 1;
+      bestRate = sorted[end];
+    }
+  }
+  return bestRate;
+}
+
+/** Jito's tip distribution program, one account per validator per epoch. */
+const JITO_TIP_DISTRIBUTION_PROGRAM = new PublicKey(
+  "4R3gSG8BpU4t19KYj8CfnbtRpnT8gtk4dvTHxVRwc2r7",
+);
+/** Epochs to look back for a tip account whose merkle root has been uploaded. */
+const MEV_LOOKBACK_EPOCHS = 4;
+
+/**
+ * Reads how much Jito tipped this validator's stakers in an epoch. MEV is paid
+ * outside inflation, so `getInflationReward` misses it entirely.
+ */
+async function fetchMevTipsToStakers(
+  votePubkey: string,
+  epoch: number,
+): Promise<number | null> {
+  const epochBytes = Buffer.alloc(8);
+  epochBytes.writeBigUInt64LE(BigInt(epoch));
+  const [tipAccount] = PublicKey.findProgramAddressSync(
+    [
+      Buffer.from("TIP_DISTRIBUTION_ACCOUNT"),
+      new PublicKey(votePubkey).toBuffer(),
+      epochBytes,
+    ],
+    JITO_TIP_DISTRIBUTION_PROGRAM,
+  );
+
+  const account = await heliusRpc<{
+    value: { data: [string, string] } | null;
+  }>("tip-distribution", "getAccountInfo", [
+    tipAccount.toBase58(),
+    { encoding: "base64" },
+  ], 3600);
+
+  const encoded = account?.value?.data?.[0];
+  if (!encoded) return null;
+
+  // discriminator(8) + vote account(32) + upload authority(32), then an
+  // Option<MerkleRoot>; the root is only present once the epoch is finalized.
+  const data = Buffer.from(encoded, "base64");
+  const rootOffset = 8 + 32 + 32;
+  if (data.length < rootOffset + 1 || data[rootOffset] !== 1) return null;
+
+  const maxTotalClaimOffset = rootOffset + 1 + 32;
+  const commissionOffset = maxTotalClaimOffset + 8 * 4 + 8;
+  if (data.length < commissionOffset + 2) return null;
+
+  const maxTotalClaim = Number(data.readBigUInt64LE(maxTotalClaimOffset));
+  const commissionBps = data.readUInt16LE(commissionOffset);
+  return maxTotalClaim * (1 - commissionBps / 10_000);
+}
+
+/** Per-epoch MEV return, from the most recent epoch with finalized tips. */
+async function fetchMevRate(
+  votePubkey: string,
+  activatedStake: number,
+  epoch: number,
+): Promise<number | null> {
+  if (activatedStake <= 0) return null;
+  for (let i = 1; i <= MEV_LOOKBACK_EPOCHS; i++) {
+    const tips = await fetchMevTipsToStakers(votePubkey, epoch - i);
+    if (tips !== null && tips > 0) return tips / activatedStake;
+  }
+  return null;
+}
+
+/** Vote credits over the recent epochs, against the best validator's. */
+function computeUptime(snapshot: VoteAccountsSnapshot): number | null {
+  const epochs = (snapshot.validator.epochCredits ?? [])
+    .map(([epoch]) => epoch)
+    .slice(-UPTIME_EPOCHS);
+  if (epochs.length === 0) return null;
+
+  let earned = 0;
+  let best = 0;
+  for (const epoch of epochs) {
+    earned += creditsEarnedInEpoch(snapshot.validator, epoch);
+    best += snapshot.bestCreditsByEpoch.get(epoch) ?? 0;
+  }
+  if (best <= 0) return null;
+  return Math.min(100, (earned / best) * 100);
+}
+
+export async function fetchValidatorChainStats(): Promise<ValidatorChainStats | null> {
+  if (process.env.NEXT_PHASE === "phase-production-build") return null;
+
+  const snapshot = await getVoteAccountsSnapshot();
+  if (!snapshot) return null;
+
+  const { votePubkey, activatedStake } = snapshot.validator;
+  const epochInfo = await heliusRpc<EpochInfo>(
+    "epoch-info",
+    "getEpochInfo",
+    [],
+    600,
+  );
+
+  let stakingApy: number | null = null;
+  let mevApy: number | null = null;
+  let apyEstimate: number | null = null;
+
+  if (epochInfo) {
+    const [inflationRate, mevRate, epochsPerYear] = await Promise.all([
+      fetchInflationRate(votePubkey, epochInfo.epoch - 1),
+      fetchMevRate(votePubkey, activatedStake, epochInfo.epoch),
+      fetchEpochsPerYear(epochInfo),
+    ]);
+    const annualize = (rate: number) => ((1 + rate) ** epochsPerYear - 1) * 100;
+
+    stakingApy = inflationRate === null ? null : annualize(inflationRate);
+    mevApy = mevRate === null ? null : annualize(mevRate);
+    if (inflationRate !== null) {
+      apyEstimate = annualize(inflationRate + (mevRate ?? 0));
+    }
+  }
+
+  const stats: ValidatorChainStats = {
+    commission: voteAccountCommissionPercent(snapshot.validator),
+    uptime: computeUptime(snapshot),
+    apyEstimate,
+    stakingApy,
+    mevApy,
+    delinquent: snapshot.delinquent,
+  };
+
+  console.log(
+    `[validator] apy=${stats.apyEstimate?.toFixed(2) ?? "—"}% (staking=${stats.stakingApy?.toFixed(2) ?? "—"}% mev=${stats.mevApy?.toFixed(2) ?? "—"}%) uptime=${stats.uptime?.toFixed(2) ?? "—"}% commission=${stats.commission ?? "—"}%`,
+  );
+  return stats;
 }
 
 export function formatSOL(lamports: number | null): string {

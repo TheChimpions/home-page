@@ -71,9 +71,20 @@ export default function ValidatorPerch() {
             </ul>
 
             <div className="flex flex-col sm:flex-row sm:items-center gap-4 pt-2">
-              <span className="inline-flex h-10 items-center border border-gray-modern-700 px-4 font-sans text-lg text-gray-modern-300">
-                Coming soon to the App Store
+              <a
+                href="https://apps.apple.com/us/app/sol-perch/id6773548821"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex h-10 items-center justify-center border border-gray-modern-700 bg-gray-modern-900/50 px-4 font-sans text-lg text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"
+              >
+                Download on the App Store
+              </a>
+              <span className="inline-flex h-10 items-center justify-center border border-gray-modern-800 px-4 font-sans text-lg text-gray-modern-400">
+                Coming soon to Google Play
               </span>
+            </div>
+
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
               <Link
                 href="/validator/perch/privacy"
                 className="text-gray-modern-50 hover:text-gold-500 font-sans text-lg transition-colors underline underline-offset-2 decoration-gray-modern-400 hover:decoration-gold-500"

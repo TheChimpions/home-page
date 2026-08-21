@@ -3,14 +3,14 @@ import FadeUp from "@/components/ui/FadeUp";
 import {
   fetchValidatorStake,
   fetchValidatorDelegators,
-  fetchValidatorStakewiz,
+  fetchValidatorChainStats,
 } from "@/lib/collection-stats";
 
 const numCls = "text-white font-title text-[3rem] leading-10 tabular-nums";
 
 export default async function ValidatorLiveStats() {
-  const [stakewiz, stakeSol, delegators] = await Promise.all([
-    fetchValidatorStakewiz(),
+  const [chainStats, stakeSol, delegators] = await Promise.all([
+    fetchValidatorChainStats(),
     fetchValidatorStake(),
     fetchValidatorDelegators(),
   ]);
@@ -21,9 +21,9 @@ export default async function ValidatorLiveStats() {
       : stakeSol >= 1_000_000
         ? { end: stakeSol / 1_000_000, decimals: 2, suffix: "M" }
         : { end: Math.round(stakeSol / 1000), decimals: 0, suffix: "k" };
-  const apy = stakewiz?.apy_estimate ?? null;
-  const commission = stakewiz?.commission ?? null;
-  const uptime = stakewiz?.uptime ?? null;
+  const apy = chainStats?.apyEstimate ?? null;
+  const commission = chainStats?.commission ?? null;
+  const uptime = chainStats?.uptime ?? null;
 
   const liveStats = [
     {
@@ -41,7 +41,7 @@ export default async function ValidatorLiveStats() {
         commission !== null ? (
           <CountUpStat
             end={commission}
-            decimals={0}
+            decimals={Number.isInteger(commission) ? 0 : 2}
             suffix="%"
             className={numCls}
           />
