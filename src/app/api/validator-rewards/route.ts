@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { fetchValidatorStakewiz } from "@/lib/collection-stats";
+import { fetchValidatorChainStats } from "@/lib/collection-stats";
 
 export const dynamic = "force-dynamic";
 
@@ -48,14 +48,19 @@ async function fetchSanctumSolValue(): Promise<number | null> {
 }
 
 export async function GET() {
-  const [sanctumApy, solValue, stakewiz] = await Promise.all([
+  const [sanctumApy, solValue, chainStats] = await Promise.all([
     fetchSanctumApy(),
     fetchSanctumSolValue(),
-    fetchValidatorStakewiz(),
+    fetchValidatorChainStats(),
   ]);
 
-  const apy = sanctumApy ?? stakewiz?.apy_estimate ?? null;
-  const source = sanctumApy !== null ? "sanctum" : stakewiz ? "stakewiz" : null;
+  const apy = sanctumApy ?? chainStats?.apyEstimate ?? null;
+  const source =
+    sanctumApy !== null
+      ? "sanctum"
+      : chainStats?.apyEstimate != null
+        ? "onchain"
+        : null;
 
   return NextResponse.json(
     {
