@@ -1,0 +1,48 @@
+{% layout none %}
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ 'gift_cards.issued.title' | t: shop: shop.name }}</title>
+    <style>
+      @font-face {
+        font-family: "Pixel Operator";
+        src: url("{{ 'PixelOperator.ttf' | asset_url }}") format("truetype");
+        font-weight: 400;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Alagard";
+        src: url("{{ 'alagard.ttf' | asset_url }}") format("truetype");
+        font-weight: 400;
+        font-display: block;
+      }
+    </style>
+    <link rel="stylesheet" href="{{ 'base.css' | asset_url }}">
+  </head>
+  <body>
+    <main class="container">
+      <div class="customer">
+        <img src="{{ 'logo-header.png' | asset_url }}" alt="{{ shop.name | escape }}" width="152" height="90" class="pixelated">
+
+        <h1 class="customer__title">
+          {{ 'gift_cards.issued.subtext' | t }}
+          <span class="grad-text">{{ gift_card.balance | money_with_currency }}</span>
+        </h1>
+
+        <div class="join-cta">
+          <div class="gradient-rail join-cta__rail" aria-hidden="true"></div>
+          <p class="gift-card__code">{{ gift_card.code | format_code }}</p>
+        </div>
+
+        {%- if gift_card.expires_on -%}
+          {%- assign expiry_date = gift_card.expires_on | date: format: 'date' -%}
+          <p class="customer__meta">{{ 'gift_cards.issued.expires_on' | t: expiry: expiry_date }}</p>
+        {%- endif -%}
+
+        <a href="{{ shop.url }}" class="btn btn--primary">{{ 'gift_cards.issued.shop_link' | t }}</a>
+      </div>
+    </main>
+  </body>
+</html>

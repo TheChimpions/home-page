@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // The Shopify theme is a standalone Liquid theme, not part of the Next app.
+    "shopify-theme/**",
   ]),
 ]);
 

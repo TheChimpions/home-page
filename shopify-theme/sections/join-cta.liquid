@@ -1,0 +1,109 @@
+<section class="section">
+  <div class="container join-cta__section">
+    <div class="fade-up">
+      <div class="join-cta">
+        <div class="gradient-rail join-cta__rail" aria-hidden="true"></div>
+
+        <div class="join-cta__grid">
+          <div>
+            <h2 class="join-cta__title">{{ section.settings.heading }}</h2>
+            {%- if section.settings.text != blank -%}
+              <p class="join-cta__text">{{ section.settings.text }}</p>
+            {%- endif -%}
+          </div>
+
+          <div class="join-cta__actions">
+            {%- for block in section.blocks -%}
+              {%- liquid
+                case block.settings.icon
+                  when 'tensor'
+                    assign icon_file = 'tensor.svg'
+                  when 'magic_eden'
+                    assign icon_file = 'magic-eden.svg'
+                  else
+                    assign icon_file = blank
+                endcase
+              -%}
+              <a
+                href="{{ block.settings.link | default: routes.root_url }}"
+                class="btn"
+                {% if block.settings.new_tab %}target="_blank" rel="noopener noreferrer"{% endif %}
+                {{ block.shopify_attributes }}
+              >
+                <span>{{ block.settings.label }}</span>
+                {%- if icon_file != blank -%}
+                  <img src="{{ icon_file | asset_url }}" alt="" class="btn__icon" width="32" height="16">
+                {%- endif -%}
+              </a>
+            {%- endfor -%}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Join CTA",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Want to be part of it?"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Text",
+      "default": "Join The Chimpions - grab some merch, buy an NFT, stake to our validator, or just vibe in the Treehouse."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "button",
+      "name": "Button",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Tensor"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "none", "label": "None" },
+            { "value": "tensor", "label": "Tensor" },
+            { "value": "magic_eden", "label": "Magic Eden" }
+          ],
+          "default": "none"
+        },
+        {
+          "type": "checkbox",
+          "id": "new_tab",
+          "label": "Open in a new tab",
+          "default": true
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Join CTA",
+      "blocks": [
+        { "type": "button", "settings": { "label": "Tensor", "icon": "tensor" } },
+        { "type": "button", "settings": { "label": "Magic Eden", "icon": "magic_eden" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

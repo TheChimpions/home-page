@@ -1,0 +1,185 @@
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+-%}
+
+<div class="container">
+  <nav class="breadcrumbs" aria-label="{{ 'general.breadcrumbs.label' | t }}">
+    <a href="{{ routes.root_url }}">{{ 'general.breadcrumbs.home' | t }}</a>
+    {%- if collection -%}
+      <span class="breadcrumbs__sep">/</span>
+      <a href="{{ collection.url }}">{{ collection.title }}</a>
+    {%- endif -%}
+    <span class="breadcrumbs__sep">/</span>
+    <span>{{ product.title }}</span>
+  </nav>
+
+  <div class="product">
+    <div data-gallery>
+      <div class="product__media-main">
+        {%- if product.featured_media -%}
+          <img
+            data-gallery-main
+            src="{{ product.featured_media | image_url: width: 1200 }}"
+            srcset="
+              {{ product.featured_media | image_url: width: 600 }} 600w,
+              {{ product.featured_media | image_url: width: 1200 }} 1200w,
+              {{ product.featured_media | image_url: width: 1800 }} 1800w
+            "
+            sizes="(min-width: 1024px) 55vw, 100vw"
+            width="{{ product.featured_media.width }}"
+            height="{{ product.featured_media.height }}"
+            alt="{{ product.featured_media.alt | escape }}"
+          >
+        {%- else -%}
+          {{ 'product-apparel-1' | placeholder_svg_tag }}
+        {%- endif -%}
+      </div>
+
+      {%- if product.media.size > 1 -%}
+        <div class="product__thumbs">
+          {%- for media in product.media -%}
+            <button
+              type="button"
+              class="product__thumb{% if media.id == product.featured_media.id %} is-active{% endif %}"
+              data-gallery-thumb="{{ media | image_url: width: 1200 }}"
+              data-gallery-srcset="{{ media | image_url: width: 600 }} 600w, {{ media | image_url: width: 1200 }} 1200w"
+              aria-label="{{ 'products.product.media_thumbnail' | t: index: forloop.index }}"
+            >
+              <img
+                src="{{ media | image_url: width: 200 }}"
+                alt="{{ media.alt | escape }}"
+                width="200"
+                height="200"
+                loading="lazy"
+              >
+            </button>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+
+    <div>
+      {%- if product.vendor != blank -%}
+        <p class="product__vendor">{{ product.vendor }}</p>
+      {%- endif -%}
+
+      <h1 class="product__title">{{ product.title }}</h1>
+
+      <div class="product__price" data-product-price="{{ section.id }}">
+        {% render 'price', product_or_variant: current_variant, class: 'price--large' %}
+      </div>
+
+      {%- form 'product', product, class: 'product__form', data-product-form: section.id -%}
+        {%- unless product.has_only_default_variant -%}
+          <div data-variant-picker="{{ section.id }}">
+            {%- for option in product.options_with_values -%}
+              {%- assign option_index = forloop.index0 -%}
+              <div class="product__option" data-option-index="{{ option_index }}">
+                <span class="product__option-label">{{ option.name }}</span>
+                <div class="product__swatches">
+                  {%- for value in option.values -%}
+                    {%- assign input_id = section.id | append: '-option-' | append: option_index | append: '-' | append: forloop.index0 -%}
+                    <label
+                      class="product__swatch{% if option.selected_value == value %} is-selected{% endif %}"
+                      for="{{ input_id }}"
+                    >
+                      <input
+                        type="radio"
+                        id="{{ input_id }}"
+                        name="option-{{ option_index }}-{{ section.id }}"
+                        value="{{ value | escape }}"
+                        {% if option.selected_value == value %}checked{% endif %}
+                      >
+                      {{ value }}
+                    </label>
+                  {%- endfor -%}
+                </div>
+              </div>
+            {%- endfor -%}
+
+            <input type="hidden" name="id" value="{{ current_variant.id }}" data-variant-id>
+
+            <script type="application/json" data-variant-json>
+              [
+                {%- for variant in product.variants -%}
+                  {%- capture variant_price_html -%}
+                    {% render 'price', product_or_variant: variant, class: 'price--large' %}
+                  {%- endcapture -%}
+                  {
+                    "id": {{ variant.id }},
+                    "options": {{ variant.options | json }},
+                    "available": {{ variant.available }},
+                    "price_html": {{ variant_price_html | json }}
+                  }{% unless forloop.last %},{% endunless %}
+                {%- endfor -%}
+              ]
+            </script>
+          </div>
+        {%- else -%}
+          <input type="hidden" name="id" value="{{ current_variant.id }}">
+        {%- endunless -%}
+
+        <div>
+          <span class="product__option-label">{{ 'products.product.quantity' | t }}</span>
+          <div class="quantity" data-quantity>
+            <button type="button" data-quantity-change="-1" aria-label="{{ 'products.product.quantity_decrease' | t }}">&minus;</button>
+            <input type="number" name="quantity" value="1" min="1" aria-label="{{ 'products.product.quantity' | t }}">
+            <button type="button" data-quantity-change="1" aria-label="{{ 'products.product.quantity_increase' | t }}">+</button>
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          name="add"
+          class="btn btn--primary btn--full"
+          data-add-to-cart
+          data-add-text="{{ 'products.product.add_to_cart' | t }}"
+          data-sold-out-text="{{ 'products.product.sold_out' | t }}"
+          data-unavailable-text="{{ 'products.product.unavailable' | t }}"
+          {% unless current_variant.available %}disabled{% endunless %}
+        >
+          {%- if current_variant.available -%}
+            {{ 'products.product.add_to_cart' | t }}
+          {%- else -%}
+            {{ 'products.product.sold_out' | t }}
+          {%- endif -%}
+        </button>
+
+        {%- if section.settings.show_dynamic_checkout -%}
+          {{ form | payment_button }}
+        {%- endif -%}
+      {%- endform -%}
+
+      {%- if product.description != blank -%}
+        <div class="product__description rte">{{ product.description }}</div>
+      {%- endif -%}
+
+      {%- if section.settings.show_share -%}
+        <p class="cart__note product__share">
+          {{ 'products.product.share' | t }}
+          <a class="link-underline" href="https://twitter.com/intent/tweet?url={{ shop.url }}{{ product.url }}" target="_blank" rel="noopener noreferrer">X</a>
+        </p>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Product",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_dynamic_checkout",
+      "label": "Show dynamic checkout buttons",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_share",
+      "label": "Show share link",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

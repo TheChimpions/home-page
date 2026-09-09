@@ -1,0 +1,23 @@
+{
+  "type": "header",
+  "name": "Header group",
+  "sections": {
+    "announcement-bar": {
+      "type": "announcement-bar",
+      "settings": {
+        "text": "Free shipping on orders over $150 — holders get 22% off with their Chimpion"
+      }
+    },
+    "header": {
+      "type": "header",
+      "settings": {
+        "menu": "main-menu",
+        "link_1_label": "Tensor",
+        "link_1_url": "https://www.tensor.trade/trade/the_chimpions",
+        "link_2_label": "Magic Eden",
+        "link_2_url": "https://magiceden.io/creators/the_chimpions"
+      }
+    }
+  },
+  "order": ["announcement-bar", "header"]
+}

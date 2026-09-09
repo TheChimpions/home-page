@@ -1,0 +1,200 @@
+<section class="ecosystem">
+  {%- if section.settings.background != blank -%}
+    <img
+      src="{{ section.settings.background | image_url: width: 2400 }}"
+      alt=""
+      class="ecosystem__bg"
+      width="{{ section.settings.background.width }}"
+      height="{{ section.settings.background.height }}"
+      loading="lazy"
+    >
+  {%- else -%}
+    <img src="{{ 'bg-ecosystem-desktop.png' | asset_url }}" alt="" class="ecosystem__bg" width="1920" height="900" loading="lazy">
+  {%- endif -%}
+
+  <div class="container section__inner section__body">
+    <div class="section-head">
+      <h2 class="section-title section-title--sm">
+        {{ section.settings.heading }}
+        {%- if section.settings.heading_highlight != blank -%}
+          <span class="grad-text grad-text--aqua">{{ section.settings.heading_highlight }}</span>
+        {%- endif -%}
+      </h2>
+      {%- if section.settings.subheading != blank -%}
+        <p class="section-subtitle section-head__text">{{ section.settings.subheading }}</p>
+      {%- endif -%}
+    </div>
+
+    <div class="ecosystem__grid">
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign icon = block.settings.icon
+          case block.settings.default_icon
+            when 'dao'
+              assign fallback_icon = 'icon-the-dao.svg'
+            when 'gallery'
+              assign fallback_icon = 'icon-gallery.svg'
+            when 'capital'
+              assign fallback_icon = 'icon-capital.svg'
+            else
+              assign fallback_icon = 'icon-treehouse.svg'
+          endcase
+        -%}
+        <div class="fade-up" data-delay="{{ forloop.index0 | times: 100 }}" {{ block.shopify_attributes }}>
+          <a
+            href="{{ block.settings.link | default: routes.root_url }}"
+            class="card-link shooting-top"
+            style="--card-color: {{ block.settings.color }};"
+          >
+            <div class="card-link__row">
+              <div>
+                {%- if icon != blank -%}
+                  <img
+                    src="{{ icon | image_url: width: 80 }}"
+                    alt=""
+                    class="card-link__icon"
+                    width="40"
+                    height="40"
+                    loading="lazy"
+                  >
+                {%- else -%}
+                  <img src="{{ fallback_icon | asset_url }}" alt="" class="card-link__icon" width="40" height="40" loading="lazy">
+                {%- endif -%}
+
+                <h3 class="card-link__title">{{ block.settings.title }}</h3>
+                <p class="card-link__text">{{ block.settings.text }}</p>
+              </div>
+
+              <div class="card-link__arrow arrow-bounce">
+                <img src="{{ 'arrow-right.svg' | asset_url }}" alt="" width="24" height="24" loading="lazy">
+              </div>
+            </div>
+          </a>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Ecosystem cards",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Our "
+    },
+    {
+      "type": "text",
+      "id": "heading_highlight",
+      "label": "Gradient heading",
+      "default": "Ecosystem"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Explore what makes The Chimpions unique"
+    },
+    {
+      "type": "image_picker",
+      "id": "background",
+      "label": "Background image"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "card",
+      "name": "Card",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "The DAO"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Description",
+          "default": "Learn how the DAO works, and how to participate"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        },
+        {
+          "type": "color",
+          "id": "color",
+          "label": "Hover colour",
+          "default": "#c239f4"
+        },
+        {
+          "type": "select",
+          "id": "default_icon",
+          "label": "Built-in icon",
+          "options": [
+            { "value": "dao", "label": "DAO" },
+            { "value": "gallery", "label": "Gallery" },
+            { "value": "capital", "label": "Capital" },
+            { "value": "treehouse", "label": "Treehouse" }
+          ],
+          "default": "dao"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "Custom icon",
+          "info": "Overrides the built-in icon. A square SVG or PNG works best."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Ecosystem cards",
+      "blocks": [
+        {
+          "type": "card",
+          "settings": {
+            "title": "The DAO",
+            "text": "Learn how the DAO works, and how to participate",
+            "color": "#c239f4",
+            "default_icon": "dao"
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "title": "Gallery",
+            "text": "Browse the 222 animated Chimpions",
+            "color": "#39f4c2",
+            "default_icon": "gallery"
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "title": "Capital",
+            "text": "See our investments & syndicate deals",
+            "color": "#eeb411",
+            "default_icon": "capital"
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "title": "Treehouse",
+            "text": "Explore our Art & Research center, open to anyone",
+            "color": "#fcfcfd",
+            "default_icon": "treehouse"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

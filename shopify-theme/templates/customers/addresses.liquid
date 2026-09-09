@@ -1,0 +1,53 @@
+<div class="container">
+  <div class="customer customer--wide">
+    <h1 class="customer__title">{{ 'customer.addresses.title' | t }}</h1>
+    <a href="{{ routes.account_url }}" class="link-underline">{{ 'customer.order.return' | t }}</a>
+
+    {%- paginate customer.addresses by 6 -%}
+      {%- for address in customer.addresses -%}
+        <div class="address-card">
+          <div class="customer__meta">{{ address | format_address }}</div>
+
+          {% form 'customer_address', address %}
+            <input type="hidden" name="_method" value="delete">
+            <button type="submit" class="cart-item__remove">{{ 'customer.addresses.delete' | t }}</button>
+          {% endform %}
+        </div>
+      {%- endfor -%}
+
+      {% render 'pagination', paginate: paginate %}
+    {%- endpaginate -%}
+
+    <h2 class="footer__heading">{{ 'customer.addresses.add_new' | t }}</h2>
+
+    {% form 'customer_address', customer.new_address %}
+      <div class="field">
+        <label class="field__label" for="AddressFirstName">{{ 'customer.register.first_name' | t }}</label>
+        <input class="input" type="text" id="AddressFirstName" name="address[first_name]" autocomplete="given-name">
+      </div>
+      <div class="field">
+        <label class="field__label" for="AddressLastName">{{ 'customer.register.last_name' | t }}</label>
+        <input class="input" type="text" id="AddressLastName" name="address[last_name]" autocomplete="family-name">
+      </div>
+      <div class="field">
+        <label class="field__label" for="AddressLine1">{{ 'customer.addresses.address1' | t }}</label>
+        <input class="input" type="text" id="AddressLine1" name="address[address1]" autocomplete="address-line1">
+      </div>
+      <div class="field">
+        <label class="field__label" for="AddressCity">{{ 'customer.addresses.city' | t }}</label>
+        <input class="input" type="text" id="AddressCity" name="address[city]" autocomplete="address-level2">
+      </div>
+      <div class="field">
+        <label class="field__label" for="AddressZip">{{ 'customer.addresses.zip' | t }}</label>
+        <input class="input" type="text" id="AddressZip" name="address[zip]" autocomplete="postal-code">
+      </div>
+      <div class="field">
+        <label class="field__label" for="AddressCountry">{{ 'customer.addresses.country' | t }}</label>
+        <select class="input" id="AddressCountry" name="address[country]" autocomplete="country">
+          {{ country_option_tags }}
+        </select>
+      </div>
+      <button type="submit" class="btn btn--primary">{{ 'customer.addresses.save' | t }}</button>
+    {% endform %}
+  </div>
+</div>

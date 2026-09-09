@@ -1,0 +1,45 @@
+{%- comment -%}
+  Renders a product card.
+  Accepts:
+    product - product object
+    delay - fade-up delay in ms (optional)
+{%- endcomment -%}
+<a
+  href="{{ product.url }}"
+  class="product-card fade-up"
+  {% if delay %}data-delay="{{ delay }}"{% endif %}
+>
+  <div class="product-card__media">
+    {%- if product.featured_media -%}
+      <img
+        src="{{ product.featured_media | image_url: width: 700 }}"
+        srcset="
+          {{ product.featured_media | image_url: width: 350 }} 350w,
+          {{ product.featured_media | image_url: width: 700 }} 700w,
+          {{ product.featured_media | image_url: width: 1000 }} 1000w
+        "
+        sizes="(min-width: 768px) 25vw, 50vw"
+        width="{{ product.featured_media.width }}"
+        height="{{ product.featured_media.height }}"
+        alt="{{ product.featured_media.alt | escape }}"
+        loading="lazy"
+      >
+    {%- else -%}
+      {{ 'product-apparel-1' | placeholder_svg_tag: 'product-card__placeholder' }}
+    {%- endif -%}
+
+    {%- if product.available == false -%}
+      <span class="product-card__badge product-card__badge--sold">{{ 'products.card.sold_out' | t }}</span>
+    {%- elsif product.compare_at_price > product.price -%}
+      <span class="product-card__badge">{{ 'products.card.on_sale' | t }}</span>
+    {%- endif -%}
+  </div>
+
+  <div class="product-card__body">
+    {%- if product.vendor != blank -%}
+      <span class="product-card__vendor">{{ product.vendor }}</span>
+    {%- endif -%}
+    <h3 class="product-card__title">{{ product.title }}</h3>
+    {% render 'price', product_or_variant: product %}
+  </div>
+</a>

@@ -1,0 +1,69 @@
+<section class="section">
+  <div class="container section__inner">
+    <div class="about__grid">
+      <div class="fade-up">
+        <h2 class="section-title">
+          {{ section.settings.heading }}
+          {%- if section.settings.heading_highlight != blank -%}
+            <br><span class="grad-text">{{ section.settings.heading_highlight }}</span>
+          {%- endif -%}
+        </h2>
+      </div>
+
+      <div class="fade-up" data-delay="150">
+        <div class="about__body rte">{{ section.settings.text }}</div>
+      </div>
+    </div>
+
+    {%- if section.settings.image != blank -%}
+      <div class="fade-up" data-delay="300">
+        <div class="about__media">
+          <img
+            src="{{ section.settings.image | image_url: width: 2000 }}"
+            alt="{{ section.settings.image.alt | escape }}"
+            width="{{ section.settings.image.width }}"
+            height="{{ section.settings.image.height }}"
+            loading="lazy"
+          >
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "About",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "What is"
+    },
+    {
+      "type": "text",
+      "id": "heading_highlight",
+      "label": "Gradient heading",
+      "default": "The Chimpions"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>The Chimpions is a curated collection of 222 NFTs, forming a network of individuals united by shared values. Each Chimpion is a 1/1 digital identity and a key to the DAO. At its core, The Chimpions is a values-first organization:</p><ul><li>Integrity over hype</li><li>Long-term thinking over short-term speculation</li><li>Contribution over extraction</li></ul><p>The merch store is an extension of that — wearable pixels, made for the people who show up.</p>"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Banner image",
+      "info": "A wide mosaic works best here."
+    }
+  ],
+  "presets": [
+    {
+      "name": "About"
+    }
+  ]
+}
+{% endschema %}
