@@ -14,26 +14,13 @@
 
           <div class="join-cta__actions">
             {%- for block in section.blocks -%}
-              {%- liquid
-                case block.settings.icon
-                  when 'tensor'
-                    assign icon_file = 'tensor.svg'
-                  when 'magic_eden'
-                    assign icon_file = 'magic-eden.svg'
-                  else
-                    assign icon_file = blank
-                endcase
-              -%}
               <a
                 href="{{ block.settings.link | default: routes.root_url }}"
                 class="btn"
                 {% if block.settings.new_tab %}target="_blank" rel="noopener noreferrer"{% endif %}
                 {{ block.shopify_attributes }}
               >
-                <span>{{ block.settings.label }}</span>
-                {%- if icon_file != blank -%}
-                  <img src="{{ icon_file | asset_url }}" alt="" class="btn__icon" width="32" height="16">
-                {%- endif -%}
+                {{ block.settings.label }}
               </a>
             {%- endfor -%}
           </div>
@@ -57,7 +44,7 @@
       "type": "textarea",
       "id": "text",
       "label": "Text",
-      "default": "Join The Chimpions - grab some merch, buy an NFT, stake to our validator, or just vibe in the Treehouse."
+      "default": "Join The Chimpions - grab some merch, stake to our validator, or just vibe in the Treehouse."
     }
   ],
   "blocks": [
@@ -69,7 +56,7 @@
           "type": "text",
           "id": "label",
           "label": "Label",
-          "default": "Tensor"
+          "default": "Shop the merch"
         },
         {
           "type": "url",
@@ -77,21 +64,10 @@
           "label": "Link"
         },
         {
-          "type": "select",
-          "id": "icon",
-          "label": "Icon",
-          "options": [
-            { "value": "none", "label": "None" },
-            { "value": "tensor", "label": "Tensor" },
-            { "value": "magic_eden", "label": "Magic Eden" }
-          ],
-          "default": "none"
-        },
-        {
           "type": "checkbox",
           "id": "new_tab",
           "label": "Open in a new tab",
-          "default": true
+          "default": false
         }
       ]
     }
@@ -100,8 +76,7 @@
     {
       "name": "Join CTA",
       "blocks": [
-        { "type": "button", "settings": { "label": "Tensor", "icon": "tensor" } },
-        { "type": "button", "settings": { "label": "Magic Eden", "icon": "magic_eden" } }
+        { "type": "button", "settings": { "label": "Shop the merch" } }
       ]
     }
   ]

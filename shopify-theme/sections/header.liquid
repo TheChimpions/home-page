@@ -93,30 +93,6 @@
     </div>
 
     <div class="header__actions">
-      {%- if section.settings.link_1_label != blank and section.settings.link_1_url != blank -%}
-        <a
-          href="{{ section.settings.link_1_url }}"
-          class="btn btn--sm"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <span>{{ section.settings.link_1_label }}</span>
-          <img src="{{ 'tensor.svg' | asset_url }}" alt="" class="btn__icon" width="22" height="17">
-        </a>
-      {%- endif -%}
-
-      {%- if section.settings.link_2_label != blank and section.settings.link_2_url != blank -%}
-        <a
-          href="{{ section.settings.link_2_url }}"
-          class="btn btn--sm"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <span>{{ section.settings.link_2_label }}</span>
-          <img src="{{ 'magic-eden.svg' | asset_url }}" alt="" class="btn__icon" width="18" height="12">
-        </a>
-      {%- endif -%}
-
       <a href="{{ routes.cart_url }}" class="cart-link">
         {% render 'icon-cart' %}
         <span>{{ 'layout.cart.title' | t }}</span>
@@ -155,18 +131,6 @@
     </nav>
 
     <div class="drawer__footer">
-      {%- if section.settings.link_1_label != blank and section.settings.link_1_url != blank -%}
-        <a href="{{ section.settings.link_1_url }}" class="btn btn--full" target="_blank" rel="noopener noreferrer">
-          <span>{{ section.settings.link_1_label }}</span>
-          <img src="{{ 'tensor.svg' | asset_url }}" alt="" class="btn__icon" width="22" height="17">
-        </a>
-      {%- endif -%}
-      {%- if section.settings.link_2_label != blank and section.settings.link_2_url != blank -%}
-        <a href="{{ section.settings.link_2_url }}" class="btn btn--full" target="_blank" rel="noopener noreferrer">
-          <span>{{ section.settings.link_2_label }}</span>
-          <img src="{{ 'magic-eden.svg' | asset_url }}" alt="" class="btn__icon" width="18" height="12">
-        </a>
-      {%- endif -%}
       {%- if shop.customer_accounts_enabled -%}
         <a href="{{ routes.account_url }}" class="link-underline">{{ 'customer.account.title' | t }}</a>
       {%- endif -%}
@@ -189,32 +153,6 @@
       "id": "menu",
       "default": "main-menu",
       "label": "Menu"
-    },
-    {
-      "type": "header",
-      "content": "Marketplace buttons"
-    },
-    {
-      "type": "text",
-      "id": "link_1_label",
-      "label": "Button 1 label",
-      "default": "Tensor"
-    },
-    {
-      "type": "url",
-      "id": "link_1_url",
-      "label": "Button 1 link"
-    },
-    {
-      "type": "text",
-      "id": "link_2_label",
-      "label": "Button 2 label",
-      "default": "Magic Eden"
-    },
-    {
-      "type": "url",
-      "id": "link_2_url",
-      "label": "Button 2 link"
     }
   ],
   "enabled_on": {

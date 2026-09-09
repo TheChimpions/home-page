@@ -1,0 +1,86 @@
+{%- liquid
+  if section.settings.collection != blank
+    assign catalog = collections[section.settings.collection]
+  else
+    assign catalog = collections.all
+  endif
+-%}
+
+{%- paginate catalog.products by section.settings.products_per_page -%}
+  <div class="container">
+    <div class="collection-head">
+      <h1 class="collection-head__title">
+        {{ section.settings.heading }}
+        {%- if section.settings.heading_highlight != blank -%}
+          <span class="grad-text">{{ section.settings.heading_highlight }}</span>
+        {%- endif -%}
+      </h1>
+
+      {%- if section.settings.subheading != blank -%}
+        <p class="section-subtitle collection-head__description">{{ section.settings.subheading }}</p>
+      {%- endif -%}
+    </div>
+
+    {%- if catalog.products.size > 0 -%}
+      <div class="product-grid product-grid--4">
+        {%- for product in catalog.products -%}
+          {%- assign card_delay = forloop.index0 | modulo: 4 | times: 60 -%}
+          {% render 'product-card', product: product, delay: card_delay %}
+        {%- endfor -%}
+      </div>
+
+      {% render 'pagination', paginate: paginate %}
+    {%- else -%}
+      <div class="empty-state">
+        <h2 class="empty-state__title">{{ 'collections.general.no_products' | t }}</h2>
+        <p class="text-muted">{{ 'collections.general.no_products_subtext' | t }}</p>
+      </div>
+    {%- endif -%}
+  </div>
+{%- endpaginate -%}
+
+{% schema %}
+{
+  "name": "Catalog",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "The "
+    },
+    {
+      "type": "text",
+      "id": "heading_highlight",
+      "label": "Gradient heading",
+      "default": "Merch"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Wearable pixels, printed in small runs"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection",
+      "info": "Leave empty to show every product in the store."
+    },
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "label": "Products per page",
+      "min": 8,
+      "max": 48,
+      "step": 4,
+      "default": 24
+    }
+  ],
+  "presets": [
+    {
+      "name": "Catalog"
+    }
+  ]
+}
+{% endschema %}
