@@ -45,9 +45,6 @@
       "title": "Cart"
     }
   },
-  "onboarding": {
-    "product_title": "Example product"
-  },
   "newsletter": {
     "label": "Email",
     "placeholder": "Your email",

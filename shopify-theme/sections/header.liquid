@@ -93,6 +93,12 @@
     </div>
 
     <div class="header__actions">
+      {%- if section.settings.site_link_label != blank and section.settings.site_link_url != blank -%}
+        <a href="{{ section.settings.site_link_url }}" class="btn btn--sm">
+          {{ section.settings.site_link_label }}
+        </a>
+      {%- endif -%}
+
       <a href="{{ routes.cart_url }}" class="cart-link">
         {% render 'icon-cart' %}
         <span>{{ 'layout.cart.title' | t }}</span>
@@ -131,6 +137,11 @@
     </nav>
 
     <div class="drawer__footer">
+      {%- if section.settings.site_link_label != blank and section.settings.site_link_url != blank -%}
+        <a href="{{ section.settings.site_link_url }}" class="btn btn--full">
+          {{ section.settings.site_link_label }}
+        </a>
+      {%- endif -%}
       {%- if shop.customer_accounts_enabled -%}
         <a href="{{ routes.account_url }}" class="link-underline">{{ 'customer.account.title' | t }}</a>
       {%- endif -%}
@@ -151,8 +162,24 @@
     {
       "type": "link_list",
       "id": "menu",
-      "default": "main-menu",
-      "label": "Menu"
+      "label": "Menu",
+      "info": "Optional. The store front page is the catalog, so a nav menu is only needed for extra pages."
+    },
+    {
+      "type": "header",
+      "content": "Main site"
+    },
+    {
+      "type": "text",
+      "id": "site_link_label",
+      "label": "Link label",
+      "default": "chimpions.co"
+    },
+    {
+      "type": "url",
+      "id": "site_link_url",
+      "label": "Link",
+      "info": "Sends shoppers back to the main site."
     }
   ],
   "enabled_on": {

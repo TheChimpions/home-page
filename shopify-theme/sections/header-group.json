@@ -11,7 +11,9 @@
     "header": {
       "type": "header",
       "settings": {
-        "menu": "main-menu"
+        "menu": "",
+        "site_link_label": "chimpions.co",
+        "site_link_url": "https://chimpions.co"
       }
     }
   },

@@ -24,15 +24,17 @@ root of the zip, not inside a `shopify-theme/` folder) and upload it under
 
 ## After installing
 
-1. **Navigation** — create a `main-menu` and a `footer` menu in
-   *Online Store → Navigation*. The header renders one level of dropdowns, so a menu item
-   with children becomes a dropdown, matching the "Community" menu on the main site.
-   Since the root is the catalog, a short menu works best — e.g. *Shop* → `/`, *Contact*,
-   and an external link back to thechimpions.io.
+1. **Navigation** — the header ships with no menu selected, so it is just the logo, the
+   main-site link and the cart. Shopify's default `main-menu` (Home, Catalog) is redundant
+   here because the front page *is* the catalog. If you later want nav for extra pages,
+   pick a menu under **Header → Menu**; one level of dropdowns is supported. The footer
+   uses the `footer` menu — edit or empty it in *Online Store → Navigation*.
 2. **Store front page** — the front page is the **Catalog** section: a paginated product
    grid over every product in the store. Point it at a single collection instead, or
    change the heading and subheading, in the theme editor.
-3. **Contact page** — create a page that uses the `page.contact` template to get the
+3. **Main-site link** — the header and mobile drawer carry one link back to the main
+   site, set under **Header → Main site**.
+4. **Contact page** — create a page that uses the `page.contact` template to get the
    styled contact form.
 
 ## Structure
@@ -43,20 +45,8 @@ root of the zip, not inside a `shopify-theme/` folder) and upload it under
 | `assets/base.css` | Design tokens (the palette from `src/app/globals.css`) and every component style |
 | `assets/theme.js` | Hide-on-scroll header, mobile drawer, typewriter, fade-up reveals, count-up stats, FAQ accordion, variant picker, quantity steppers |
 | `sections/catalog.liquid` | The store front page — paginated product grid |
+| `sections/header.liquid`, `footer.liquid`, `announcement-bar.liquid` | Header, footer and announcement bar |
 | `sections/main-*.liquid` | Product, collection, cart, search, blog, article, page, 404, password |
-
-Optional sections, not used by any template but available to add to any page from the
-theme editor, each carrying its counterpart on the main site:
-
-| Path | What it is |
-| --- | --- |
-| `sections/hero.liquid` | Hero — typed lines and the scrolling Chimpion columns (desktop) / strip (mobile) |
-| `sections/stats.liquid` | Gradient-railed stats bar, optional count-up per stat |
-| `sections/about.liquid` | Two-column "What is The Chimpions" block |
-| `sections/ecosystem.liquid` | Ecosystem cards with the shooting-line animation and per-card hover colour |
-| `sections/faq.liquid` | Accordion FAQ with the breathing logo |
-| `sections/join-cta.liquid` | "Want to be part of it?" panel |
-| `sections/featured-collection.liquid` | Product grid pointed at one collection |
 | `templates/` | JSON templates wiring sections together, plus the customer account templates |
 
 ## Where the design comes from
@@ -64,23 +54,15 @@ theme editor, each carrying its counterpart on the main site:
 | Main site | Theme |
 | --- | --- |
 | `src/app/globals.css` `@theme` tokens | CSS custom properties at the top of `assets/base.css` |
-| `src/components/home/Hero/Hero.tsx` | `sections/hero.liquid` (optional) |
-| `src/components/home/Stats/Stats.tsx` | `sections/stats.liquid` (optional) |
-| `src/components/home/About/About.tsx` | `sections/about.liquid` (optional) |
-| `src/components/home/Ecosystem/Ecosystem.tsx` | `sections/ecosystem.liquid` (optional) |
-| `src/components/home/Faq/Faq.tsx` | `sections/faq.liquid` (optional) |
-| `src/components/home/JoinCta/JoinCta.tsx` | `sections/join-cta.liquid` (optional) |
 | `src/components/Header/Header.tsx`, `MobileMenu.tsx` | `sections/header.liquid` |
 | `src/components/Footer/Footer.tsx` | `sections/footer.liquid` |
 
-Fonts, logos, the starfield hero background, the ecosystem backdrop and 20 Chimpion
-portraits are copied from `public/` into `assets/` (Shopify's asset folder is flat, so
-`public/carousel/1v2.png` is `assets/chimp-1.png` here).
+Fonts, the logos and the starfield background (used on the password page) are copied from
+`public/` into `assets/`; Shopify's asset folder is flat, so there are no subdirectories.
 
-The one thing the theme deliberately does not carry over is the live on-chain data — the
-optional stats bar takes plain values or a count-up target from the theme editor instead
-of hitting the validator, treasury and marketplace APIs. The store also carries no
-marketplace (Tensor / Magic Eden) links — those live on the main site.
+The theme carries the brand, not the marketing site: there is no hero, stats bar, ecosystem
+grid, FAQ or CTA here, no live on-chain data, and no marketplace links. The header carries a
+single link back to the main site, set under **Header → Main site** in the theme editor.
 
 ## Checks
 

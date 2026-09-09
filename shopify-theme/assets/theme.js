@@ -114,118 +114,6 @@
     });
   }
 
-  /* ----------------------------------------------------- hero typewriter */
-  function initTypewriter() {
-    var lines = document.querySelectorAll("[data-typewriter]");
-    if (!lines.length) return;
-
-    lines.forEach(function (line) {
-      var target = line.querySelector("[data-typewriter-output]");
-      var text = line.dataset.typewriter || "";
-      if (!target) return;
-
-      if (reduceMotion) {
-        target.textContent = text;
-        return;
-      }
-
-      var speed = parseInt(line.dataset.speed || "38", 10);
-      var delay = parseInt(line.dataset.delay || "0", 10);
-      var index = 0;
-      var cursor = document.createElement("span");
-      cursor.className = "typewriter__cursor";
-      cursor.textContent = "_";
-
-      setTimeout(function () {
-        target.appendChild(cursor);
-        var timer = setInterval(function () {
-          index += 1;
-          cursor.remove();
-          target.textContent = text.slice(0, index);
-          target.appendChild(cursor);
-          if (index >= text.length) {
-            clearInterval(timer);
-            setTimeout(function () {
-              cursor.remove();
-            }, 1200);
-          }
-        }, speed);
-      }, delay);
-    });
-  }
-
-  /* --------------------------------------------------------- count-up stats */
-  function initCountUp() {
-    var stats = document.querySelectorAll("[data-countup]");
-    if (!stats.length) return;
-
-    function run(el) {
-      var end = parseFloat(el.dataset.countup);
-      if (isNaN(end)) return;
-      var decimals = parseInt(el.dataset.decimals || "0", 10);
-      var prefix = el.dataset.prefix || "";
-      var suffix = el.dataset.suffix || "";
-      var duration = 1400;
-      var start = null;
-
-      if (reduceMotion) {
-        el.textContent = prefix + end.toFixed(decimals) + suffix;
-        return;
-      }
-
-      function frame(timestamp) {
-        if (start === null) start = timestamp;
-        var progress = Math.min((timestamp - start) / duration, 1);
-        var eased = 1 - Math.pow(1 - progress, 3);
-        el.textContent = prefix + (end * eased).toFixed(decimals) + suffix;
-        if (progress < 1) requestAnimationFrame(frame);
-      }
-      requestAnimationFrame(frame);
-    }
-
-    if (!("IntersectionObserver" in window)) {
-      stats.forEach(run);
-      return;
-    }
-
-    var observer = new IntersectionObserver(
-      function (entries) {
-        entries.forEach(function (entry) {
-          if (!entry.isIntersecting) return;
-          run(entry.target);
-          observer.unobserve(entry.target);
-        });
-      },
-      { threshold: 0.4 }
-    );
-    stats.forEach(function (el) {
-      observer.observe(el);
-    });
-  }
-
-  /* ---------------------------------------------------------- FAQ accordion */
-  function initFaq() {
-    document.querySelectorAll("[data-faq]").forEach(function (faq) {
-      var items = faq.querySelectorAll("[data-faq-item]");
-      items.forEach(function (item) {
-        var button = item.querySelector("[data-faq-question]");
-        if (!button) return;
-        button.addEventListener("click", function () {
-          var isOpen = item.classList.contains("is-open");
-          items.forEach(function (other) {
-            other.classList.remove("is-open");
-            var otherButton = other.querySelector("[data-faq-question]");
-            if (otherButton) otherButton.setAttribute("aria-expanded", "false");
-          });
-          if (!isOpen) {
-            item.classList.add("is-open");
-            button.setAttribute("aria-expanded", "true");
-          }
-        });
-      });
-    });
-  }
-
   /* ------------------------------------------------------ quantity steppers */
   function initQuantity() {
     document.querySelectorAll("[data-quantity]").forEach(function (wrapper) {
@@ -358,9 +246,6 @@
     initDrawer();
     initDropdowns();
     initFadeUp();
-    initTypewriter();
-    initCountUp();
-    initFaq();
     initQuantity();
     initVariantPickers();
     initGallery();
