@@ -1,43 +1,55 @@
+{%- comment -%}
+  The store front page. Shopify's paginate tag is not available on the index
+  template, so this renders up to `products_to_show` products (50 is Shopify's
+  per-loop ceiling) and links to the fully paginated collection page if there
+  are more than that.
+{%- endcomment -%}
+
 {%- liquid
   if section.settings.collection != blank
     assign catalog = collections[section.settings.collection]
   else
     assign catalog = collections.all
   endif
+
+  assign limit = section.settings.products_to_show
+  assign catalog_url = catalog.url | default: routes.all_products_collection_url
 -%}
 
-{%- paginate catalog.products by section.settings.products_per_page -%}
-  <div class="container">
-    <div class="collection-head">
-      <h1 class="collection-head__title">
-        {{ section.settings.heading }}
-        {%- if section.settings.heading_highlight != blank -%}
-          <span class="grad-text">{{ section.settings.heading_highlight }}</span>
-        {%- endif -%}
-      </h1>
-
-      {%- if section.settings.subheading != blank -%}
-        <p class="section-subtitle collection-head__description">{{ section.settings.subheading }}</p>
+<div class="container">
+  <div class="collection-head">
+    <h1 class="collection-head__title">
+      {{ section.settings.heading }}
+      {%- if section.settings.heading_highlight != blank -%}
+        <span class="grad-text">{{ section.settings.heading_highlight }}</span>
       {%- endif -%}
-    </div>
+    </h1>
 
-    {%- if catalog.products.size > 0 -%}
-      <div class="product-grid product-grid--4">
-        {%- for product in catalog.products -%}
-          {%- assign card_delay = forloop.index0 | modulo: 4 | times: 60 -%}
-          {% render 'product-card', product: product, delay: card_delay %}
-        {%- endfor -%}
-      </div>
-
-      {% render 'pagination', paginate: paginate %}
-    {%- else -%}
-      <div class="empty-state">
-        <h2 class="empty-state__title">{{ 'collections.general.no_products' | t }}</h2>
-        <p class="text-muted">{{ 'collections.general.no_products_subtext' | t }}</p>
-      </div>
+    {%- if section.settings.subheading != blank -%}
+      <p class="section-subtitle collection-head__description">{{ section.settings.subheading }}</p>
     {%- endif -%}
   </div>
-{%- endpaginate -%}
+
+  {%- if catalog.products.size > 0 -%}
+    <div class="product-grid product-grid--4">
+      {%- for product in catalog.products limit: limit -%}
+        {%- assign card_delay = forloop.index0 | modulo: 4 | times: 60 -%}
+        {% render 'product-card', product: product, delay: card_delay %}
+      {%- endfor -%}
+    </div>
+
+    {%- if catalog.products_count > limit -%}
+      <div class="center-row">
+        <a href="{{ catalog_url }}" class="btn">{{ 'collections.general.view_all' | t }}</a>
+      </div>
+    {%- endif -%}
+  {%- else -%}
+    <div class="empty-state">
+      <h2 class="empty-state__title">{{ 'collections.general.no_products' | t }}</h2>
+      <p class="text-muted">{{ 'collections.general.no_products_subtext' | t }}</p>
+    </div>
+  {%- endif -%}
+</div>
 
 {% schema %}
 {
@@ -69,12 +81,13 @@
     },
     {
       "type": "range",
-      "id": "products_per_page",
-      "label": "Products per page",
+      "id": "products_to_show",
+      "label": "Products to show",
+      "info": "Shopify caps the front page at 50. Above that, a link to the full collection page appears.",
       "min": 8,
-      "max": 48,
-      "step": 4,
-      "default": 24
+      "max": 50,
+      "step": 2,
+      "default": 50
     }
   ],
   "presets": [

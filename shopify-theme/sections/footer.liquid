@@ -16,26 +16,6 @@
         {%- if section.settings.tagline != blank -%}
           <p class="footer__tagline">{{ section.settings.tagline }}</p>
         {%- endif -%}
-
-        {%- if section.settings.show_newsletter -%}
-          {% form 'customer', class: 'newsletter' %}
-            <input type="hidden" name="contact[tags]" value="newsletter">
-            <label class="visually-hidden" for="NewsletterEmail">{{ 'newsletter.label' | t }}</label>
-            <input
-              id="NewsletterEmail"
-              class="input"
-              type="email"
-              name="contact[email]"
-              placeholder="{{ 'newsletter.placeholder' | t }}"
-              autocomplete="email"
-              required
-            >
-            <button type="submit" class="btn">{{ 'newsletter.button' | t }}</button>
-            {%- if form.posted_successfully? -%}
-              <p class="notice notice--success">{{ 'newsletter.success' | t }}</p>
-            {%- endif -%}
-          {% endform %}
-        {%- endif -%}
       </div>
 
       {%- if section.settings.menu_primary != blank -%}
@@ -121,16 +101,6 @@
       "type": "link_list",
       "id": "menu_secondary",
       "label": "Second menu"
-    },
-    {
-      "type": "header",
-      "content": "Newsletter"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_newsletter",
-      "label": "Show email sign-up",
-      "default": true
     },
     {
       "type": "header",

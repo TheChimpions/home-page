@@ -935,6 +935,12 @@ select.input {
   gap: 0.75rem;
 }
 
+.center-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 3rem;
+}
+
 /* ------------------------------------------------------- product grid --- */
 
 .collection-head {
@@ -1524,13 +1530,6 @@ select.input {
 .footer__payment svg {
   height: 1.5rem;
   width: auto;
-}
-
-.newsletter {
-  display: flex;
-  gap: 0.5rem;
-  max-width: 24rem;
-  width: 100%;
 }
 
 /* ------------------------------------------------------ customer pages --- */

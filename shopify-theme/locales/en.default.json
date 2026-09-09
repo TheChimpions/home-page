@@ -45,12 +45,6 @@
       "title": "Cart"
     }
   },
-  "newsletter": {
-    "label": "Email",
-    "placeholder": "Your email",
-    "button": "Sign up",
-    "success": "Thanks for subscribing."
-  },
   "products": {
     "card": {
       "sold_out": "Sold out",
