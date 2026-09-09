@@ -1,0 +1,16 @@
+{
+  "sections": {
+    "catalog": {
+      "type": "catalog",
+      "settings": {
+        "heading": "The ",
+        "heading_highlight": "Merch",
+        "subheading": "Wearable pixels, printed in small runs",
+        "products_to_show": 50
+      }
+    }
+  },
+  "order": [
+    "catalog"
+  ]
+}

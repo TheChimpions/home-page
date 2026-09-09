@@ -1,0 +1,14 @@
+{
+  "current": {
+    "social_twitter_link": "https://x.com/TheChimpions",
+    "social_discord_link": "https://discord.com/invite/thechimpions",
+    "currency_code_enabled": false
+  },
+  "presets": {
+    "Chimpions": {
+      "social_twitter_link": "https://x.com/TheChimpions",
+      "social_discord_link": "https://discord.com/invite/thechimpions",
+      "currency_code_enabled": false
+    }
+  }
+}

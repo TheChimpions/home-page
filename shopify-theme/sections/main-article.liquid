@@ -1,0 +1,62 @@
+<div class="container">
+  <article class="article">
+    <p class="article-card__meta">{{ article.published_at | date: format: 'date' }}</p>
+    <h1 class="page-hero__title article__title">{{ article.title }}</h1>
+
+    {%- if article.image -%}
+      <img
+        src="{{ article.image | image_url: width: 1400 }}"
+        alt="{{ article.image.alt | escape }}"
+        width="1400"
+        height="800"
+        class="article__image"
+      >
+    {%- endif -%}
+
+    <div class="rte article__body">{{ article.content }}</div>
+
+    {%- if blog.comments_enabled? -%}
+      <div class="article__comments">
+        <h2 class="footer__heading">{{ 'blogs.comments.title' | t }}</h2>
+
+        {%- for comment in article.comments -%}
+          <div class="article__comment">
+            <p class="article-card__meta">{{ comment.author }}</p>
+            <div class="rte text-muted">{{ comment.content }}</div>
+          </div>
+        {%- endfor -%}
+
+        {% form 'new_comment', article %}
+          {%- if form.posted_successfully? -%}
+            <p class="notice notice--success">{{ 'blogs.comments.success' | t }}</p>
+          {%- elsif form.errors -%}
+            <p class="notice notice--error">{{ form.errors | default_errors }}</p>
+          {%- endif -%}
+
+          <div class="stack">
+            <div class="field">
+              <label class="field__label" for="CommentAuthor">{{ 'blogs.comments.name' | t }}</label>
+              <input class="input" type="text" id="CommentAuthor" name="comment[author]" value="{{ form.author }}">
+            </div>
+            <div class="field">
+              <label class="field__label" for="CommentEmail">{{ 'blogs.comments.email' | t }}</label>
+              <input class="input" type="email" id="CommentEmail" name="comment[email]" value="{{ form.email }}">
+            </div>
+            <div class="field">
+              <label class="field__label" for="CommentBody">{{ 'blogs.comments.message' | t }}</label>
+              <textarea class="input" id="CommentBody" name="comment[body]" rows="5">{{ form.body }}</textarea>
+            </div>
+            <button type="submit" class="btn">{{ 'blogs.comments.post' | t }}</button>
+          </div>
+        {% endform %}
+      </div>
+    {%- endif -%}
+  </article>
+</div>
+
+{% schema %}
+{
+  "name": "Article",
+  "settings": []
+}
+{% endschema %}

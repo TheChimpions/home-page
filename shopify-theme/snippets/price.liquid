@@ -1,0 +1,22 @@
+{%- comment -%}
+  Renders a price block.
+  Accepts:
+    product_or_variant - product or variant object
+    class - extra class, e.g. "price--large"
+{%- endcomment -%}
+{%- liquid
+  assign target = product_or_variant
+  assign compare_at = target.compare_at_price
+  if target.price_varies
+    assign price_text = target.price_min | money
+    assign price_text = 'products.price.from_price' | t: price: price_text
+  else
+    assign price_text = target.price | money
+  endif
+-%}
+<div class="price {{ class }}">
+  <span class="price__current">{{ price_text }}</span>
+  {%- if compare_at and compare_at > target.price -%}
+    <span class="price__compare">{{ compare_at | money }}</span>
+  {%- endif -%}
+</div>

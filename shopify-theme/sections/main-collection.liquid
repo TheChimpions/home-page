@@ -1,0 +1,68 @@
+{%- paginate collection.products by section.settings.products_per_page -%}
+  <div class="container">
+    <div class="collection-head">
+      <h1 class="collection-head__title">{{ collection.title }}</h1>
+      {%- if collection.description != blank -%}
+        <div class="rte text-muted collection-head__description">{{ collection.description }}</div>
+      {%- endif -%}
+    </div>
+
+    <div class="collection-toolbar">
+      <span>{{ 'collections.general.product_count' | t: count: collection.products_count }}</span>
+
+      {%- if section.settings.show_sorting -%}
+        <form method="get" action="{{ collection.url }}">
+          <label class="visually-hidden" for="SortBy">{{ 'collections.sorting.title' | t }}</label>
+          <select id="SortBy" name="sort_by" class="input" onchange="this.form.submit()">
+            {%- assign sort_by = collection.sort_by | default: collection.default_sort_by -%}
+            {%- for option in collection.sort_options -%}
+              <option value="{{ option.value }}" {% if option.value == sort_by %}selected{% endif %}>
+                {{ option.name }}
+              </option>
+            {%- endfor -%}
+          </select>
+          <noscript><button type="submit" class="btn btn--sm">{{ 'collections.sorting.submit' | t }}</button></noscript>
+        </form>
+      {%- endif -%}
+    </div>
+
+    {%- if collection.products.size > 0 -%}
+      <div class="product-grid product-grid--4">
+        {%- for product in collection.products -%}
+          {%- assign card_delay = forloop.index0 | modulo: 4 | times: 60 -%}
+          {% render 'product-card', product: product, delay: card_delay %}
+        {%- endfor -%}
+      </div>
+
+      {% render 'pagination', paginate: paginate %}
+    {%- else -%}
+      <div class="empty-state">
+        <h2 class="empty-state__title">{{ 'collections.general.no_matches' | t }}</h2>
+        <a href="{{ routes.all_products_collection_url }}" class="btn">{{ 'collections.general.view_all' | t }}</a>
+      </div>
+    {%- endif -%}
+  </div>
+{%- endpaginate -%}
+
+{% schema %}
+{
+  "name": "Collection",
+  "settings": [
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "label": "Products per page",
+      "min": 8,
+      "max": 48,
+      "step": 4,
+      "default": 24
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sorting",
+      "label": "Show sorting",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

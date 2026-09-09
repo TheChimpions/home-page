@@ -1,0 +1,194 @@
+{
+  "general": {
+    "meta": {
+      "tags": "Tagged \"{{ tags }}\"",
+      "page": "Page {{ page }}"
+    },
+    "breadcrumbs": {
+      "home": "Home",
+      "label": "Breadcrumbs"
+    },
+    "pagination": {
+      "label": "Pagination",
+      "previous": "Previous page",
+      "next": "Next page"
+    },
+    "search": {
+      "title": "Search",
+      "placeholder": "Search the store",
+      "submit": "Search",
+      "results_with_count": {
+        "one": "{{ count }} result for \"{{ terms }}\"",
+        "other": "{{ count }} results for \"{{ terms }}\""
+      },
+      "no_results": "No results for \"{{ terms }}\""
+    },
+    "404": {
+      "title": "Lost in the Treehouse",
+      "subtext": "The page you were looking for does not exist.",
+      "link": "Back to the store"
+    },
+    "password_page": {
+      "password_label": "Password",
+      "enter": "Enter"
+    }
+  },
+  "accessibility": {
+    "skip_to_content": "Skip to content",
+    "new_window": "Opens in a new window.",
+    "open_menu": "Open menu",
+    "close": "Close",
+    "menu": "Menu"
+  },
+  "layout": {
+    "cart": {
+      "title": "Cart"
+    }
+  },
+  "products": {
+    "card": {
+      "sold_out": "Sold out",
+      "on_sale": "Sale"
+    },
+    "price": {
+      "from_price": "From {{ price }}"
+    },
+    "product": {
+      "quantity": "Quantity",
+      "quantity_decrease": "Decrease quantity",
+      "quantity_increase": "Increase quantity",
+      "add_to_cart": "Add to cart",
+      "sold_out": "Sold out",
+      "unavailable": "Unavailable",
+      "share": "Share:",
+      "media_thumbnail": "Show image {{ index }}"
+    }
+  },
+  "collections": {
+    "general": {
+      "all_collections": "Collections",
+      "view_all": "View all",
+      "no_matches": "No products found",
+      "product_count": {
+        "one": "{{ count }} product",
+        "other": "{{ count }} products"
+      },
+      "no_products": "No products yet",
+      "no_products_subtext": "Check back soon."
+    },
+    "sorting": {
+      "title": "Sort by",
+      "submit": "Sort"
+    }
+  },
+  "cart": {
+    "general": {
+      "title": "Your cart",
+      "empty": "Your cart is empty",
+      "continue_shopping": "Continue shopping",
+      "subtotal": "Subtotal",
+      "update": "Update",
+      "checkout": "Checkout",
+      "remove": "Remove",
+      "shipping_at_checkout": "Taxes and shipping calculated at checkout."
+    },
+    "label": {
+      "product": "Product",
+      "quantity": "Quantity",
+      "total": "Total"
+    }
+  },
+  "contact": {
+    "form": {
+      "name": "Name",
+      "email": "Email",
+      "message": "Message",
+      "send": "Send",
+      "post_success": "Thanks for reaching out. We'll get back to you soon."
+    }
+  },
+  "blogs": {
+    "comments": {
+      "title": "Comments",
+      "name": "Name",
+      "email": "Email",
+      "message": "Comment",
+      "post": "Post comment",
+      "success": "Your comment was posted."
+    }
+  },
+  "customer": {
+    "account": {
+      "title": "Account",
+      "addresses": "Addresses",
+      "log_out": "Log out"
+    },
+    "login": {
+      "title": "Login",
+      "email": "Email",
+      "password": "Password",
+      "forgot_password": "Forgot your password?",
+      "sign_in": "Sign in",
+      "new_customer": "New here?"
+    },
+    "register": {
+      "title": "Create account",
+      "first_name": "First name",
+      "last_name": "Last name",
+      "submit": "Create"
+    },
+    "recover_password": {
+      "title": "Reset your password",
+      "submit": "Send reset link",
+      "success": "We've sent you an email with a link to update your password."
+    },
+    "reset_password": {
+      "title": "Reset account password",
+      "subtext": "Enter a new password.",
+      "password": "Password",
+      "password_confirm": "Confirm password",
+      "submit": "Reset password"
+    },
+    "activate_account": {
+      "title": "Activate account",
+      "subtext": "Create your password to activate your account.",
+      "password": "Password",
+      "password_confirm": "Confirm password",
+      "submit": "Activate account",
+      "decline": "Decline invitation"
+    },
+    "orders": {
+      "title": "Order history",
+      "order_number": "Order",
+      "date": "Date",
+      "fulfillment_status": "Fulfillment status",
+      "total": "Total",
+      "none": "You haven't placed any orders yet."
+    },
+    "order": {
+      "title": "Order {{ name }}",
+      "total": "Total",
+      "billing_address": "Billing address",
+      "shipping_address": "Shipping address",
+      "return": "Back to account"
+    },
+    "addresses": {
+      "title": "Addresses",
+      "add_new": "Add a new address",
+      "address1": "Address",
+      "city": "City",
+      "zip": "Postal code",
+      "country": "Country",
+      "save": "Save address",
+      "delete": "Delete"
+    }
+  },
+  "gift_cards": {
+    "issued": {
+      "title": "{{ shop }} gift card",
+      "subtext": "Here's your gift card for",
+      "expires_on": "Expires on {{ expiry }}",
+      "shop_link": "Start shopping"
+    }
+  }
+}

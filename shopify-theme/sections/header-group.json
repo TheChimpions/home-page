@@ -1,0 +1,24 @@
+{
+  "type": "header",
+  "name": "Header group",
+  "sections": {
+    "announcement-bar": {
+      "type": "announcement-bar",
+      "settings": {
+        "text": "Free shipping on orders over $150 — holders get 22% off with their Chimpion"
+      }
+    },
+    "header": {
+      "type": "header",
+      "settings": {
+        "menu": "",
+        "site_link_label": "chimpions.co",
+        "site_link_url": "https://chimpions.co"
+      }
+    }
+  },
+  "order": [
+    "announcement-bar",
+    "header"
+  ]
+}

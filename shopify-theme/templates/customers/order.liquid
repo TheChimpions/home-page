@@ -1,0 +1,47 @@
+<div class="container">
+  <div class="customer customer--wide">
+    <h1 class="customer__title">{{ 'customer.order.title' | t: name: order.name }}</h1>
+    <p class="customer__meta">{{ order.created_at | date: format: 'date_at_time' }}</p>
+
+    <table class="cart__table">
+      <thead>
+        <tr>
+          <th>{{ 'cart.label.product' | t }}</th>
+          <th>{{ 'cart.label.quantity' | t }}</th>
+          <th class="text-right">{{ 'cart.label.total' | t }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {%- for line_item in order.line_items -%}
+          <tr>
+            <td>
+              <span class="cart-item__title">{{ line_item.title }}</span>
+            </td>
+            <td>{{ line_item.quantity }}</td>
+            <td class="text-right">{{ line_item.final_line_price | money }}</td>
+          </tr>
+        {%- endfor -%}
+      </tbody>
+    </table>
+
+    <div class="cart__footer">
+      <div class="cart__total">
+        <span>{{ 'customer.order.total' | t }}</span>
+        <span class="cart__total-value">{{ order.total_price | money }}</span>
+      </div>
+    </div>
+
+    <div class="address-grid">
+      <div>
+        <h2 class="footer__heading">{{ 'customer.order.billing_address' | t }}</h2>
+        <div class="customer__meta">{{ order.billing_address | format_address }}</div>
+      </div>
+      <div>
+        <h2 class="footer__heading">{{ 'customer.order.shipping_address' | t }}</h2>
+        <div class="customer__meta">{{ order.shipping_address | format_address }}</div>
+      </div>
+    </div>
+
+    <a href="{{ routes.account_url }}" class="link-underline">{{ 'customer.order.return' | t }}</a>
+  </div>
+</div>

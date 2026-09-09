@@ -1,0 +1,58 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Chimpions",
+    "theme_version": "1.0.0",
+    "theme_author": "The Chimpions",
+    "theme_documentation_url": "https://thechimpions.io",
+    "theme_support_url": "https://discord.com/invite/thechimpions"
+  },
+  {
+    "name": "Brand",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "This theme ships with the pixel palette, Pixel Operator / Alagard typefaces and the artwork used on thechimpions.io. Colours are defined in assets\/base.css as CSS variables if you need to fine-tune them."
+      },
+      {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "Favicon"
+      },
+      {
+        "type": "image_picker",
+        "id": "share_image",
+        "label": "Social sharing image",
+        "info": "Used when a page without its own image is shared. 1200 x 630 works best."
+      }
+    ]
+  },
+  {
+    "name": "Social media",
+    "settings": [
+      {
+        "type": "text",
+        "id": "social_twitter_link",
+        "label": "X (Twitter)",
+        "default": "https://x.com/TheChimpions"
+      },
+      {
+        "type": "text",
+        "id": "social_discord_link",
+        "label": "Discord",
+        "default": "https://discord.com/invite/thechimpions"
+      }
+    ]
+  },
+  {
+    "name": "Currency format",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "currency_code_enabled",
+        "label": "Show currency codes",
+        "default": false
+      }
+    ]
+  }
+]

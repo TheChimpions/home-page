@@ -1,0 +1,20 @@
+{
+  "type": "footer",
+  "name": "Footer group",
+  "sections": {
+    "footer": {
+      "type": "footer",
+      "settings": {
+        "tagline": "222 unique Chimpions. One powerful DAO.\nBuilt on Solana.",
+        "menu_primary_title": "The Chimpions",
+        "menu_primary": "footer",
+        "menu_secondary_title": "Community",
+        "copyright_name": "Chimpions",
+        "show_payment_icons": true
+      }
+    }
+  },
+  "order": [
+    "footer"
+  ]
+}

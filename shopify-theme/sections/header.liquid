@@ -1,0 +1,189 @@
+{%- liquid
+  assign menu = linklists[section.settings.menu]
+-%}
+
+<header class="header" data-header>
+  <div class="header__inner">
+    <button
+      class="header__burger"
+      type="button"
+      aria-label="{{ 'accessibility.open_menu' | t }}"
+      data-drawer-open
+    >
+      <img src="{{ 'menu.svg' | asset_url }}" alt="" width="24" height="18">
+    </button>
+
+    <a href="{{ routes.root_url }}" class="header__logo header__logo--mobile">
+      {%- if section.settings.logo != blank -%}
+        <img
+          src="{{ section.settings.logo | image_url: width: 200 }}"
+          alt="{{ shop.name | escape }}"
+          width="{{ section.settings.logo.width }}"
+          height="{{ section.settings.logo.height }}"
+        >
+      {%- else -%}
+        <img src="{{ 'logo-header.png' | asset_url }}" alt="{{ shop.name | escape }}" width="76" height="45">
+      {%- endif -%}
+    </a>
+
+    <div class="header__left">
+      <a href="{{ routes.root_url }}" class="header__logo header__logo--desktop">
+        {%- if section.settings.logo != blank -%}
+          <img
+            src="{{ section.settings.logo | image_url: width: 300 }}"
+            alt="{{ shop.name | escape }}"
+            width="{{ section.settings.logo.width }}"
+            height="{{ section.settings.logo.height }}"
+          >
+        {%- else -%}
+          <img src="{{ 'logo-header.svg' | asset_url }}" alt="{{ shop.name | escape }}" width="76" height="45">
+        {%- endif -%}
+      </a>
+
+      <nav class="header__nav" role="navigation">
+        {%- for link in menu.links -%}
+          {%- if link.links.size > 0 -%}
+            {%- liquid
+              assign group_active = false
+              for child in link.links
+                if child.active or child.child_active
+                  assign group_active = true
+                endif
+              endfor
+            -%}
+            <div class="nav-dropdown" data-dropdown>
+              <button
+                type="button"
+                class="nav-dropdown__toggle{% if group_active %} is-active{% endif %}"
+                data-dropdown-toggle
+                aria-expanded="false"
+              >
+                {%- if group_active -%}
+                  <img src="{{ 'yellow-arrow.svg' | asset_url }}" alt="" class="active-arrow" width="20" height="20">
+                {%- endif -%}
+                {{ link.title }}
+                {% render 'icon-chevron' %}
+              </button>
+              <div class="nav-dropdown__menu">
+                <div class="nav-dropdown__panel">
+                  {%- for child in link.links -%}
+                    <a
+                      href="{{ child.url }}"
+                      class="nav-dropdown__link{% if child.active %} is-active{% endif %}"
+                    >
+                      {{ child.title }}
+                    </a>
+                  {%- endfor -%}
+                </div>
+              </div>
+            </div>
+          {%- else -%}
+            <a
+              href="{{ link.url }}"
+              class="header__nav-link{% if link.active %} is-active{% endif %}"
+            >
+              {%- if link.active -%}
+                <img src="{{ 'yellow-arrow.svg' | asset_url }}" alt="" class="active-arrow" width="20" height="20">
+              {%- endif -%}
+              {{ link.title }}
+            </a>
+          {%- endif -%}
+        {%- endfor -%}
+      </nav>
+    </div>
+
+    <div class="header__actions">
+      {%- if section.settings.site_link_label != blank and section.settings.site_link_url != blank -%}
+        <a href="{{ section.settings.site_link_url }}" class="btn btn--sm">
+          {{ section.settings.site_link_label }}
+        </a>
+      {%- endif -%}
+
+      <a href="{{ routes.cart_url }}" class="cart-link">
+        {% render 'icon-cart' %}
+        <span>{{ 'layout.cart.title' | t }}</span>
+        <span class="cart-link__count" data-cart-count>{{ cart.item_count }}</span>
+      </a>
+    </div>
+
+    <div class="header__mobile-actions">
+      <a href="{{ routes.cart_url }}" class="cart-link cart-link--icon" aria-label="{{ 'layout.cart.title' | t }}">
+        {% render 'icon-cart' %}
+        <span class="cart-link__count" data-cart-count>{{ cart.item_count }}</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<div class="drawer" data-drawer aria-hidden="true">
+  <div class="drawer__overlay" data-drawer-close></div>
+  <div class="drawer__panel" role="dialog" aria-modal="true" aria-label="{{ 'accessibility.menu' | t }}">
+    <div class="drawer__header">
+      <a href="{{ routes.root_url }}">
+        <img src="{{ 'logo-header.png' | asset_url }}" alt="{{ shop.name | escape }}" width="76" height="45" class="pixelated">
+      </a>
+      <button type="button" class="drawer__close" data-drawer-close aria-label="{{ 'accessibility.close' | t }}">&times;</button>
+    </div>
+
+    <nav class="drawer__nav">
+      {%- for link in menu.links -%}
+        <a href="{{ link.url }}" class="drawer__link{% if link.active %} is-active{% endif %}">{{ link.title }}</a>
+        {%- for child in link.links -%}
+          <a href="{{ child.url }}" class="drawer__link drawer__sublink{% if child.active %} is-active{% endif %}">
+            {{ child.title }}
+          </a>
+        {%- endfor -%}
+      {%- endfor -%}
+    </nav>
+
+    <div class="drawer__footer">
+      {%- if section.settings.site_link_label != blank and section.settings.site_link_url != blank -%}
+        <a href="{{ section.settings.site_link_url }}" class="btn btn--full">
+          {{ section.settings.site_link_label }}
+        </a>
+      {%- endif -%}
+      {%- if shop.customer_accounts_enabled -%}
+        <a href="{{ routes.account_url }}" class="link-underline">{{ 'customer.account.title' | t }}</a>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Header",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo",
+      "info": "Leave empty to use the pixel Chimpions logo bundled with the theme."
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menu",
+      "info": "Optional. The store front page is the catalog, so a nav menu is only needed for extra pages."
+    },
+    {
+      "type": "header",
+      "content": "Main site"
+    },
+    {
+      "type": "text",
+      "id": "site_link_label",
+      "label": "Link label",
+      "default": "chimpions.co"
+    },
+    {
+      "type": "url",
+      "id": "site_link_url",
+      "label": "Link",
+      "info": "Sends shoppers back to the main site."
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}

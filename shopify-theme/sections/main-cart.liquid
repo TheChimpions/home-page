@@ -1,0 +1,91 @@
+<div class="container cart">
+  <h1 class="cart__title">{{ 'cart.general.title' | t }}</h1>
+
+  {%- if cart.item_count > 0 -%}
+    <form action="{{ routes.cart_url }}" method="post" novalidate>
+      <table class="cart__table">
+        <thead>
+          <tr>
+            <th>{{ 'cart.label.product' | t }}</th>
+            <th>{{ 'cart.label.quantity' | t }}</th>
+            <th class="text-right">{{ 'cart.label.total' | t }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {%- for item in cart.items -%}
+            <tr>
+              <td data-label="{{ 'cart.label.product' | t }}">
+                <div class="cart-item">
+                  {%- if item.image -%}
+                    <img
+                      class="cart-item__image"
+                      src="{{ item.image | image_url: width: 200 }}"
+                      alt="{{ item.image.alt | escape }}"
+                      width="88"
+                      height="88"
+                      loading="lazy"
+                    >
+                  {%- endif -%}
+                  <div>
+                    <a href="{{ item.url }}" class="cart-item__title">{{ item.product.title }}</a>
+                    {%- unless item.product.has_only_default_variant -%}
+                      <p class="cart-item__meta">{{ item.variant.title }}</p>
+                    {%- endunless -%}
+                    {%- unless item.selling_plan_allocation == nil -%}
+                      <p class="cart-item__meta">{{ item.selling_plan_allocation.selling_plan.name }}</p>
+                    {%- endunless -%}
+                    <p class="cart-item__meta">{{ item.original_price | money }}</p>
+                    <a href="{{ item.url_to_remove }}" class="cart-item__remove">{{ 'cart.general.remove' | t }}</a>
+                  </div>
+                </div>
+              </td>
+
+              <td data-label="{{ 'cart.label.quantity' | t }}">
+                <div class="quantity" data-quantity>
+                  <button type="button" data-quantity-change="-1" aria-label="{{ 'products.product.quantity_decrease' | t }}">&minus;</button>
+                  <input
+                    type="number"
+                    name="updates[]"
+                    value="{{ item.quantity }}"
+                    min="0"
+                    data-cart-quantity
+                    aria-label="{{ 'cart.label.quantity' | t }}"
+                  >
+                  <button type="button" data-quantity-change="1" aria-label="{{ 'products.product.quantity_increase' | t }}">+</button>
+                </div>
+              </td>
+
+              <td data-label="{{ 'cart.label.total' | t }}" class="text-right">
+                {{ item.final_line_price | money }}
+              </td>
+            </tr>
+          {%- endfor -%}
+        </tbody>
+      </table>
+
+      <div class="cart__footer">
+        <div class="cart__total">
+          <span>{{ 'cart.general.subtotal' | t }}</span>
+          <span class="cart__total-value">{{ cart.total_price | money }}</span>
+        </div>
+        <p class="cart__note">{{ 'cart.general.shipping_at_checkout' | t }}</p>
+        <div class="button-row">
+          <button type="submit" name="update" class="btn">{{ 'cart.general.update' | t }}</button>
+          <button type="submit" name="checkout" class="btn btn--primary">{{ 'cart.general.checkout' | t }}</button>
+        </div>
+      </div>
+    </form>
+  {%- else -%}
+    <div class="empty-state">
+      <h2 class="empty-state__title">{{ 'cart.general.empty' | t }}</h2>
+      <a href="{{ routes.all_products_collection_url }}" class="btn btn--primary">{{ 'cart.general.continue_shopping' | t }}</a>
+    </div>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Cart",
+  "settings": []
+}
+{% endschema %}
