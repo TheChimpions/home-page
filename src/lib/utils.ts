@@ -32,3 +32,30 @@ export function orbAddressUrl(pubkey: string): string {
 export function orbTxUrl(signature: string): string {
   return `${ORB_BASE}/tx/${signature}`;
 }
+
+interface NFTAttribute {
+  trait_type?: string;
+  value: string;
+}
+
+/**
+ * Look up an NFT attribute by trait name, ignoring case.
+ *
+ * Trait casing isn't consistent across the collection — The Trickster carries
+ * `tribe` where the other 221 carry `Tribe` — so an exact match silently drops
+ * the value and the chimp reads as "Unknown".
+ */
+export function getAttribute(
+  attributes: NFTAttribute[] | undefined,
+  trait: string,
+): string | undefined {
+  const want = trait.toLowerCase();
+  return attributes?.find((a) => a.trait_type?.toLowerCase() === want)?.value;
+}
+
+/** Artist handles on an NFT, in the order the traits are declared. */
+export function getArtists(attributes: NFTAttribute[] | undefined): string[] {
+  return (attributes ?? [])
+    .filter((a) => a.trait_type?.toLowerCase().includes("artist"))
+    .map((a) => a.value);
+}

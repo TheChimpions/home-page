@@ -10,6 +10,8 @@ import {
 import { isEscrowOrProgramAccount } from "./program-accounts";
 import { CHIAO_TREASURY } from "./known-wallets";
 import { VALIDATOR_PUBKEY } from "./validator";
+import { COLLECTION_ADDRESS } from "./collection";
+import { resolveAssetImage } from "./asset-overrides";
 
 const ME_BASE = "https://api-mainnet.magiceden.dev/v2";
 const COLLECTION = "the_chimpions";
@@ -20,9 +22,6 @@ const TREASURY_USD_FALLBACK = 140000;
 
 const HELIUS_API_KEY =
   process.env.HELIUS_API_KEY || process.env.NEXT_PUBLIC_HELIUS_API_KEY;
-const CREATOR_ADDRESS =
-  process.env.NEXT_PUBLIC_CREATOR_ADDRESS ||
-  "D7hKRyCsdaaSGVGwSAgcEfkSofBb6gn68UPD3yWW59zW";
 
 export interface MEStats {
   floorPrice: number | null;
@@ -77,12 +76,14 @@ interface HeliusAsset {
 }
 
 function assetImage(asset: HeliusAsset): string | null {
-  return (
+  const image = resolveAssetImage(
+    asset.id,
     asset.content?.links?.image ||
-    asset.content?.files?.[0]?.cdn_uri ||
-    asset.content?.files?.[0]?.uri ||
-    null
+      asset.content?.files?.[0]?.cdn_uri ||
+      asset.content?.files?.[0]?.uri ||
+      "",
   );
+  return image || null;
 }
 
 async function fetchHolderAssets(): Promise<Map<string, HolderNFT[]>> {
@@ -95,10 +96,10 @@ async function fetchHolderAssets(): Promise<Map<string, HolderNFT[]>> {
       body: JSON.stringify({
         jsonrpc: "2.0",
         id: "holder-counts",
-        method: "getAssetsByCreator",
+        method: "getAssetsByGroup",
         params: {
-          creatorAddress: CREATOR_ADDRESS,
-          onlyVerified: true,
+          groupKey: "collection",
+          groupValue: COLLECTION_ADDRESS,
           limit: 1000,
           page: 1,
         },
@@ -151,7 +152,7 @@ const cachedHolderAssets = unstable_cache(
     const m = await fetchHolderAssets();
     return Array.from(m.entries());
   },
-  ["holder-assets-v1"],
+  ["holder-assets-v2"],
   { revalidate: HOLDER_COUNTS_TTL_SECONDS, tags: ["holder-counts"] },
 );
 
