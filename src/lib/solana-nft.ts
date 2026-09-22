@@ -23,6 +23,9 @@ import {
 } from "./enrichment-cache";
 import { fetchProvenanceBatch } from "./provenance";
 import { isEscrowOrProgramAccount } from "./program-accounts";
+import { COLLECTION_ADDRESS } from "./collection";
+import { resolveAssetImage } from "./asset-overrides";
+import { getArtists, getAttribute } from "./utils";
 
 interface HeliusAssetFile {
   mime?: string;
@@ -49,15 +52,12 @@ interface HeliusAsset {
 }
 
 const HELIUS_API_KEY = process.env.HELIUS_API_KEY;
-const CREATOR_ADDRESS =
-  process.env.NEXT_PUBLIC_CREATOR_ADDRESS ||
-  "D7hKRyCsdaaSGVGwSAgcEfkSofBb6gn68UPD3yWW59zW";
 
 const ASSEMBLY_TTL_SECONDS = 30 * 24 * 60 * 60; // 30 days
 
 const cachedAssemble = unstable_cache(
   () => assembleAllNFTs(),
-  ["chimpions-assembly-v2"],
+  ["chimpions-assembly-v5"],
   { revalidate: ASSEMBLY_TTL_SECONDS, tags: ["chimpions-assembly"] },
 );
 
@@ -75,7 +75,7 @@ export async function fetchAllChimpions(): Promise<ChimpionMetadata[]> {
 async function assembleAllNFTs(): Promise<ChimpionMetadata[]> {
   const t0 = Date.now();
   try {
-    console.log(`[helius] fetching getAssetsByCreator (${CREATOR_ADDRESS})`);
+    console.log(`[helius] fetching getAssetsByGroup (${COLLECTION_ADDRESS})`);
 
     if (!HELIUS_API_KEY) {
       throw new Error("HELIUS_API_KEY is not configured in .env.local");
@@ -91,10 +91,10 @@ async function assembleAllNFTs(): Promise<ChimpionMetadata[]> {
       body: JSON.stringify({
         jsonrpc: "2.0",
         id: "the-chimpions",
-        method: "getAssetsByCreator",
+        method: "getAssetsByGroup",
         params: {
-          creatorAddress: CREATOR_ADDRESS,
-          onlyVerified: true,
+          groupKey: "collection",
+          groupValue: COLLECTION_ADDRESS,
           limit: 1000,
           page: 1,
         },
@@ -119,7 +119,7 @@ async function assembleAllNFTs(): Promise<ChimpionMetadata[]> {
     );
 
     if (assets.length === 0) {
-      console.warn("[helius] no NFTs found — creator address may be wrong");
+      console.warn("[helius] no NFTs found — collection address may be wrong");
       return [];
     }
 
@@ -146,33 +146,26 @@ async function assembleAllNFTs(): Promise<ChimpionMetadata[]> {
         const attributes =
           fullMetadata?.attributes || asset.content?.metadata?.attributes || [];
 
-        const tribe = attributes.find(
-          (attr) => attr.trait_type === "Tribe",
-        )?.value;
-
-        const type = attributes.find(
-          (attr) => attr.trait_type === "Type",
-        )?.value;
-
-        const artists = attributes
-          .filter((attr) => attr.trait_type?.includes("Artist"))
-          .map((attr) => attr.value)
-          .join(", ");
+        const tribe = getAttribute(attributes, "Tribe");
+        const type = getAttribute(attributes, "Type");
+        const artists = getArtists(attributes).join(", ");
 
         const files = asset.content?.files || [];
         const gifFile = files.find(
           (f) => f.mime === "image/gif" || f.cdn_uri?.includes(".gif"),
         );
 
-        const image =
+        const image = resolveAssetImage(
+          asset.id,
           fullMetadata?.animation_url ||
-          gifFile?.cdn_uri ||
-          gifFile?.uri ||
-          asset.content?.links?.image ||
-          fullMetadata?.image ||
-          files[0]?.cdn_uri ||
-          files[0]?.uri ||
-          "";
+            gifFile?.cdn_uri ||
+            gifFile?.uri ||
+            asset.content?.links?.image ||
+            fullMetadata?.image ||
+            files[0]?.cdn_uri ||
+            files[0]?.uri ||
+            "",
+        );
 
         return {
           tokenId: index + 1,
@@ -180,7 +173,10 @@ async function assembleAllNFTs(): Promise<ChimpionMetadata[]> {
           name:
             fullMetadata?.name || metadata?.name || `Chimpion #${index + 1}`,
           image,
-          animationUrl: fullMetadata?.animation_url || image,
+          animationUrl: resolveAssetImage(
+            asset.id,
+            fullMetadata?.animation_url || image,
+          ),
           attributes,
           tribe: tribe || "Unknown",
           type: type || "1/1",

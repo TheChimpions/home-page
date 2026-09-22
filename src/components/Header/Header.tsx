@@ -6,7 +6,8 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
-import { ChevronDown, Wallet, LayoutList, Trash2 } from "lucide-react";
+import { ChevronDown, Wallet, LayoutList, Trash2, ArrowUpRight } from "lucide-react";
+import { isExternalHref } from "@/lib/utils";
 import MobileMenu from "./MobileMenu";
 import MyListingsPanel from "./MyListingsPanel";
 
@@ -30,20 +31,15 @@ const navigation: NavEntry[] = [
   },
   { label: "Treehouse Capital", href: "/treehouse-capital" },
   { label: "Validator", href: "/validator" },
-  // { label: "Merch Store", href: "https://pjf9bm-x6.myshopify.com" },
+  { label: "Merch Store", href: "https://store.chimpions.co" },
 ];
 
-const allNavItems: NavLink[] = [
-  { label: "Home", href: "/" },
-  { label: "The DAO", href: "/the-dao" },
-  { label: "NFT Gallery", href: "/nft-gallery" },
-  { label: "Our Holders", href: "/our-holders" },
-  { label: "Chimp Swap", href: "/chimp-swap" },
-  { label: "The Treehouse", href: "/the-treehouse" },
-  { label: "Treehouse Capital", href: "/treehouse-capital" },
-  { label: "Validator", href: "/validator" },
-  // { label: "Merch Store", href: "#" },
-];
+// Mobile shows the same links as desktop, just flattened — keeping a second
+// hand-written list let the two drift (Merch Store was missing from mobile,
+// Chimp Swap was missing from desktop).
+const allNavItems: NavLink[] = navigation.flatMap((entry) =>
+  isGroup(entry) ? entry.items : [entry],
+);
 
 function NavDropdown({
   group,
@@ -99,16 +95,30 @@ function NavDropdown({
           <div className="bg-gray-modern-900 border border-gray-modern-800 rounded-md py-1 shadow-xl">
             {group.items.map((item) => {
               const isItemActive = currentPath === item.href;
+              const itemClass = `flex items-center gap-1.5 px-4 py-2.5 text-xl font-sans transition-colors hover:text-gold-500 whitespace-nowrap ${
+                isItemActive ? "text-gold-500 font-bold" : "text-gray-modern-400"
+              }`;
+              if (isExternalHref(item.href)) {
+                return (
+                  <a
+                    key={item.href}
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setOpen(false)}
+                    className={itemClass}
+                  >
+                    {item.label}
+                    <ArrowUpRight className="w-4 h-4 shrink-0" aria-hidden />
+                  </a>
+                );
+              }
               return (
                 <Link
                   key={item.href}
                   href={item.href}
                   onClick={() => setOpen(false)}
-                  className={`flex items-center gap-1.5 px-4 py-2.5 text-xl font-sans transition-colors hover:text-gold-500 whitespace-nowrap ${
-                    isItemActive
-                      ? "text-gold-500 font-bold"
-                      : "text-gray-modern-400"
-                  }`}
+                  className={itemClass}
                 >
                   {item.label}
                 </Link>
@@ -288,25 +298,43 @@ export default function Header() {
                     );
                   }
                   const isActive = pathname === entry.href;
+                  const linkClass = `text-xl font-sans transition-colors hover:text-gold-500 whitespace-nowrap flex items-center gap-1 ${
+                    isActive ? "text-gold-500 font-bold" : "text-gray-modern-400"
+                  }`;
+                  const activeArrow = isActive && (
+                    <Image
+                      src="/assets/yellow-arrow.svg"
+                      alt=""
+                      width={20}
+                      height={20}
+                      className="w-6 h-6"
+                    />
+                  );
+                  if (isExternalHref(entry.href)) {
+                    return (
+                      <a
+                        key={entry.href}
+                        href={entry.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={linkClass}
+                      >
+                        {activeArrow}
+                        {entry.label}
+                        <ArrowUpRight
+                          className="w-4 h-4 shrink-0"
+                          aria-hidden
+                        />
+                      </a>
+                    );
+                  }
                   return (
                     <Link
                       key={entry.href}
                       href={entry.href}
-                      className={`text-xl font-sans transition-colors hover:text-gold-500 whitespace-nowrap flex items-center gap-1 ${
-                        isActive
-                          ? "text-gold-500 font-bold"
-                          : "text-gray-modern-400"
-                      }`}
+                      className={linkClass}
                     >
-                      {isActive && (
-                        <Image
-                          src="/assets/yellow-arrow.svg"
-                          alt=""
-                          width={20}
-                          height={20}
-                          className="w-6 h-6"
-                        />
-                      )}
+                      {activeArrow}
                       {entry.label}
                     </Link>
                   );

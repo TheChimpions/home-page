@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isChimpionAsset } from "@/lib/collection";
+import { getArtists, getAttribute } from "@/lib/utils";
 
 interface HeliusAsset {
   id: string;
@@ -12,13 +14,10 @@ interface HeliusAsset {
     files?: { mime?: string; cdn_uri?: string; uri?: string }[];
     links?: { image?: string };
   };
-  creators?: { address: string; verified: boolean }[];
+  grouping?: { group_key?: string; group_value?: string }[];
 }
 
 const HELIUS_API_KEY = process.env.HELIUS_API_KEY;
-const CREATOR_ADDRESS =
-  process.env.NEXT_PUBLIC_CREATOR_ADDRESS ||
-  "D7hKRyCsdaaSGVGwSAgcEfkSofBb6gn68UPD3yWW59zW";
 
 export async function GET(request: NextRequest) {
   const wallet = request.nextUrl.searchParams.get("wallet");
@@ -52,17 +51,11 @@ export async function GET(request: NextRequest) {
     const assets = data.result?.items ?? [];
 
     const chimps = (assets as HeliusAsset[])
-      .filter((asset) =>
-        asset.creators?.some(
-          (c) => c.address === CREATOR_ADDRESS && c.verified,
-        ),
-      )
+      .filter(isChimpionAsset)
       .map((asset) => {
         const metadata = asset.content?.metadata;
         const attributes: { trait_type: string; value: string }[] =
           metadata?.attributes ?? [];
-        const getAttr = (trait: string) =>
-          attributes.find((a) => a.trait_type === trait)?.value;
 
         const files = asset.content?.files ?? [];
         const gifFile = files.find(
@@ -82,12 +75,9 @@ export async function GET(request: NextRequest) {
           mint: asset.id,
           name: metadata?.name ?? "Unknown Chimpion",
           image,
-          tribe: getAttr("Tribe"),
-          type: getAttr("Type"),
-          artist: attributes
-            .filter((a) => a.trait_type?.includes("Artist"))
-            .map((a) => a.value)
-            .join(", ") || undefined,
+          tribe: getAttribute(attributes, "Tribe"),
+          type: getAttribute(attributes, "Type"),
+          artist: getArtists(attributes).join(", ") || undefined,
           holder: wallet,
         };
       });
