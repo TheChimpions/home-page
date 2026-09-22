@@ -25,7 +25,7 @@ const navigation: NavEntry[] = [
     items: [
       { label: "NFT Gallery", href: "/nft-gallery" },
       { label: "Our Holders", href: "/our-holders" },
-      // { label: "Chimp Swap", href: "/chimp-swap" },
+      { label: "Chimp Swap", href: "/chimp-swap" },
       { label: "The Treehouse", href: "/the-treehouse" },
     ],
   },

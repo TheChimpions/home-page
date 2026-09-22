@@ -1,6 +1,7 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { NFTFilters } from "@/types/nft";
+import { IS_DEVNET } from "./cluster";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -20,17 +21,19 @@ export function truncateAddress(address?: string | null): string {
   return `${address.slice(0, 4)}...${address.slice(-4)}`;
 }
 
-// Orb is our explorer of record for accounts and transactions.
+// Orb is our explorer of record for accounts and transactions. It serves both
+// clusters; devnet needs an explicit ?cluster=devnet, mainnet is the default.
 const ORB_BASE = "https://orbmarkets.io";
+const ORB_CLUSTER_QUERY = IS_DEVNET ? "?cluster=devnet" : "";
 
 /** Orb explorer link for a wallet/account pubkey. */
 export function orbAddressUrl(pubkey: string): string {
-  return `${ORB_BASE}/address/${pubkey}`;
+  return `${ORB_BASE}/address/${pubkey}${ORB_CLUSTER_QUERY}`;
 }
 
 /** Orb explorer link for a transaction signature. */
 export function orbTxUrl(signature: string): string {
-  return `${ORB_BASE}/tx/${signature}`;
+  return `${ORB_BASE}/tx/${signature}${ORB_CLUSTER_QUERY}`;
 }
 
 interface NFTAttribute {
