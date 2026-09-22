@@ -59,3 +59,8 @@ export function getArtists(attributes: NFTAttribute[] | undefined): string[] {
     .filter((a) => a.trait_type?.toLowerCase().includes("artist"))
     .map((a) => a.value);
 }
+
+/** True for links that leave the site and should open in a new tab. */
+export function isExternalHref(href: string): boolean {
+  return /^https?:\/\//i.test(href);
+}

@@ -3,7 +3,8 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { LayoutList } from "lucide-react";
+import { LayoutList, ArrowUpRight } from "lucide-react";
+import { isExternalHref } from "@/lib/utils";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 
@@ -198,28 +199,44 @@ export default function MobileMenu({
             <ul className="flex flex-col gap-4">
               {navigationItems.map((item) => {
                 const isActive = currentPath === item.href;
+                const linkClass = `flex items-center gap-1 scale-x-95 origin-left text-[18px] leading-7 font-sans transition-colors ${
+                  isActive
+                    ? "text-gold-500  font-bold"
+                    : "text-gray-modern-400 hover:text-gold-400"
+                }`;
+                const activeArrow = isActive && (
+                  <Image
+                    src="/assets/yellow-arrow.svg"
+                    alt=""
+                    width={23}
+                    height={23}
+                    className="size-6"
+                  />
+                );
                 return (
                   <li key={item.href}>
-                    <Link
-                      href={item.href}
-                      onClick={onClose}
-                      className={`flex items-center gap-1 scale-x-95 origin-left text-[18px] leading-7 font-sans transition-colors ${
-                        isActive
-                          ? "text-gold-500  font-bold"
-                          : "text-gray-modern-400 hover:text-gold-400"
-                      }`}
-                    >
-                      {isActive && (
-                        <Image
-                          src="/assets/yellow-arrow.svg"
-                          alt=""
-                          width={23}
-                          height={23}
-                          className="size-6"
-                        />
-                      )}
-                      {item.label}
-                    </Link>
+                    {isExternalHref(item.href) ? (
+                      <a
+                        href={item.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={onClose}
+                        className={linkClass}
+                      >
+                        {activeArrow}
+                        {item.label}
+                        <ArrowUpRight className="w-4 h-4 shrink-0" aria-hidden />
+                      </a>
+                    ) : (
+                      <Link
+                        href={item.href}
+                        onClick={onClose}
+                        className={linkClass}
+                      >
+                        {activeArrow}
+                        {item.label}
+                      </Link>
+                    )}
                   </li>
                 );
               })}
