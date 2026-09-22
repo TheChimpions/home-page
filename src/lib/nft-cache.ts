@@ -1,7 +1,7 @@
 import { ChimpionMetadata } from '@/types/nft';
 
 const CACHE_NAME = 'chimpions-nft-cache';
-const CACHE_VERSION = 'v10-escrow-filter';
+const CACHE_VERSION = 'v11-collection-group';
 const CACHE_DURATION = 24 * 60 * 60 * 1000; 
 
 interface CacheEntry {
