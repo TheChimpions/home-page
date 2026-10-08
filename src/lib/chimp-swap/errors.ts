@@ -1,4 +1,4 @@
-import idl from "./idl/chimp_swap.json";
+import idl from "./idl/grail_grove.json";
 
 const BY_NAME = new Map(idl.errors.map((e) => [e.name, e.msg] as const));
 const BY_CODE = new Map(idl.errors.map((e) => [e.code, e.msg] as const));

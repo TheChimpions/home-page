@@ -1,8 +1,8 @@
 import { PublicKey } from "@solana/web3.js";
-import idl from "./idl/chimp_swap.json";
+import idl from "./idl/grail_grove.json";
 
 /**
- * Chimp Swap program id. Defaults to the address baked into the IDL; override
+ * Grail Grove program id. Defaults to the address baked into the IDL; override
  * with NEXT_PUBLIC_CHIMP_SWAP_PROGRAM_ID for devnet/staging deployments.
  */
 export const CHIMP_SWAP_PROGRAM_ID = new PublicKey(

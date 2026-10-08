@@ -1,6 +1,6 @@
 import { PublicKey } from "@solana/web3.js";
 import { describe, expect, it } from "vitest";
-import idl from "../idl/chimp_swap.json";
+import idl from "../idl/grail_grove.json";
 import {
   CHIMP_SWAP_PROGRAM_ID,
   TOKEN_METADATA_PROGRAM_ID,

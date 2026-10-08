@@ -1,8 +1,14 @@
-{
-  "address": "6hXfvd34FyPaU3tRRhwxiWBLBLeb77GsTkXfpBGptUeC",
+/**
+ * Program IDL in camelCase format in order to be used in JS/TS.
+ *
+ * Note that this is only a type helper and is not the actual IDL. The original
+ * IDL can be found at `target/idl/grail_grove.json`.
+ */
+export type GrailGrove = {
+  "address": "GrA1LdMTRsZPrLZLjbZbQ9Cx4XNbyL1bz7enprBkDv49",
   "metadata": {
-    "name": "chimp_swap",
-    "version": "0.1.0",
+    "name": "grailGrove",
+    "version": "1.0.0",
     "spec": "0.1.0",
     "description": "Non-custodial 1-for-1 Chimpions NFT swap"
   },
@@ -17,7 +23,7 @@
   ],
   "instructions": [
     {
-      "name": "accept_authority",
+      "name": "acceptAuthority",
       "discriminator": [
         107,
         86,
@@ -49,7 +55,7 @@
           }
         },
         {
-          "name": "new_authority",
+          "name": "newAuthority",
           "signer": true
         }
       ],
@@ -126,7 +132,7 @@
           ]
         },
         {
-          "name": "master_edition",
+          "name": "masterEdition",
           "pda": {
             "seeds": [
               {
@@ -236,15 +242,15 @@
           }
         },
         {
-          "name": "owner_token_account",
+          "name": "ownerTokenAccount",
           "writable": true
         },
         {
-          "name": "token_program",
+          "name": "tokenProgram",
           "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         },
         {
-          "name": "token_metadata_program",
+          "name": "tokenMetadataProgram",
           "address": "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
         }
       ],
@@ -327,7 +333,7 @@
           ]
         },
         {
-          "name": "master_edition",
+          "name": "masterEdition",
           "pda": {
             "seeds": [
               {
@@ -437,15 +443,15 @@
           }
         },
         {
-          "name": "owner_token_account",
+          "name": "ownerTokenAccount",
           "writable": true
         },
         {
-          "name": "token_program",
+          "name": "tokenProgram",
           "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         },
         {
-          "name": "token_metadata_program",
+          "name": "tokenMetadataProgram",
           "address": "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
         }
       ],
@@ -491,18 +497,19 @@
         {
           "name": "treasury",
           "docs": [
-            "transfers never fail the rent-exemption check."
+            "program-owned or executable account could strand fees or make every",
+            "swap's system transfer fail."
           ]
         },
         {
           "name": "program",
-          "address": "6hXfvd34FyPaU3tRRhwxiWBLBLeb77GsTkXfpBGptUeC"
+          "address": "GrA1LdMTRsZPrLZLjbZbQ9Cx4XNbyL1bz7enprBkDv49"
         },
         {
-          "name": "program_data"
+          "name": "programData"
         },
         {
-          "name": "system_program",
+          "name": "systemProgram",
           "address": "11111111111111111111111111111111"
         }
       ],
@@ -511,7 +518,7 @@
           "name": "args",
           "type": {
             "defined": {
-              "name": "InitializeArgs"
+              "name": "initializeArgs"
             }
           }
         }
@@ -579,7 +586,13 @@
           "signer": true
         },
         {
-          "name": "mint"
+          "name": "mint",
+          "docs": [
+            "Single-supply NFT whose freeze authority is its master edition. Both",
+            "are implied by a verified collection member with an edition account,",
+            "but are asserted here so the invariant is stated in this program and",
+            "fails with a clear error rather than a Token Metadata CPI error."
+          ]
         },
         {
           "name": "metadata",
@@ -680,7 +693,7 @@
           }
         },
         {
-          "name": "master_edition",
+          "name": "masterEdition",
           "pda": {
             "seeds": [
               {
@@ -790,26 +803,26 @@
           }
         },
         {
-          "name": "owner_token_account",
+          "name": "ownerTokenAccount",
           "writable": true
         },
         {
-          "name": "token_program",
+          "name": "tokenProgram",
           "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         },
         {
-          "name": "token_metadata_program",
+          "name": "tokenMetadataProgram",
           "address": "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
         },
         {
-          "name": "system_program",
+          "name": "systemProgram",
           "address": "11111111111111111111111111111111"
         }
       ],
       "args": []
     },
     {
-      "name": "propose_authority",
+      "name": "proposeAuthority",
       "discriminator": [
         20,
         148,
@@ -850,7 +863,7 @@
       ],
       "args": [
         {
-          "name": "new_authority",
+          "name": "newAuthority",
           "type": "pubkey"
         }
       ]
@@ -906,7 +919,7 @@
               },
               {
                 "kind": "account",
-                "path": "listed_mint"
+                "path": "listedMint"
               }
             ]
           }
@@ -925,10 +938,10 @@
           "writable": true
         },
         {
-          "name": "listed_mint"
+          "name": "listedMint"
         },
         {
-          "name": "listed_master_edition",
+          "name": "listedMasterEdition",
           "pda": {
             "seeds": [
               {
@@ -983,7 +996,7 @@
               },
               {
                 "kind": "account",
-                "path": "listed_mint"
+                "path": "listedMint"
               },
               {
                 "kind": "const",
@@ -1038,11 +1051,16 @@
           }
         },
         {
-          "name": "lister_listed_token_account",
+          "name": "listerListedTokenAccount",
+          "docs": [
+            "The account recorded at list time. Owner and mint cannot have changed",
+            "while frozen (SPL Token rejects SetAuthority on frozen accounts), but",
+            "are re-asserted so the guarantee lives here and not only upstream."
+          ],
           "writable": true
         },
         {
-          "name": "taker_listed_token_account",
+          "name": "takerListedTokenAccount",
           "writable": true,
           "pda": {
             "seeds": [
@@ -1089,7 +1107,7 @@
               },
               {
                 "kind": "account",
-                "path": "listed_mint"
+                "path": "listedMint"
               }
             ],
             "program": {
@@ -1132,10 +1150,10 @@
           }
         },
         {
-          "name": "offered_mint"
+          "name": "offeredMint"
         },
         {
-          "name": "offered_metadata",
+          "name": "offeredMetadata",
           "pda": {
             "seeds": [
               {
@@ -1190,7 +1208,7 @@
               },
               {
                 "kind": "account",
-                "path": "offered_mint"
+                "path": "offeredMint"
               }
             ],
             "program": {
@@ -1233,11 +1251,11 @@
           }
         },
         {
-          "name": "taker_offered_token_account",
+          "name": "takerOfferedTokenAccount",
           "writable": true
         },
         {
-          "name": "lister_offered_token_account",
+          "name": "listerOfferedTokenAccount",
           "writable": true,
           "pda": {
             "seeds": [
@@ -1284,7 +1302,7 @@
               },
               {
                 "kind": "account",
-                "path": "offered_mint"
+                "path": "offeredMint"
               }
             ],
             "program": {
@@ -1327,31 +1345,31 @@
           }
         },
         {
-          "name": "token_program",
+          "name": "tokenProgram",
           "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         },
         {
-          "name": "associated_token_program",
+          "name": "associatedTokenProgram",
           "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
         },
         {
-          "name": "system_program",
+          "name": "systemProgram",
           "address": "11111111111111111111111111111111"
         },
         {
-          "name": "token_metadata_program",
+          "name": "tokenMetadataProgram",
           "address": "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
         }
       ],
       "args": [
         {
-          "name": "max_fee_lamports",
+          "name": "maxFeeLamports",
           "type": "u64"
         }
       ]
     },
     {
-      "name": "update_config",
+      "name": "updateConfig",
       "discriminator": [
         29,
         158,
@@ -1390,9 +1408,9 @@
           ]
         },
         {
-          "name": "new_treasury",
+          "name": "newTreasury",
           "docs": [
-            "funded so fee transfers never fail the rent-exemption check."
+            "account (see `Initialize::treasury`)."
           ],
           "optional": true
         }
@@ -1402,7 +1420,7 @@
           "name": "args",
           "type": {
             "defined": {
-              "name": "UpdateConfigArgs"
+              "name": "updateConfigArgs"
             }
           }
         }
@@ -1411,7 +1429,7 @@
   ],
   "accounts": [
     {
-      "name": "Config",
+      "name": "config",
       "discriminator": [
         155,
         12,
@@ -1424,7 +1442,7 @@
       ]
     },
     {
-      "name": "Listing",
+      "name": "listing",
       "discriminator": [
         218,
         32,
@@ -1439,7 +1457,7 @@
   ],
   "events": [
     {
-      "name": "ConfigUpdated",
+      "name": "configUpdated",
       "discriminator": [
         40,
         241,
@@ -1452,7 +1470,7 @@
       ]
     },
     {
-      "name": "Delisted",
+      "name": "delisted",
       "discriminator": [
         127,
         52,
@@ -1465,7 +1483,7 @@
       ]
     },
     {
-      "name": "Ejected",
+      "name": "ejected",
       "discriminator": [
         49,
         40,
@@ -1478,7 +1496,7 @@
       ]
     },
     {
-      "name": "Listed",
+      "name": "listed",
       "discriminator": [
         243,
         173,
@@ -1491,7 +1509,7 @@
       ]
     },
     {
-      "name": "Swapped",
+      "name": "swapped",
       "discriminator": [
         217,
         52,
@@ -1507,103 +1525,118 @@
   "errors": [
     {
       "code": 6000,
-      "name": "Unauthorized",
+      "name": "unauthorized",
       "msg": "Caller is not the config authority"
     },
     {
       "code": 6001,
-      "name": "NotPendingAuthority",
+      "name": "notPendingAuthority",
       "msg": "Caller is not the pending authority"
     },
     {
       "code": 6002,
-      "name": "FeeTooHigh",
+      "name": "feeTooHigh",
       "msg": "Swap fee exceeds the maximum allowed"
     },
     {
       "code": 6003,
-      "name": "InvalidBps",
+      "name": "invalidBps",
       "msg": "Treasury share must be between 0 and 10000 basis points"
     },
     {
       "code": 6004,
-      "name": "Paused",
+      "name": "paused",
       "msg": "Listings and swaps are paused"
     },
     {
       "code": 6005,
-      "name": "NotUpgradeAuthority",
+      "name": "notUpgradeAuthority",
       "msg": "Payer is not the program upgrade authority"
     },
     {
       "code": 6006,
-      "name": "InvalidMetadataOwner",
+      "name": "invalidMetadataOwner",
       "msg": "Metadata account is not owned by Token Metadata"
     },
     {
       "code": 6007,
-      "name": "MetadataDeserializeFailed",
+      "name": "metadataDeserializeFailed",
       "msg": "Failed to deserialize token metadata"
     },
     {
       "code": 6008,
-      "name": "MetadataMintMismatch",
+      "name": "metadataMintMismatch",
       "msg": "Metadata does not belong to this mint"
     },
     {
       "code": 6009,
-      "name": "NotInCollection",
+      "name": "notInCollection",
       "msg": "NFT is not a verified member of the Chimpions collection"
     },
     {
       "code": 6010,
-      "name": "UnsupportedTokenStandard",
+      "name": "unsupportedTokenStandard",
       "msg": "Only legacy (non-programmable) NFTs are supported"
     },
     {
       "code": 6011,
-      "name": "NotHoldingToken",
+      "name": "notHoldingToken",
       "msg": "Token account does not hold exactly one token"
     },
     {
       "code": 6012,
-      "name": "TokenAccountMismatch",
+      "name": "tokenAccountMismatch",
       "msg": "Token account does not match the listing"
     },
     {
       "code": 6013,
-      "name": "SameMint",
+      "name": "sameMint",
       "msg": "Cannot swap a listing for the same mint"
     },
     {
       "code": 6014,
-      "name": "FeeAboveMax",
+      "name": "feeAboveMax",
       "msg": "Swap fee is higher than the maximum the taker agreed to pay"
     },
     {
       "code": 6015,
-      "name": "SelfSwap",
+      "name": "selfSwap",
       "msg": "Listing owner cannot swap with their own listing"
     },
     {
       "code": 6016,
-      "name": "InvalidTreasury",
+      "name": "invalidTreasury",
       "msg": "Treasury must be a funded account"
     },
     {
       "code": 6017,
-      "name": "OfferedNotNft",
+      "name": "offeredNotNft",
       "msg": "Offered mint is not a single-supply NFT"
     },
     {
       "code": 6018,
-      "name": "MathOverflow",
+      "name": "mathOverflow",
       "msg": "Math overflow"
+    },
+    {
+      "code": 6019,
+      "name": "ownerMismatch",
+      "msg": "Owner account does not match the listing"
+    },
+    {
+      "code": 6020,
+      "name": "notNft",
+      "msg": "Mint is not a single-supply NFT"
+    },
+    {
+      "code": 6021,
+      "name": "invalidFreezeAuthority",
+      "msg": "Mint freeze authority is not the master edition"
     }
   ],
   "types": [
     {
-      "name": "Config",
+      "name": "config",
       "docs": [
         "Singleton program configuration, owned by the admin multisig."
       ],
@@ -1618,7 +1651,7 @@
             "type": "pubkey"
           },
           {
-            "name": "pending_authority",
+            "name": "pendingAuthority",
             "docs": [
               "Two-step authority handoff target. `Pubkey::default()` when none."
             ],
@@ -1639,14 +1672,14 @@
             "type": "pubkey"
           },
           {
-            "name": "swap_fee_lamports",
+            "name": "swapFeeLamports",
             "docs": [
               "Flat fee the taker pays on a successful swap."
             ],
             "type": "u64"
           },
           {
-            "name": "treasury_bps",
+            "name": "treasuryBps",
             "docs": [
               "Share of the fee (in basis points) routed to the treasury; the rest",
               "goes to the holder who posted the listing."
@@ -1661,7 +1694,7 @@
             "type": "bool"
           },
           {
-            "name": "active_listings",
+            "name": "activeListings",
             "docs": [
               "Number of currently open listings."
             ],
@@ -1675,16 +1708,16 @@
       }
     },
     {
-      "name": "ConfigUpdated",
+      "name": "configUpdated",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "swap_fee_lamports",
+            "name": "swapFeeLamports",
             "type": "u64"
           },
           {
-            "name": "treasury_bps",
+            "name": "treasuryBps",
             "type": "u16"
           },
           {
@@ -1699,7 +1732,7 @@
       }
     },
     {
-      "name": "Delisted",
+      "name": "delisted",
       "type": {
         "kind": "struct",
         "fields": [
@@ -1715,7 +1748,7 @@
       }
     },
     {
-      "name": "Ejected",
+      "name": "ejected",
       "type": {
         "kind": "struct",
         "fields": [
@@ -1735,7 +1768,7 @@
       }
     },
     {
-      "name": "InitializeArgs",
+      "name": "initializeArgs",
       "type": {
         "kind": "struct",
         "fields": [
@@ -1748,18 +1781,18 @@
             "type": "pubkey"
           },
           {
-            "name": "swap_fee_lamports",
+            "name": "swapFeeLamports",
             "type": "u64"
           },
           {
-            "name": "treasury_bps",
+            "name": "treasuryBps",
             "type": "u16"
           }
         ]
       }
     },
     {
-      "name": "Listed",
+      "name": "listed",
       "type": {
         "kind": "struct",
         "fields": [
@@ -1772,18 +1805,22 @@
             "type": "pubkey"
           },
           {
-            "name": "token_account",
+            "name": "tokenAccount",
             "type": "pubkey"
           },
           {
-            "name": "created_at",
+            "name": "createdAt",
             "type": "i64"
+          },
+          {
+            "name": "treasuryBps",
+            "type": "u16"
           }
         ]
       }
     },
     {
-      "name": "Listing",
+      "name": "listing",
       "docs": [
         "One open swap listing. Seeds: [\"listing\", mint]. The NFT stays in the",
         "owner's token account: this PDA is the SPL delegate and the account is",
@@ -1801,15 +1838,23 @@
             "type": "pubkey"
           },
           {
-            "name": "token_account",
+            "name": "tokenAccount",
             "docs": [
               "Owner's token account holding the NFT at list time."
             ],
             "type": "pubkey"
           },
           {
-            "name": "created_at",
+            "name": "createdAt",
             "type": "i64"
+          },
+          {
+            "name": "treasuryBps",
+            "docs": [
+              "Treasury share (bps) snapshotted at list time, so a later config",
+              "change cannot retroactively alter what this lister earns."
+            ],
+            "type": "u16"
           },
           {
             "name": "bump",
@@ -1819,16 +1864,16 @@
       }
     },
     {
-      "name": "Swapped",
+      "name": "swapped",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "listed_mint",
+            "name": "listedMint",
             "type": "pubkey"
           },
           {
-            "name": "offered_mint",
+            "name": "offeredMint",
             "type": "pubkey"
           },
           {
@@ -1840,33 +1885,33 @@
             "type": "pubkey"
           },
           {
-            "name": "fee_lamports",
+            "name": "feeLamports",
             "type": "u64"
           },
           {
-            "name": "treasury_fee_lamports",
+            "name": "treasuryFeeLamports",
             "type": "u64"
           },
           {
-            "name": "lister_fee_lamports",
+            "name": "listerFeeLamports",
             "type": "u64"
           }
         ]
       }
     },
     {
-      "name": "UpdateConfigArgs",
+      "name": "updateConfigArgs",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "swap_fee_lamports",
+            "name": "swapFeeLamports",
             "type": {
               "option": "u64"
             }
           },
           {
-            "name": "treasury_bps",
+            "name": "treasuryBps",
             "type": {
               "option": "u16"
             }
@@ -1881,4 +1926,4 @@
       }
     }
   ]
-}
+};

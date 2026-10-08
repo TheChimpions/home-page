@@ -1,7 +1,7 @@
 import { Program } from "@coral-xyz/anchor";
 import type { Connection, PublicKey } from "@solana/web3.js";
-import idlJson from "./idl/chimp_swap.json";
-import type { ChimpSwap } from "./idl/chimp_swap";
+import idlJson from "./idl/grail_grove.json";
+import type { GrailGrove } from "./idl/grail_grove";
 import { CHIMP_SWAP_PROGRAM_ID } from "./constants";
 
 /**
@@ -11,7 +11,7 @@ import { CHIMP_SWAP_PROGRAM_ID } from "./constants";
 export function getChimpSwapProgram(
   connection: Connection,
   programId: PublicKey = CHIMP_SWAP_PROGRAM_ID,
-): Program<ChimpSwap> {
-  const idl = { ...idlJson, address: programId.toBase58() } as ChimpSwap;
-  return new Program<ChimpSwap>(idl, { connection });
+): Program<GrailGrove> {
+  const idl = { ...idlJson, address: programId.toBase58() } as GrailGrove;
+  return new Program<GrailGrove>(idl, { connection });
 }

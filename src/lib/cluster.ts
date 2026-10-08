@@ -5,7 +5,7 @@
  *
  * To run against a devnet test deployment, set NEXT_PUBLIC_SOLANA_CLUSTER
  * alongside a devnet NEXT_PUBLIC_HELIUS_RPC, NEXT_PUBLIC_COLLECTION_ADDRESS
- * and NEXT_PUBLIC_CHIMP_SWAP_PROGRAM_ID (see program/scripts/devnet-setup.ts).
+ * and NEXT_PUBLIC_CHIMP_SWAP_PROGRAM_ID (see scripts/devnet-setup.ts in the grail-grove repo).
  */
 export const SOLANA_CLUSTER: "mainnet-beta" | "devnet" =
   process.env.NEXT_PUBLIC_SOLANA_CLUSTER === "devnet" ? "devnet" : "mainnet-beta";

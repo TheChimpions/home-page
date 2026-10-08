@@ -6,7 +6,7 @@ import { fetchHeliusAssetBatch } from "@/lib/helius-asset";
 
 export const dynamic = "force-dynamic";
 
-/** Every open Chimp Swap listing, newest first, with name/art/traits. */
+/** Every open Grail Grove listing, newest first, with name/art/traits. */
 export async function GET() {
   try {
     const listings = await fetchAllSwapListings(connection);

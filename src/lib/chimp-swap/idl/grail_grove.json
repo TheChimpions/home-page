@@ -1,14 +1,8 @@
-/**
- * Program IDL in camelCase format in order to be used in JS/TS.
- *
- * Note that this is only a type helper and is not the actual IDL. The original
- * IDL can be found at `target/idl/chimp_swap.json`.
- */
-export type ChimpSwap = {
-  "address": "6hXfvd34FyPaU3tRRhwxiWBLBLeb77GsTkXfpBGptUeC",
+{
+  "address": "GrA1LdMTRsZPrLZLjbZbQ9Cx4XNbyL1bz7enprBkDv49",
   "metadata": {
-    "name": "chimpSwap",
-    "version": "0.1.0",
+    "name": "grail_grove",
+    "version": "1.0.0",
     "spec": "0.1.0",
     "description": "Non-custodial 1-for-1 Chimpions NFT swap"
   },
@@ -23,7 +17,7 @@ export type ChimpSwap = {
   ],
   "instructions": [
     {
-      "name": "acceptAuthority",
+      "name": "accept_authority",
       "discriminator": [
         107,
         86,
@@ -55,7 +49,7 @@ export type ChimpSwap = {
           }
         },
         {
-          "name": "newAuthority",
+          "name": "new_authority",
           "signer": true
         }
       ],
@@ -132,7 +126,7 @@ export type ChimpSwap = {
           ]
         },
         {
-          "name": "masterEdition",
+          "name": "master_edition",
           "pda": {
             "seeds": [
               {
@@ -242,15 +236,15 @@ export type ChimpSwap = {
           }
         },
         {
-          "name": "ownerTokenAccount",
+          "name": "owner_token_account",
           "writable": true
         },
         {
-          "name": "tokenProgram",
+          "name": "token_program",
           "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         },
         {
-          "name": "tokenMetadataProgram",
+          "name": "token_metadata_program",
           "address": "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
         }
       ],
@@ -333,7 +327,7 @@ export type ChimpSwap = {
           ]
         },
         {
-          "name": "masterEdition",
+          "name": "master_edition",
           "pda": {
             "seeds": [
               {
@@ -443,15 +437,15 @@ export type ChimpSwap = {
           }
         },
         {
-          "name": "ownerTokenAccount",
+          "name": "owner_token_account",
           "writable": true
         },
         {
-          "name": "tokenProgram",
+          "name": "token_program",
           "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         },
         {
-          "name": "tokenMetadataProgram",
+          "name": "token_metadata_program",
           "address": "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
         }
       ],
@@ -497,18 +491,19 @@ export type ChimpSwap = {
         {
           "name": "treasury",
           "docs": [
-            "transfers never fail the rent-exemption check."
+            "program-owned or executable account could strand fees or make every",
+            "swap's system transfer fail."
           ]
         },
         {
           "name": "program",
-          "address": "6hXfvd34FyPaU3tRRhwxiWBLBLeb77GsTkXfpBGptUeC"
+          "address": "GrA1LdMTRsZPrLZLjbZbQ9Cx4XNbyL1bz7enprBkDv49"
         },
         {
-          "name": "programData"
+          "name": "program_data"
         },
         {
-          "name": "systemProgram",
+          "name": "system_program",
           "address": "11111111111111111111111111111111"
         }
       ],
@@ -517,7 +512,7 @@ export type ChimpSwap = {
           "name": "args",
           "type": {
             "defined": {
-              "name": "initializeArgs"
+              "name": "InitializeArgs"
             }
           }
         }
@@ -585,7 +580,13 @@ export type ChimpSwap = {
           "signer": true
         },
         {
-          "name": "mint"
+          "name": "mint",
+          "docs": [
+            "Single-supply NFT whose freeze authority is its master edition. Both",
+            "are implied by a verified collection member with an edition account,",
+            "but are asserted here so the invariant is stated in this program and",
+            "fails with a clear error rather than a Token Metadata CPI error."
+          ]
         },
         {
           "name": "metadata",
@@ -686,7 +687,7 @@ export type ChimpSwap = {
           }
         },
         {
-          "name": "masterEdition",
+          "name": "master_edition",
           "pda": {
             "seeds": [
               {
@@ -796,26 +797,26 @@ export type ChimpSwap = {
           }
         },
         {
-          "name": "ownerTokenAccount",
+          "name": "owner_token_account",
           "writable": true
         },
         {
-          "name": "tokenProgram",
+          "name": "token_program",
           "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         },
         {
-          "name": "tokenMetadataProgram",
+          "name": "token_metadata_program",
           "address": "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
         },
         {
-          "name": "systemProgram",
+          "name": "system_program",
           "address": "11111111111111111111111111111111"
         }
       ],
       "args": []
     },
     {
-      "name": "proposeAuthority",
+      "name": "propose_authority",
       "discriminator": [
         20,
         148,
@@ -856,7 +857,7 @@ export type ChimpSwap = {
       ],
       "args": [
         {
-          "name": "newAuthority",
+          "name": "new_authority",
           "type": "pubkey"
         }
       ]
@@ -912,7 +913,7 @@ export type ChimpSwap = {
               },
               {
                 "kind": "account",
-                "path": "listedMint"
+                "path": "listed_mint"
               }
             ]
           }
@@ -931,10 +932,10 @@ export type ChimpSwap = {
           "writable": true
         },
         {
-          "name": "listedMint"
+          "name": "listed_mint"
         },
         {
-          "name": "listedMasterEdition",
+          "name": "listed_master_edition",
           "pda": {
             "seeds": [
               {
@@ -989,7 +990,7 @@ export type ChimpSwap = {
               },
               {
                 "kind": "account",
-                "path": "listedMint"
+                "path": "listed_mint"
               },
               {
                 "kind": "const",
@@ -1044,11 +1045,16 @@ export type ChimpSwap = {
           }
         },
         {
-          "name": "listerListedTokenAccount",
+          "name": "lister_listed_token_account",
+          "docs": [
+            "The account recorded at list time. Owner and mint cannot have changed",
+            "while frozen (SPL Token rejects SetAuthority on frozen accounts), but",
+            "are re-asserted so the guarantee lives here and not only upstream."
+          ],
           "writable": true
         },
         {
-          "name": "takerListedTokenAccount",
+          "name": "taker_listed_token_account",
           "writable": true,
           "pda": {
             "seeds": [
@@ -1095,7 +1101,7 @@ export type ChimpSwap = {
               },
               {
                 "kind": "account",
-                "path": "listedMint"
+                "path": "listed_mint"
               }
             ],
             "program": {
@@ -1138,10 +1144,10 @@ export type ChimpSwap = {
           }
         },
         {
-          "name": "offeredMint"
+          "name": "offered_mint"
         },
         {
-          "name": "offeredMetadata",
+          "name": "offered_metadata",
           "pda": {
             "seeds": [
               {
@@ -1196,7 +1202,7 @@ export type ChimpSwap = {
               },
               {
                 "kind": "account",
-                "path": "offeredMint"
+                "path": "offered_mint"
               }
             ],
             "program": {
@@ -1239,11 +1245,11 @@ export type ChimpSwap = {
           }
         },
         {
-          "name": "takerOfferedTokenAccount",
+          "name": "taker_offered_token_account",
           "writable": true
         },
         {
-          "name": "listerOfferedTokenAccount",
+          "name": "lister_offered_token_account",
           "writable": true,
           "pda": {
             "seeds": [
@@ -1290,7 +1296,7 @@ export type ChimpSwap = {
               },
               {
                 "kind": "account",
-                "path": "offeredMint"
+                "path": "offered_mint"
               }
             ],
             "program": {
@@ -1333,31 +1339,31 @@ export type ChimpSwap = {
           }
         },
         {
-          "name": "tokenProgram",
+          "name": "token_program",
           "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         },
         {
-          "name": "associatedTokenProgram",
+          "name": "associated_token_program",
           "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
         },
         {
-          "name": "systemProgram",
+          "name": "system_program",
           "address": "11111111111111111111111111111111"
         },
         {
-          "name": "tokenMetadataProgram",
+          "name": "token_metadata_program",
           "address": "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
         }
       ],
       "args": [
         {
-          "name": "maxFeeLamports",
+          "name": "max_fee_lamports",
           "type": "u64"
         }
       ]
     },
     {
-      "name": "updateConfig",
+      "name": "update_config",
       "discriminator": [
         29,
         158,
@@ -1396,9 +1402,9 @@ export type ChimpSwap = {
           ]
         },
         {
-          "name": "newTreasury",
+          "name": "new_treasury",
           "docs": [
-            "funded so fee transfers never fail the rent-exemption check."
+            "account (see `Initialize::treasury`)."
           ],
           "optional": true
         }
@@ -1408,7 +1414,7 @@ export type ChimpSwap = {
           "name": "args",
           "type": {
             "defined": {
-              "name": "updateConfigArgs"
+              "name": "UpdateConfigArgs"
             }
           }
         }
@@ -1417,7 +1423,7 @@ export type ChimpSwap = {
   ],
   "accounts": [
     {
-      "name": "config",
+      "name": "Config",
       "discriminator": [
         155,
         12,
@@ -1430,7 +1436,7 @@ export type ChimpSwap = {
       ]
     },
     {
-      "name": "listing",
+      "name": "Listing",
       "discriminator": [
         218,
         32,
@@ -1445,7 +1451,7 @@ export type ChimpSwap = {
   ],
   "events": [
     {
-      "name": "configUpdated",
+      "name": "ConfigUpdated",
       "discriminator": [
         40,
         241,
@@ -1458,7 +1464,7 @@ export type ChimpSwap = {
       ]
     },
     {
-      "name": "delisted",
+      "name": "Delisted",
       "discriminator": [
         127,
         52,
@@ -1471,7 +1477,7 @@ export type ChimpSwap = {
       ]
     },
     {
-      "name": "ejected",
+      "name": "Ejected",
       "discriminator": [
         49,
         40,
@@ -1484,7 +1490,7 @@ export type ChimpSwap = {
       ]
     },
     {
-      "name": "listed",
+      "name": "Listed",
       "discriminator": [
         243,
         173,
@@ -1497,7 +1503,7 @@ export type ChimpSwap = {
       ]
     },
     {
-      "name": "swapped",
+      "name": "Swapped",
       "discriminator": [
         217,
         52,
@@ -1513,103 +1519,118 @@ export type ChimpSwap = {
   "errors": [
     {
       "code": 6000,
-      "name": "unauthorized",
+      "name": "Unauthorized",
       "msg": "Caller is not the config authority"
     },
     {
       "code": 6001,
-      "name": "notPendingAuthority",
+      "name": "NotPendingAuthority",
       "msg": "Caller is not the pending authority"
     },
     {
       "code": 6002,
-      "name": "feeTooHigh",
+      "name": "FeeTooHigh",
       "msg": "Swap fee exceeds the maximum allowed"
     },
     {
       "code": 6003,
-      "name": "invalidBps",
+      "name": "InvalidBps",
       "msg": "Treasury share must be between 0 and 10000 basis points"
     },
     {
       "code": 6004,
-      "name": "paused",
+      "name": "Paused",
       "msg": "Listings and swaps are paused"
     },
     {
       "code": 6005,
-      "name": "notUpgradeAuthority",
+      "name": "NotUpgradeAuthority",
       "msg": "Payer is not the program upgrade authority"
     },
     {
       "code": 6006,
-      "name": "invalidMetadataOwner",
+      "name": "InvalidMetadataOwner",
       "msg": "Metadata account is not owned by Token Metadata"
     },
     {
       "code": 6007,
-      "name": "metadataDeserializeFailed",
+      "name": "MetadataDeserializeFailed",
       "msg": "Failed to deserialize token metadata"
     },
     {
       "code": 6008,
-      "name": "metadataMintMismatch",
+      "name": "MetadataMintMismatch",
       "msg": "Metadata does not belong to this mint"
     },
     {
       "code": 6009,
-      "name": "notInCollection",
+      "name": "NotInCollection",
       "msg": "NFT is not a verified member of the Chimpions collection"
     },
     {
       "code": 6010,
-      "name": "unsupportedTokenStandard",
+      "name": "UnsupportedTokenStandard",
       "msg": "Only legacy (non-programmable) NFTs are supported"
     },
     {
       "code": 6011,
-      "name": "notHoldingToken",
+      "name": "NotHoldingToken",
       "msg": "Token account does not hold exactly one token"
     },
     {
       "code": 6012,
-      "name": "tokenAccountMismatch",
+      "name": "TokenAccountMismatch",
       "msg": "Token account does not match the listing"
     },
     {
       "code": 6013,
-      "name": "sameMint",
+      "name": "SameMint",
       "msg": "Cannot swap a listing for the same mint"
     },
     {
       "code": 6014,
-      "name": "feeAboveMax",
+      "name": "FeeAboveMax",
       "msg": "Swap fee is higher than the maximum the taker agreed to pay"
     },
     {
       "code": 6015,
-      "name": "selfSwap",
+      "name": "SelfSwap",
       "msg": "Listing owner cannot swap with their own listing"
     },
     {
       "code": 6016,
-      "name": "invalidTreasury",
+      "name": "InvalidTreasury",
       "msg": "Treasury must be a funded account"
     },
     {
       "code": 6017,
-      "name": "offeredNotNft",
+      "name": "OfferedNotNft",
       "msg": "Offered mint is not a single-supply NFT"
     },
     {
       "code": 6018,
-      "name": "mathOverflow",
+      "name": "MathOverflow",
       "msg": "Math overflow"
+    },
+    {
+      "code": 6019,
+      "name": "OwnerMismatch",
+      "msg": "Owner account does not match the listing"
+    },
+    {
+      "code": 6020,
+      "name": "NotNft",
+      "msg": "Mint is not a single-supply NFT"
+    },
+    {
+      "code": 6021,
+      "name": "InvalidFreezeAuthority",
+      "msg": "Mint freeze authority is not the master edition"
     }
   ],
   "types": [
     {
-      "name": "config",
+      "name": "Config",
       "docs": [
         "Singleton program configuration, owned by the admin multisig."
       ],
@@ -1624,7 +1645,7 @@ export type ChimpSwap = {
             "type": "pubkey"
           },
           {
-            "name": "pendingAuthority",
+            "name": "pending_authority",
             "docs": [
               "Two-step authority handoff target. `Pubkey::default()` when none."
             ],
@@ -1645,14 +1666,14 @@ export type ChimpSwap = {
             "type": "pubkey"
           },
           {
-            "name": "swapFeeLamports",
+            "name": "swap_fee_lamports",
             "docs": [
               "Flat fee the taker pays on a successful swap."
             ],
             "type": "u64"
           },
           {
-            "name": "treasuryBps",
+            "name": "treasury_bps",
             "docs": [
               "Share of the fee (in basis points) routed to the treasury; the rest",
               "goes to the holder who posted the listing."
@@ -1667,7 +1688,7 @@ export type ChimpSwap = {
             "type": "bool"
           },
           {
-            "name": "activeListings",
+            "name": "active_listings",
             "docs": [
               "Number of currently open listings."
             ],
@@ -1681,16 +1702,16 @@ export type ChimpSwap = {
       }
     },
     {
-      "name": "configUpdated",
+      "name": "ConfigUpdated",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "swapFeeLamports",
+            "name": "swap_fee_lamports",
             "type": "u64"
           },
           {
-            "name": "treasuryBps",
+            "name": "treasury_bps",
             "type": "u16"
           },
           {
@@ -1705,7 +1726,7 @@ export type ChimpSwap = {
       }
     },
     {
-      "name": "delisted",
+      "name": "Delisted",
       "type": {
         "kind": "struct",
         "fields": [
@@ -1721,7 +1742,7 @@ export type ChimpSwap = {
       }
     },
     {
-      "name": "ejected",
+      "name": "Ejected",
       "type": {
         "kind": "struct",
         "fields": [
@@ -1741,7 +1762,7 @@ export type ChimpSwap = {
       }
     },
     {
-      "name": "initializeArgs",
+      "name": "InitializeArgs",
       "type": {
         "kind": "struct",
         "fields": [
@@ -1754,18 +1775,18 @@ export type ChimpSwap = {
             "type": "pubkey"
           },
           {
-            "name": "swapFeeLamports",
+            "name": "swap_fee_lamports",
             "type": "u64"
           },
           {
-            "name": "treasuryBps",
+            "name": "treasury_bps",
             "type": "u16"
           }
         ]
       }
     },
     {
-      "name": "listed",
+      "name": "Listed",
       "type": {
         "kind": "struct",
         "fields": [
@@ -1778,18 +1799,22 @@ export type ChimpSwap = {
             "type": "pubkey"
           },
           {
-            "name": "tokenAccount",
+            "name": "token_account",
             "type": "pubkey"
           },
           {
-            "name": "createdAt",
+            "name": "created_at",
             "type": "i64"
+          },
+          {
+            "name": "treasury_bps",
+            "type": "u16"
           }
         ]
       }
     },
     {
-      "name": "listing",
+      "name": "Listing",
       "docs": [
         "One open swap listing. Seeds: [\"listing\", mint]. The NFT stays in the",
         "owner's token account: this PDA is the SPL delegate and the account is",
@@ -1807,15 +1832,23 @@ export type ChimpSwap = {
             "type": "pubkey"
           },
           {
-            "name": "tokenAccount",
+            "name": "token_account",
             "docs": [
               "Owner's token account holding the NFT at list time."
             ],
             "type": "pubkey"
           },
           {
-            "name": "createdAt",
+            "name": "created_at",
             "type": "i64"
+          },
+          {
+            "name": "treasury_bps",
+            "docs": [
+              "Treasury share (bps) snapshotted at list time, so a later config",
+              "change cannot retroactively alter what this lister earns."
+            ],
+            "type": "u16"
           },
           {
             "name": "bump",
@@ -1825,16 +1858,16 @@ export type ChimpSwap = {
       }
     },
     {
-      "name": "swapped",
+      "name": "Swapped",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "listedMint",
+            "name": "listed_mint",
             "type": "pubkey"
           },
           {
-            "name": "offeredMint",
+            "name": "offered_mint",
             "type": "pubkey"
           },
           {
@@ -1846,33 +1879,33 @@ export type ChimpSwap = {
             "type": "pubkey"
           },
           {
-            "name": "feeLamports",
+            "name": "fee_lamports",
             "type": "u64"
           },
           {
-            "name": "treasuryFeeLamports",
+            "name": "treasury_fee_lamports",
             "type": "u64"
           },
           {
-            "name": "listerFeeLamports",
+            "name": "lister_fee_lamports",
             "type": "u64"
           }
         ]
       }
     },
     {
-      "name": "updateConfigArgs",
+      "name": "UpdateConfigArgs",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "swapFeeLamports",
+            "name": "swap_fee_lamports",
             "type": {
               "option": "u64"
             }
           },
           {
-            "name": "treasuryBps",
+            "name": "treasury_bps",
             "type": {
               "option": "u16"
             }
@@ -1887,4 +1920,4 @@ export type ChimpSwap = {
       }
     }
   ]
-};
+}
