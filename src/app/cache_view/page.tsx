@@ -4,7 +4,7 @@ import {
   getCacheSnapshot,
   runFullEnrichment,
 } from "@/lib/solana-nft";
-import { getMatricaProfileByWallet, getMatricaUsername } from "@/lib/matrica";
+import { getAllMatricaByWallet } from "@/lib/enrichment-cache";
 import { inngest } from "@/inngest/client";
 import TwitterCell from "./TwitterCell";
 import {
@@ -67,11 +67,13 @@ async function scrapeTwittersOnly() {
     return;
   }
 
-  const scrapedByUsername = await getAllScrapedTwitters();
+  const [scrapedByUsername, matricaByWallet] = await Promise.all([
+    getAllScrapedTwitters(),
+    getAllMatricaByWallet(),
+  ]);
   const usernames = new Set<string>();
   for (const wallet of pendingWallets) {
-    const profile = await getMatricaProfileByWallet(wallet);
-    const username = getMatricaUsername(profile);
+    const username = matricaByWallet[wallet]?.username;
     if (!username) continue;
     usernames.add(username);
   }

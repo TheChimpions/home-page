@@ -13,7 +13,8 @@
     "lint": "eslint",
     "inngest:dev": "npx inngest-cli@latest dev",
     "test": "vitest run",
-    "verify-swap": "tsx scripts/verify-swap-flow.ts"
+    "verify-swap": "tsx scripts/verify-swap-flow.ts",
+    "scrape-matrica": "tsx scripts/scrape-matrica-owners.ts"
   },
   "dependencies": {
     "@coral-xyz/anchor": "^0.32.1",

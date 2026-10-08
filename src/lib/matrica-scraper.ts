@@ -1,5 +1,4 @@
 import { getBrowser } from "./puppeteer-browser";
-import type { MatricaProfile } from "./matrica";
 
 const NAV_TIMEOUT_MS = 5000;
 const CONTENT_TIMEOUT_MS = 4000;
@@ -8,12 +7,6 @@ const CIRCUIT_FAILURE_THRESHOLD = 3;
 let consecutiveFailures = 0;
 let circuitOpenedAt = 0;
 const CIRCUIT_COOLDOWN_MS = 5 * 60 * 1000;
-
-export function profileSignature(profile: MatricaProfile | null): string {
-  if (!profile?.user) return "none";
-  const u = profile.user;
-  return `${u.id ?? "no-id"}|${u.username ?? "no-username"}`;
-}
 
 function isLikelyValidUsername(username: string): boolean {
   if (!username) return false;

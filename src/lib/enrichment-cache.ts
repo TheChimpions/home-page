@@ -11,6 +11,8 @@ export interface MatricaEntry {
   username: string | null;
   userId: string | null;
   pfp: string | null;
+  /** Twitter handle from the Matrica profile, when shown. Absent on old rows. */
+  twitter?: string | null;
 }
 
 /**
@@ -90,24 +92,23 @@ export async function getAllMatricaByWallet(): Promise<
   return readLocalFile<MatricaEntry>(LOCAL_MATRICA_FILE);
 }
 
+/**
+ * Upsert wallet → identity rows. Unlike the listings/provenance setters this
+ * never deletes: identities are only observed for current owners, so a wallet
+ * missing from one run (a past owner, or a page that failed to load) must keep
+ * whatever was known before. Use clearAllMatrica() to wipe deliberately.
+ */
 export async function setMatricaByWallet(
   entries: Record<string, MatricaEntry>,
 ): Promise<void> {
+  if (Object.keys(entries).length === 0) return;
   const redis = getRedis();
   if (redis) {
-    const existingKeys = await redis.hkeys(KV_MATRICA);
-    const newKeys = new Set(Object.keys(entries));
-    const toRemove = existingKeys.filter((k) => !newKeys.has(k));
-
-    if (newKeys.size > 0) {
-      await redis.hset(KV_MATRICA, entries);
-    }
-    if (toRemove.length > 0) {
-      await redis.hdel(KV_MATRICA, ...toRemove);
-    }
+    await redis.hset(KV_MATRICA, entries);
     return;
   }
-  await writeLocalFile(LOCAL_MATRICA_FILE, entries);
+  const existing = await readLocalFile<MatricaEntry>(LOCAL_MATRICA_FILE);
+  await writeLocalFile(LOCAL_MATRICA_FILE, { ...existing, ...entries });
 }
 
 export async function clearAllMatrica(): Promise<void> {

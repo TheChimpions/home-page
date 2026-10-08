@@ -1,10 +1,6 @@
 import { unstable_cache } from "next/cache";
 import { ChimpionMetadata } from "@/types/nft";
-import {
-  getMatricaProfileByWallet,
-  getMatricaUsername,
-  getMatricaPfp,
-} from "./matrica";
+import { mergeMatricaEntries, scrapeMatricaOwners } from "./matrica";
 import {
   detectListingByHolder,
   fetchActiveListings,
@@ -243,7 +239,7 @@ async function applyEnrichmentFromCache(
       if (entry?.username) {
         nft.holderName = entry.username;
         nftsWithName++;
-        const handle = scrapedByUsername[entry.username];
+        const handle = scrapedByUsername[entry.username] ?? entry.twitter;
         if (handle) {
           nft.holderTwitter = handle;
           nftsWithTwitter++;
@@ -326,36 +322,49 @@ async function applyEnrichmentFromCache(
   );
 }
 
-/** Resolve a set of wallets to Matrica identities with bounded concurrency. */
-async function resolveMatricaForWallets(
-  wallets: string[],
+/**
+ * Resolve Matrica identities by scraping each chimp's matrica.io page, then
+ * overlay the result on the stored table. Pages that fail to load contribute
+ * nothing, so a blocked or flaky run leaves existing identities untouched.
+ * Returns the merged table (stored + fresh) so callers can report coverage.
+ */
+async function resolveMatricaFromPages(
+  mints: string[],
+  currentHolders: Set<string>,
 ): Promise<Record<string, MatricaEntry>> {
-  const entries: Record<string, MatricaEntry> = {};
-  const API_CONCURRENCY = 8;
-  let cursor = 0;
-  await Promise.all(
-    Array.from({ length: Math.min(API_CONCURRENCY, wallets.length) }, async () => {
-      while (true) {
-        const i = cursor++;
-        if (i >= wallets.length) return;
-        const wallet = wallets[i];
-        const profile = await getMatricaProfileByWallet(wallet);
-        entries[wallet] = {
-          username: getMatricaUsername(profile),
-          userId: profile?.user?.id ?? null,
-          pfp: getMatricaPfp(profile),
-        };
-      }
-    }),
+  const existing = await getAllMatricaByWallet();
+  const scrape = await scrapeMatricaOwners(mints, { concurrency: 4 });
+
+  if (scrape.failed > 0) {
+    console.warn(
+      `[enrichment] matrica: ${scrape.failed}/${mints.length} page fetches failed (first: ${scrape.firstError})`,
+    );
+  }
+  if (scrape.resolved === 0) {
+    console.warn(
+      "[enrichment] matrica: no owners resolved this run; keeping stored identities",
+    );
+    return existing;
+  }
+
+  await setMatricaByWallet(scrape.entries);
+  const merged = mergeMatricaEntries(existing, scrape.entries);
+
+  const holdersResolved = [...currentHolders].filter(
+    (w) => merged[w]?.username,
+  ).length;
+  console.log(
+    `[enrichment] matrica: ${scrape.resolved} pages with owner, ${scrape.noOwner} without, ${scrape.notFound} unknown mints; ${holdersResolved}/${currentHolders.size} current holders have a username → KV`,
   );
-  return entries;
+  return merged;
 }
 
 /**
- * Fetch on-chain provenance for every chimp, store it, then resolve Matrica
- * for the union of current holders and all historical owners. Returns the
- * stored maps so callers can compute counts. Shared by the full enrichment
- * job and the provenance-only refresh.
+ * Fetch on-chain provenance for every chimp, store it, then refresh Matrica
+ * identities from each chimp's matrica.io page. Past owners keep whatever
+ * identity was stored for them previously. Returns the stored maps so callers
+ * can compute counts. Shared by the full enrichment job and the
+ * provenance-only refresh.
  */
 async function refreshProvenanceAndOwners(nfts: ChimpionMetadata[]): Promise<{
   provenanceByMint: Record<string, Awaited<ReturnType<typeof fetchProvenanceBatch>>[string]>;
@@ -373,23 +382,12 @@ async function refreshProvenanceAndOwners(nfts: ChimpionMetadata[]): Promise<{
     `[enrichment] provenance: ${provenanceCount}/${mints.length} chains → KV`,
   );
 
-  const walletSet = new Set<string>();
+  const currentHolders = new Set<string>();
   for (const n of nfts) {
-    if (n.holder && n.holder !== "Unknown") walletSet.add(n.holder);
+    if (n.holder && n.holder !== "Unknown") currentHolders.add(n.holder);
   }
-  for (const steps of Object.values(provenanceByMint)) {
-    for (const step of steps) walletSet.add(step.wallet);
-  }
-  const uniqueHolders = Array.from(walletSet);
 
-  const matricaEntries = await resolveMatricaForWallets(uniqueHolders);
-  await setMatricaByWallet(matricaEntries);
-  const matricaCount = Object.values(matricaEntries).filter(
-    (e) => e.username !== null,
-  ).length;
-  console.log(
-    `[enrichment] matrica: ${matricaCount}/${uniqueHolders.length} resolved → KV`,
-  );
+  const matricaEntries = await resolveMatricaFromPages(mints, currentHolders);
 
   return { provenanceByMint, matricaEntries };
 }
