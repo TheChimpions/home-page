@@ -11,7 +11,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "inngest:dev": "npx inngest-cli@latest dev"
+    "inngest:dev": "npx inngest-cli@latest dev",
+    "test": "vitest run",
+    "verify-swap": "tsx scripts/verify-swap-flow.ts",
+    "scrape-matrica": "tsx scripts/scrape-matrica-owners.ts"
   },
   "dependencies": {
     "@coral-xyz/anchor": "^0.32.1",
@@ -53,7 +56,9 @@
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4.1.18",
-    "typescript": "^5"
+    "tsx": "^4.23.15",
+    "typescript": "^5",
+    "vitest": "^5.0.1"
   },
   "pnpm": {
     "overrides": {

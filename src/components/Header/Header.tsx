@@ -25,7 +25,7 @@ const navigation: NavEntry[] = [
     items: [
       { label: "NFT Gallery", href: "/nft-gallery" },
       { label: "Our Holders", href: "/our-holders" },
-      // { label: "Chimp Swap", href: "/chimp-swap" },
+      { label: "Grail Grove", href: "/chimp-swap" },
       { label: "The Treehouse", href: "/the-treehouse" },
     ],
   },
@@ -36,7 +36,7 @@ const navigation: NavEntry[] = [
 
 // Mobile shows the same links as desktop, just flattened — keeping a second
 // hand-written list let the two drift (Merch Store was missing from mobile,
-// Chimp Swap was missing from desktop).
+// Grail Grove was missing from desktop).
 const allNavItems: NavLink[] = navigation.flatMap((entry) =>
   isGroup(entry) ? entry.items : [entry],
 );

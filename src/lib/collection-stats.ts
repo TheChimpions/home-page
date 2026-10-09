@@ -201,7 +201,7 @@ async function assembleHoldersWithProfiles(): Promise<HolderProfile[]> {
           wallet,
           count,
           username,
-          twitter: scrapedByUsername[username] ?? null,
+          twitter: scrapedByUsername[username] ?? entry?.twitter ?? null,
           pfp,
           nfts: [...nfts],
         });
