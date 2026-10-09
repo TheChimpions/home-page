@@ -20,12 +20,12 @@ const isGroup = (entry: NavEntry): entry is NavGroup => "items" in entry;
 const navigation: NavEntry[] = [
   { label: "Home", href: "/" },
   { label: "The DAO", href: "/the-dao" },
+  { label: "Grail Grove", href: "/chimp-swap" },
   {
     label: "Community",
     items: [
       { label: "NFT Gallery", href: "/nft-gallery" },
       { label: "Our Holders", href: "/our-holders" },
-      { label: "Grail Grove", href: "/chimp-swap" },
       { label: "The Treehouse", href: "/the-treehouse" },
     ],
   },
@@ -273,7 +273,7 @@ export default function Header() {
               />
             </Link>
 
-            <div className="hidden min-[1400px]:flex items-center gap-10">
+            <div className="hidden min-[1400px]:flex items-center gap-6 min-[1600px]:gap-10">
               <Link
                 href="/"
                 className="shrink-0 focus:outline-none focus-visible:outline-none focus-visible:ring-0"
@@ -286,7 +286,7 @@ export default function Header() {
                   priority
                 />
               </Link>
-              <nav className="flex items-center gap-8">
+              <nav className="flex items-center gap-6 min-[1600px]:gap-8">
                 {navigation.map((entry) => {
                   if (isGroup(entry)) {
                     return (
@@ -344,32 +344,32 @@ export default function Header() {
 
             <div className="hidden min-[1400px]:flex items-center gap-2 shrink-0">
               <a
-                href="https://www.tensor.trade/trade/the_chimpions"
+                href="https://www.orbisonsol.io/marketplace/the-chimpions"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group text-xl font-bold px-3 flex flex-row gap-2 lg:px-4 h-10 items-center border border-gray-modern-700 text-white font-sans hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950 transition-colors"
               >
-                <span>Tensor</span>
+                <span>Orbis</span>
                 <Image
-                  src="/logo/tensor.svg"
-                  alt="Tensor"
+                  src="/logo/orbis.svg"
+                  alt="Orbis"
                   width={22}
                   height={17}
                   className="brightness-0 invert group-hover:brightness-0 group-hover:invert-0 transition-all"
                 />
               </a>
               <a
-                href="https://magiceden.io/creators/the_chimpions"
+                href="https://market.degen.inc/collections/the-chimpions"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group text-xl font-bold px-3 flex flex-row gap-2 lg:px-4 h-10 items-center border border-gray-modern-700 text-white font-sans hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950 transition-colors"
               >
-                <span>Magic Eden</span>
+                <span>Degen Market</span>
                 <Image
-                  src="/logo/magic-eden.svg"
-                  alt="Magic Eden"
+                  src="/logo/degen-market.svg"
+                  alt="Degen Market"
                   width={18}
-                  height={12}
+                  height={17}
                   className="brightness-0 invert group-hover:brightness-0 group-hover:invert-0 transition-all"
                 />
               </a>

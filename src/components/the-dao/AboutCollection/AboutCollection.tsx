@@ -62,7 +62,7 @@ export default function AboutCollection() {
 
                 <div className="flex flex-col lg:flex-row gap-4 w-full md:w-auto">
                   <a
-                    href="https://www.tensor.trade/trade/the_chimpions"
+                    href="https://www.orbisonsol.io/marketplace/the-chimpions"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="group flex w-full font-bold  h-12 lg:w-auto items-center rounded-sm justify-center gap-3  border border-gray-modern-700 bg-gray-modern-900/50 px-6 py-3 text-xl font-sans text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"
@@ -70,12 +70,12 @@ export default function AboutCollection() {
                     <span className="font-bold">
                       <span className="hidden xs:inline-block">View on</span>{" "}
                       {""}
-                      Tensor
+                      Orbis
                     </span>
                     <Image
-                      src="/logo/tensor.svg"
-                      alt="Tensor"
-                      width={40}
+                      src="/logo/orbis.svg"
+                      alt="Orbis"
+                      width={21}
                       quality={100}
                       priority
                       height={16}
@@ -83,19 +83,19 @@ export default function AboutCollection() {
                     />
                   </a>
                   <a
-                    href="https://magiceden.io/creators/the_chimpions"
+                    href="https://market.degen.inc/collections/the-chimpions"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="group flex w-full font-bold h-12 lg:w-auto items-center rounded-sm justify-center gap-3  border border-gray-modern-700 bg-gray-modern-900/50 px-6 py-3 text-xl font-sans text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"
                   >
                     <span className="font-bold">
                       <span className="hidden xs:inline-block">View on </span>{" "}
-                      Magic Eden
+                      Degen Market
                     </span>
                     <Image
-                      src="/logo/magic-eden.svg"
-                      alt="Magic Eden"
-                      width={25}
+                      src="/logo/degen-market.svg"
+                      alt="Degen Market"
+                      width={17}
                       height={16}
                       className="brightness-0 invert group-hover:brightness-0 group-hover:invert-0 transition-all"
                     />

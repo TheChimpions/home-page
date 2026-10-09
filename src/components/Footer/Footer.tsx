@@ -87,31 +87,31 @@ export default function Footer() {
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-11 w-full">
             <a
-              href="https://www.tensor.trade/trade/the_chimpions"
+              href="https://www.orbisonsol.io/marketplace/the-chimpions"
               target="_blank"
               rel="noopener noreferrer"
               className="group w-full font-bold sm:max-w-xs px-4 flex flex-row gap-2 h-10 items-center justify-center border border-gray-modern-700 text-white text-xl font-sans hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950 transition-colors"
             >
-              <span>Tensor</span>
+              <span>Orbis</span>
               <Image
-                src="/logo/tensor.svg"
-                alt="Tensor"
-                width={32}
-                height={25}
+                src="/logo/orbis.svg"
+                alt="Orbis"
+                width={24}
+                height={18}
                 className="brightness-0 invert group-hover:brightness-0 group-hover:invert-0 transition-all"
               />
             </a>
             <a
-              href="https://magiceden.io/creators/the_chimpions"
+              href="https://market.degen.inc/collections/the-chimpions"
               target="_blank"
               rel="noopener noreferrer"
               className="group w-full font-bold sm:max-w-xs px-4 flex flex-row gap-2 h-10 items-center justify-center border border-gray-modern-700 text-white text-xl font-sans hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950 transition-colors"
             >
-              <span>Magic Eden</span>
+              <span>Degen Market</span>
               <Image
-                src="/logo/magic-eden.svg"
-                alt="Magic Eden"
-                width={25}
+                src="/logo/degen-market.svg"
+                alt="Degen Market"
+                width={17}
                 height={16}
                 className="brightness-0 invert group-hover:brightness-0 group-hover:invert-0 transition-all"
               />
@@ -198,31 +198,31 @@ export default function Footer() {
 
             <div className="flex items-center gap-4 shrink-0">
               <a
-                href="https://www.tensor.trade/trade/the_chimpions"
+                href="https://www.orbisonsol.io/marketplace/the-chimpions"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group px-3 flex font-bold flex-row gap-2 lg:px-4 h-10 items-center border border-gray-modern-700 text-white text-xl  font-sans hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950 transition-colors"
               >
-                <span>Tensor</span>
+                <span>Orbis</span>
                 <Image
-                  src="/logo/tensor.svg"
-                  alt="Tensor"
-                  width={32}
-                  height={25}
+                  src="/logo/orbis.svg"
+                  alt="Orbis"
+                  width={24}
+                  height={18}
                   className="brightness-0 invert group-hover:brightness-0 group-hover:invert-0 transition-all"
                 />
               </a>
               <a
-                href="https://magiceden.io/creators/the_chimpions"
+                href="https://market.degen.inc/collections/the-chimpions"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group px-3 flex font-bold flex-row gap-2 lg:px-4 h-10 items-center border border-gray-modern-700 text-white text-xl font-sans hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950 transition-colors"
               >
-                <span>Magic Eden</span>
+                <span>Degen Market</span>
                 <Image
-                  src="/logo/magic-eden.svg"
-                  alt="Magic Eden"
-                  width={25}
+                  src="/logo/degen-market.svg"
+                  alt="Degen Market"
+                  width={17}
                   height={16}
                   className="brightness-0 invert group-hover:brightness-0 group-hover:invert-0 transition-all"
                 />
