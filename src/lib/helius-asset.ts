@@ -1,6 +1,6 @@
 import { resolveAssetImage } from "./asset-overrides";
 import { IS_DEVNET } from "./cluster";
-import { isChimpionAsset } from "./collection";
+import { COLLECTION_ADDRESS, isChimpionAsset } from "./collection";
 import { getArtists, getAttribute } from "./utils";
 
 export interface HeliusAsset {
@@ -93,12 +93,24 @@ export async function fetchHeliusAssetBatch(ids: string[]): Promise<HeliusAsset[
   return out;
 }
 
-/** Server only. Every Chimpion currently owned by `wallet`. */
+/**
+ * Server only. Every Chimpion currently owned by `wallet`. Searches by owner
+ * and collection together and pages through the results: an unfiltered
+ * getAssetsByOwner caps at 1000 assets per page, so chimps in big wallets
+ * could fall off the first page.
+ */
 export async function fetchChimpionsByOwner(wallet: string): Promise<HeliusAsset[]> {
-  const result = await heliusRpc<{ items?: HeliusAsset[] }>("getAssetsByOwner", {
-    ownerAddress: wallet,
-    limit: 1000,
-    page: 1,
-  });
-  return (result.items ?? []).filter(isChimpionAsset);
+  const limit = 1000;
+  const out: HeliusAsset[] = [];
+  for (let page = 1; ; page++) {
+    const result = await heliusRpc<{ items?: HeliusAsset[] }>("searchAssets", {
+      ownerAddress: wallet,
+      grouping: ["collection", COLLECTION_ADDRESS],
+      limit,
+      page,
+    });
+    const items = result.items ?? [];
+    out.push(...items.filter(isChimpionAsset));
+    if (items.length < limit) return out;
+  }
 }

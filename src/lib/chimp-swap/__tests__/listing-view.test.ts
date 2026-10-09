@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { HeliusAsset } from "@/lib/helius-asset";
+import type { ChimpAssetSummary, HeliusAsset } from "@/lib/helius-asset";
 import type { SwapListing } from "../accounts";
 import {
   toChimpListings,
@@ -23,7 +23,11 @@ const asset = (id: string, name: string): HeliusAsset => ({
   ownership: { owner: "someone-else" },
 });
 
-const listing = (mint: string, createdAt: number, owner = "owner"): SwapListing => ({
+const listing = (
+  mint: string,
+  createdAt: number,
+  owner = "owner",
+): SwapListing => ({
   address: `listing-${mint}`,
   owner,
   mint,
@@ -54,7 +58,10 @@ describe("toChimpListings", () => {
   });
 
   it("uses the listing owner as holder even if Helius reports another owner", () => {
-    const [out] = toChimpListings([listing("m1", 1, "lister")], [asset("m1", "One")]);
+    const [out] = toChimpListings(
+      [listing("m1", 1, "lister")],
+      [asset("m1", "One")],
+    );
     expect(out.holder).toBe("lister");
   });
 
@@ -69,7 +76,10 @@ describe("toChimpListings", () => {
 
 describe("toSwapListing", () => {
   it("recovers the on-chain fields from an enriched listing", () => {
-    const [enriched] = toChimpListings([listing("m1", 42, "lister")], [asset("m1", "One")]);
+    const [enriched] = toChimpListings(
+      [listing("m1", 42, "lister")],
+      [asset("m1", "One")],
+    );
     expect(toSwapListing(enriched)).toEqual({
       address: "listing-m1",
       owner: "lister",
@@ -81,7 +91,7 @@ describe("toSwapListing", () => {
 });
 
 describe("withHolderNames", () => {
-  const chimp = (mint: string, holder?: string) => ({
+  const chimp = (mint: string, holder?: string): ChimpAssetSummary => ({
     mint,
     name: mint,
     image: "",
