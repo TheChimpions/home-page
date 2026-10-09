@@ -130,7 +130,7 @@ export default function SwapDetailModal({
                     rel="noopener noreferrer"
                     className="text-gray-modern-200 text-xl hover:text-white transition-colors"
                   >
-                    {mine ? "You" : truncateAddress(listing.seller)}
+                    {mine ? "You" : (listing.holderName ?? truncateAddress(listing.seller))}
                   </a>
                 </div>
                 <div className="flex items-center gap-3 w-full justify-between">

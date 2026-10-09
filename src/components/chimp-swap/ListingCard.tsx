@@ -36,7 +36,9 @@ export default function ListingCard({
   const [imageLoaded, setImageLoaded] = useState(false);
 
   function getValue(key: (typeof rows)[number]["key"]): string {
-    if (key === "holder") return truncateAddress(listing.holder ?? listing.seller);
+    if (key === "holder") {
+      return listing.holderName ?? truncateAddress(listing.holder ?? listing.seller);
+    }
     return listing[key] ?? "—";
   }
 

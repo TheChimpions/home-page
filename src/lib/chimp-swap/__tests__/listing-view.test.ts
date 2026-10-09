@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest";
 import type { HeliusAsset } from "@/lib/helius-asset";
 import type { SwapListing } from "../accounts";
-import { toChimpListings, toSwapListing } from "../listing-view";
+import {
+  toChimpListings,
+  toSwapListing,
+  withHolderNames,
+} from "../listing-view";
 
 const asset = (id: string, name: string): HeliusAsset => ({
   id,
@@ -73,5 +77,28 @@ describe("toSwapListing", () => {
       tokenAccount: "ata-m1",
       createdAt: 42,
     });
+  });
+});
+
+describe("withHolderNames", () => {
+  const chimp = (mint: string, holder?: string) => ({
+    mint,
+    name: mint,
+    image: "",
+    holder,
+  });
+
+  it("attaches the Matrica username for known holder wallets", () => {
+    const out = withHolderNames(
+      [chimp("m1", "walletA"), chimp("m2", "walletB")],
+      { walletA: "tuxr" },
+    );
+    expect(out[0].holderName).toBe("tuxr");
+    expect(out[1].holderName).toBeUndefined();
+  });
+
+  it("leaves chimps without a holder untouched", () => {
+    const input = chimp("m1");
+    expect(withHolderNames([input], { walletA: "tuxr" })[0]).toBe(input);
   });
 });

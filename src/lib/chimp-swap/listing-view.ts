@@ -1,5 +1,9 @@
 import type { ChimpListing } from "@/types/listing";
-import { summarizeChimpAsset, type HeliusAsset } from "@/lib/helius-asset";
+import {
+  summarizeChimpAsset,
+  type ChimpAssetSummary,
+  type HeliusAsset,
+} from "@/lib/helius-asset";
 import type { SwapListing } from "./accounts";
 
 /**
@@ -27,6 +31,17 @@ export function toChimpListings(
     });
   }
   return out.sort((a, b) => b.listedAt - a.listedAt);
+}
+
+/** Attach stored Matrica usernames to each chimp's holder wallet. */
+export function withHolderNames<T extends ChimpAssetSummary>(
+  chimps: T[],
+  names: Record<string, string>,
+): T[] {
+  return chimps.map((chimp) => {
+    const holderName = chimp.holder ? names[chimp.holder] : undefined;
+    return holderName ? { ...chimp, holderName } : chimp;
+  });
 }
 
 /** The on-chain fields a swap transaction needs, recovered from an enriched listing. */
