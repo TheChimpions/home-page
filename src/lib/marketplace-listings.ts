@@ -55,7 +55,12 @@ export function detectListingByHolder(
   };
 }
 
-export async function fetchActiveListings(): Promise<Map<string, NFTListing>> {
+/**
+ * All active Magic Eden listings for the collection, or null when any page
+ * failed to load. A partial result would read as "delisted" for every mint on
+ * the missing pages, so callers should keep their previous listings on null.
+ */
+export async function fetchActiveListings(): Promise<Map<string, NFTListing> | null> {
   const result = new Map<string, NFTListing>();
 
   try {
@@ -69,12 +74,16 @@ export async function fetchActiveListings(): Promise<Map<string, NFTListing>> {
           `${ME_BASE}/collections/${COLLECTION}/listings?offset=${offset}&limit=${PAGE_LIMIT}`,
           { next: { revalidate: 60 } },
         )
-          .then((r) => (r.ok ? (r.json() as Promise<MEListing[]>) : []))
-          .catch(() => [] as MEListing[]),
+          .then((r) => (r.ok ? (r.json() as Promise<MEListing[]>) : null))
+          .catch(() => null),
       ),
     );
 
     for (const page of pages) {
+      if (!Array.isArray(page)) {
+        console.warn("Failed to fetch active listings: a page did not load");
+        return null;
+      }
       for (const item of page) {
         result.set(item.tokenMint, {
           marketplace: "magiceden",
@@ -86,6 +95,7 @@ export async function fetchActiveListings(): Promise<Map<string, NFTListing>> {
     }
   } catch (err) {
     console.warn("Failed to fetch active listings:", err);
+    return null;
   }
 
   return result;

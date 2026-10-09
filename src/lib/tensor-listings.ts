@@ -46,16 +46,22 @@ async function getSdk(): Promise<TCompSDK | null> {
   return sdkPromise;
 }
 
+/**
+ * The Tensor (TComp) listing for a mint, null when it isn't listed, or "error"
+ * when the lookup failed and the listing state is unknown.
+ */
 export async function fetchTensorListing(
   mint: string,
-): Promise<NFTListing | null> {
+): Promise<NFTListing | null | "error"> {
   const sdk = await getSdk();
-  if (!sdk) return null;
+  if (!sdk) return "error";
 
   try {
     const assetId = new PublicKey(mint);
     const [listState] = findListStatePda({ assetId });
-    const state = await sdk.fetchListState(listState);
+    // fetchNullable: a missing ListState account means "not listed", while an
+    // RPC failure throws and is reported as an error.
+    const state = await sdk.program.account.listState.fetchNullable(listState);
     if (!state) return null;
 
     return {
@@ -65,18 +71,28 @@ export async function fetchTensorListing(
       seller: state.owner.toBase58(),
     };
   } catch {
-    return null;
+    return "error";
   }
 }
 
+export interface TensorBatchResult {
+  listings: Map<string, NFTListing>;
+  /** Mints whose lookup failed; their listing state is unknown. */
+  failed: string[];
+}
+
+/**
+ * Look up Tensor listings for many mints. Returns null when the SDK could not
+ * be set up at all (no API key, init failure), so every mint is unknown.
+ */
 export async function fetchTensorListingsBatch(
   mints: string[],
-): Promise<Map<string, NFTListing>> {
-  const result = new Map<string, NFTListing>();
+): Promise<TensorBatchResult | null> {
+  const result: TensorBatchResult = { listings: new Map(), failed: [] };
   if (mints.length === 0) return result;
 
   const sdk = await getSdk();
-  if (!sdk) return result;
+  if (!sdk) return null;
 
   const CONCURRENCY = 10;
   let cursor = 0;
@@ -89,7 +105,8 @@ export async function fetchTensorListingsBatch(
           if (i >= mints.length) return;
           const mint = mints[i];
           const listing = await fetchTensorListing(mint);
-          if (listing) result.set(mint, listing);
+          if (listing === "error") result.failed.push(mint);
+          else if (listing) result.listings.set(mint, listing);
         }
       },
     ),
