@@ -1,4 +1,5 @@
 import { NFTListing } from "@/types/nft";
+import { orbisItemUrl } from "@/lib/utils";
 
 interface MEListing {
   tokenMint: string;
@@ -19,19 +20,19 @@ interface MarketplaceMatch {
 export const MARKETPLACE_REGISTRY: Record<string, MarketplaceMatch> = {
   TCMPhJdwDryooaGtiocG1u3xcYbRpiJzb283XfCZsDp: {
     marketplace: "tensor",
-    urlBuilder: (mint) => `https://www.tensor.trade/item/${mint}`,
+    urlBuilder: orbisItemUrl,
   },
   TSWAPaqyCSx2KABk68Shruf4rp7CxcNi8hAsbdwmHbN: {
     marketplace: "tensor",
-    urlBuilder: (mint) => `https://www.tensor.trade/item/${mint}`,
+    urlBuilder: orbisItemUrl,
   },
   "1BWutmTvYPwDtmw9abTkS4Ssr8no61spGAvW1X6NDix": {
     marketplace: "magiceden",
-    urlBuilder: (mint) => `https://magiceden.io/item-details/${mint}`,
+    urlBuilder: orbisItemUrl,
   },
   M2mx93ekt1fmXSVkTrUL9xVFHkmME8HTUi5Cyc5aF7K: {
     marketplace: "magiceden",
-    urlBuilder: (mint) => `https://magiceden.io/item-details/${mint}`,
+    urlBuilder: orbisItemUrl,
   },
 };
 
@@ -77,7 +78,7 @@ export async function fetchActiveListings(): Promise<Map<string, NFTListing>> {
       for (const item of page) {
         result.set(item.tokenMint, {
           marketplace: "magiceden",
-          url: `https://magiceden.io/item-details/${item.tokenMint}`,
+          url: orbisItemUrl(item.tokenMint),
           price: item.price,
           seller: item.seller,
         });

@@ -8,6 +8,7 @@ import {
   type VersionedTransaction,
 } from "@solana/web3.js";
 import type { NFTListing } from "@/types/nft";
+import { orbisItemUrl } from "@/lib/utils";
 
 const HELIUS_API_KEY = process.env.HELIUS_API_KEY;
 
@@ -59,7 +60,7 @@ export async function fetchTensorListing(
 
     return {
       marketplace: "tensor",
-      url: `https://www.tensor.trade/item/${mint}`,
+      url: orbisItemUrl(mint),
       price: state.amount.toNumber() / 1_000_000_000,
       seller: state.owner.toBase58(),
     };
