@@ -16,8 +16,10 @@ import {
   setMatricaByWallet,
   setProvenanceByMint,
   type MatricaEntry,
+  type ProvenanceStep,
 } from "./enrichment-cache";
 import { fetchProvenanceBatch } from "./provenance";
+import { mergeListings, mergeProvenance } from "./enrichment-merge";
 import { isEscrowOrProgramAccount } from "./program-accounts";
 import { COLLECTION_ADDRESS } from "./collection";
 import { resolveAssetImage } from "./asset-overrides";
@@ -361,25 +363,34 @@ async function resolveMatricaFromPages(
 
 /**
  * Fetch on-chain provenance for every chimp, store it, then refresh Matrica
- * identities from each chimp's matrica.io page. Past owners keep whatever
- * identity was stored for them previously. Returns the stored maps so callers
- * can compute counts. Shared by the full enrichment job and the
- * provenance-only refresh.
+ * identities from each chimp's matrica.io page. Mints whose history could not
+ * be read keep their stored chain, and past owners keep whatever identity was
+ * stored for them previously. Returns the stored maps so callers can compute
+ * counts. Shared by the full enrichment job and the provenance-only refresh.
  */
 async function refreshProvenanceAndOwners(nfts: ChimpionMetadata[]): Promise<{
-  provenanceByMint: Record<string, Awaited<ReturnType<typeof fetchProvenanceBatch>>[string]>;
+  provenanceByMint: Record<string, ProvenanceStep[]>;
   matricaEntries: Record<string, MatricaEntry>;
 }> {
   // Reconstruct ownership history from on-chain transfers before resolving
   // Matrica, so every past owner (not just current holders) gets a username.
   const mints = nfts.map((n) => n.mint).filter((m): m is string => !!m);
-  const provenanceByMint = await fetchProvenanceBatch(mints);
+  const [existingProvenance, batch] = await Promise.all([
+    getAllProvenanceByMint(),
+    fetchProvenanceBatch(mints),
+  ]);
+  if (batch.failed.length > 0) {
+    console.warn(
+      `[enrichment] provenance: ${batch.failed.length}/${mints.length} lookups failed; keeping their stored chains`,
+    );
+  }
+  const provenanceByMint = mergeProvenance(existingProvenance, batch.chains);
   await setProvenanceByMint(provenanceByMint);
   const provenanceCount = Object.values(provenanceByMint).filter(
     (steps) => steps.length > 0,
   ).length;
   console.log(
-    `[enrichment] provenance: ${provenanceCount}/${mints.length} chains → KV`,
+    `[enrichment] provenance: ${Object.keys(batch.chains).length} fetched, ${provenanceCount}/${mints.length} chains stored → KV`,
   );
 
   const currentHolders = new Set<string>();
@@ -446,24 +457,34 @@ export async function runFullEnrichment(): Promise<{
     (e) => e.username !== null,
   ).length;
 
-  const meListings = await fetchActiveListings();
-  const listings: Record<string, NonNullable<ChimpionMetadata["listing"]>> = {};
-
-  for (const [mint, listing] of meListings.entries()) {
-    listings[mint] = listing;
+  const [existingListings, meListings] = await Promise.all([
+    getAllListingsByMint(),
+    fetchActiveListings(),
+  ]);
+  if (!meListings) {
+    console.warn(
+      "[enrichment] listings: Magic Eden fetch failed; keeping stored Magic Eden listings",
+    );
   }
 
   const tensorCandidates = nfts
-    .filter((n) => n.mint && !listings[n.mint])
+    .filter((n) => n.mint && !meListings?.has(n.mint))
     .map((n) => n.mint!);
-
-  if (tensorCandidates.length > 0) {
-    const tensorListings = await fetchTensorListingsBatch(tensorCandidates);
-    for (const [mint, listing] of tensorListings.entries()) {
-      listings[mint] = listing;
-    }
+  const tensor = await fetchTensorListingsBatch(tensorCandidates);
+  if (!tensor) {
+    console.warn(
+      "[enrichment] listings: Tensor unavailable; keeping stored Tensor listings",
+    );
+  } else if (tensor.failed.length > 0) {
+    console.warn(
+      `[enrichment] listings: ${tensor.failed.length} Tensor lookups failed; keeping their stored listings`,
+    );
   }
 
+  const listings = mergeListings(existingListings, {
+    magicEden: meListings,
+    tensor,
+  });
   await setListingsByMint(listings);
   const listingsCount = Object.keys(listings).length;
   console.log(

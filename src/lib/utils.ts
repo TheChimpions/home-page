@@ -36,6 +36,11 @@ export function orbTxUrl(signature: string): string {
   return `${ORB_BASE}/tx/${signature}${ORB_CLUSTER_QUERY}`;
 }
 
+/** Orbis marketplace page for a single NFT. */
+export function orbisItemUrl(mint: string): string {
+  return `https://www.orbisonsol.io/marketplace/item/${mint}`;
+}
+
 interface NFTAttribute {
   trait_type?: string;
   value: string;

@@ -17,7 +17,12 @@ import { buildDelistTransaction } from "@/lib/chimp-swap/instructions";
 import { toSwapListing } from "@/lib/chimp-swap/listing-view";
 import { describeSwapError } from "@/lib/chimp-swap/errors";
 import { formatSol, splitFee } from "@/lib/chimp-swap/fee";
-import { orbAddressUrl, orbTxUrl, truncateAddress } from "@/lib/utils";
+import {
+  orbAddressUrl,
+  orbTxUrl,
+  orbisItemUrl,
+  truncateAddress,
+} from "@/lib/utils";
 
 interface SwapDetailModalProps {
   listing: ChimpListing;
@@ -48,7 +53,6 @@ export default function SwapDetailModal({
 
   const config = configQuery.data ?? null;
   const mine = !!publicKey && publicKey.toBase58() === listing.seller;
-  const meUrl = `https://magiceden.io/item-details/${listing.mint}`;
   const split = config ? splitFee(config.swapFeeLamports, config.treasuryBps) : null;
 
   async function handleRemove() {
@@ -126,7 +130,7 @@ export default function SwapDetailModal({
                     rel="noopener noreferrer"
                     className="text-gray-modern-200 text-xl hover:text-white transition-colors"
                   >
-                    {mine ? "You" : truncateAddress(listing.seller)}
+                    {mine ? "You" : (listing.holderName ?? truncateAddress(listing.seller))}
                   </a>
                 </div>
                 <div className="flex items-center gap-3 w-full justify-between">
@@ -144,12 +148,12 @@ export default function SwapDetailModal({
               </div>
 
               <a
-                href={meUrl}
+                href={orbisItemUrl(listing.mint)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 text-gray-modern-500 hover:text-gray-modern-300 text-base transition-colors w-fit"
               >
-                View on Magic Eden <ExternalLink className="w-3 h-3" />
+                View on Orbis <ExternalLink className="w-3 h-3" />
               </a>
 
               <div className="mt-auto">

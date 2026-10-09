@@ -27,6 +27,8 @@ export interface ChimpAssetSummary {
   type?: string;
   artist?: string;
   holder?: string;
+  /** Matrica username for `holder`, when the wallet is linked to one. */
+  holderName?: string;
 }
 
 /** Name, art and traits for a Chimpion, with the same media preference used across the site. */

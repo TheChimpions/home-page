@@ -36,7 +36,8 @@ export default function ChimpPickCard({
   const values: Record<(typeof rows)[number]["key"], string | undefined> = {
     tribe: chimp.tribe,
     type: chimp.type,
-    holder: chimp.holder ? truncateAddress(chimp.holder) : undefined,
+    holder:
+      chimp.holderName ?? (chimp.holder ? truncateAddress(chimp.holder) : undefined),
     artist: chimp.artist,
   };
 

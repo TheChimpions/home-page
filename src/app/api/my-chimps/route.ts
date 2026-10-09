@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchChimpionsByOwner, summarizeChimpAsset } from "@/lib/helius-asset";
+import { withHolderNames } from "@/lib/chimp-swap/listing-view";
+import { getMatricaUsernames } from "@/lib/enrichment-cache";
 import type { MyChimp } from "@/types/listing";
 
 export const dynamic = "force-dynamic";
@@ -11,12 +13,15 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const assets = await fetchChimpionsByOwner(wallet);
+    const [assets, names] = await Promise.all([
+      fetchChimpionsByOwner(wallet),
+      getMatricaUsernames([wallet]),
+    ]);
     const chimps: MyChimp[] = assets.map((asset) => ({
       ...summarizeChimpAsset(asset),
       holder: wallet,
     }));
-    return NextResponse.json(chimps);
+    return NextResponse.json(withHolderNames(chimps, names));
   } catch (error) {
     console.error("Error fetching user chimps:", error);
     return NextResponse.json({ error: "Failed to fetch" }, { status: 500 });

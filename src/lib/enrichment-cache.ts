@@ -93,6 +93,42 @@ export async function getAllMatricaByWallet(): Promise<
 }
 
 /**
+ * Matrica usernames for just the given wallets, keyed by wallet. Wallets with
+ * no stored identity are omitted. Read failures return an empty map so callers
+ * fall back to showing the address.
+ */
+export async function getMatricaUsernames(
+  wallets: string[],
+): Promise<Record<string, string>> {
+  const unique = [...new Set(wallets)];
+  if (unique.length === 0) return {};
+
+  let rows: Record<string, MatricaEntry | null> = {};
+  const redis = getRedis();
+  if (redis) {
+    try {
+      rows =
+        (await redis.hmget<Record<string, MatricaEntry | null>>(
+          KV_MATRICA,
+          ...unique,
+        )) ?? {};
+    } catch (err) {
+      console.warn("[enrichment-cache] failed to read matrica KV:", err);
+      return {};
+    }
+  } else {
+    rows = await readLocalFile<MatricaEntry>(LOCAL_MATRICA_FILE);
+  }
+
+  const names: Record<string, string> = {};
+  for (const wallet of unique) {
+    const username = rows[wallet]?.username;
+    if (username) names[wallet] = username;
+  }
+  return names;
+}
+
+/**
  * Upsert wallet → identity rows. Unlike the listings/provenance setters this
  * never deletes: identities are only observed for current owners, so a wallet
  * missing from one run (a past owner, or a page that failed to load) must keep

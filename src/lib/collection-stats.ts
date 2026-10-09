@@ -115,7 +115,7 @@ async function fetchHolderAssets(): Promise<Map<string, HolderNFT[]>> {
 
   const byOwner = new Map<string, HolderNFT[]>();
   for (const asset of assets) {
-    const listing = listings.get(asset.id);
+    const listing = listings?.get(asset.id);
     const owner = listing?.seller || asset.ownership?.owner;
     if (!owner) continue;
     if (owner === TREASURY_MULTISIG) continue; // project treasury, not a holder

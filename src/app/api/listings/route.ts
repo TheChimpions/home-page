@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { connection } from "@/lib/connection";
 import { fetchAllSwapListings } from "@/lib/chimp-swap/accounts";
-import { toChimpListings } from "@/lib/chimp-swap/listing-view";
+import {
+  toChimpListings,
+  withHolderNames,
+} from "@/lib/chimp-swap/listing-view";
+import { getMatricaUsernames } from "@/lib/enrichment-cache";
 import { fetchHeliusAssetBatch } from "@/lib/helius-asset";
 
 export const dynamic = "force-dynamic";
@@ -13,10 +17,16 @@ export async function GET() {
     if (listings.length === 0) {
       return NextResponse.json([], { headers: cacheHeaders });
     }
-    const assets = await fetchHeliusAssetBatch(listings.map((l) => l.mint));
-    return NextResponse.json(toChimpListings(listings, assets), {
-      headers: cacheHeaders,
-    });
+    const [assets, names] = await Promise.all([
+      fetchHeliusAssetBatch(listings.map((l) => l.mint)),
+      getMatricaUsernames(listings.map((l) => l.owner)),
+    ]);
+    return NextResponse.json(
+      withHolderNames(toChimpListings(listings, assets), names),
+      {
+        headers: cacheHeaders,
+      },
+    );
   } catch (error) {
     console.error("Error fetching swap listings:", error);
     return NextResponse.json(
