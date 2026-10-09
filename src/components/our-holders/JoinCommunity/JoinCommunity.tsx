@@ -26,39 +26,39 @@ export default function JoinCommunity() {
 
           <div className="flex flex-col gap-4 lg:items-end w-full md:w-auto">
             <a
-              href="https://www.tensor.trade/trade/the_chimpions"
+              href="https://www.orbisonsol.io/marketplace/the-chimpions"
               target="_blank"
               rel="noopener noreferrer"
               className="group h-12 flex w-full font-bold  lg:max-w-auto items-center justify-between gap-3 rounded-sm border border-gray-modern-800 bg-gray-modern-900/50 px-4 py-3 text-xl font-sans text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"
             >
               <span>
-                <span className="hidden xs:inline-block">Buy on </span> Tensor
+                <span className="hidden xs:inline-block">Buy on </span> Orbis
               </span>
               <span className="hidden xs:flex w-9 justify-end shrink-0">
                 <Image
-                  src="/logo/tensor.svg"
-                  alt="Tensor"
-                  width={30}
+                  src="/logo/orbis.svg"
+                  alt="Orbis"
+                  width={21}
                   height={16}
                   className="brightness-0 invert group-hover:brightness-0 group-hover:invert-0 transition-all"
                 />
               </span>
             </a>
             <a
-              href="https://magiceden.io/creators/the_chimpions"
+              href="https://market.degen.inc/collections/the-chimpions"
               target="_blank"
               rel="noopener noreferrer"
               className="group h-12 flex w-full font-bold lg:max-w-auto items-center justify-between gap-3 rounded-sm border border-gray-modern-800 bg-gray-modern-900/50 px-4 py-3 text-xl font-sans text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"
             >
               <span>
                 <span className="hidden xs:inline-block">Buy on </span> {""}
-                Eden
+                Degen Market
               </span>
               <span className="hidden xs:flex w-9 justify-end shrink-0">
                 <Image
-                  src="/logo/magic-eden.svg"
-                  alt="Magic Eden"
-                  width={25}
+                  src="/logo/degen-market.svg"
+                  alt="Degen Market"
+                  width={17}
                   height={16}
                   className="brightness-0 invert group-hover:brightness-0 group-hover:invert-0 transition-all"
                 />

@@ -3,7 +3,7 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { LayoutList, ArrowUpRight } from "lucide-react";
+import { LayoutList, ArrowUpRight, Repeat } from "lucide-react";
 import { isExternalHref } from "@/lib/utils";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
@@ -58,6 +58,19 @@ function MobileWalletButton() {
   return null;
 }
 
+function GrailGroveButton({ onClose }: { onClose: () => void }) {
+  return (
+    <Link
+      href="/chimp-swap"
+      onClick={onClose}
+      className="group flex w-full items-center justify-center gap-2 h-12 border border-gold-500 bg-gold-500/10 px-6 text-base font-bold font-sans text-gold-500 transition-colors hover:bg-gold-500 hover:text-gray-modern-950"
+    >
+      <Repeat className="w-4 h-4 shrink-0" />
+      Grail Grove
+    </Link>
+  );
+}
+
 function MyListingsButton({
   onMyListings,
   onClose,
@@ -85,31 +98,31 @@ function MarketplaceButtons() {
   return (
     <>
       <a
-        href="https://www.tensor.trade/trade/the_chimpions"
+        href="https://www.orbisonsol.io/marketplace/the-chimpions"
         target="_blank"
         rel="noopener noreferrer"
         className="group flex w-full font-bold lg:w-auto items-center justify-center gap-2 h-12 border border-gray-modern-700 bg-gray-modern-900/50 px-6 py-3 text-base font-sans text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"
       >
-        <span className="font-bold">Tensor</span>
+        <span className="font-bold">Orbis</span>
         <Image
-          src="/logo/tensor.svg"
-          alt="Tensor"
-          width={25}
+          src="/logo/orbis.svg"
+          alt="Orbis"
+          width={21}
           height={16}
           className="brightness-0 invert group-hover:brightness-0 group-hover:invert-0 transition-all"
         />
       </a>
       <a
-        href="https://magiceden.io/creators/the_chimpions"
+        href="https://market.degen.inc/collections/the-chimpions"
         target="_blank"
         rel="noopener noreferrer"
         className="group flex w-full font-bold lg:w-auto items-center justify-center gap-2 h-12 border border-gray-modern-700 bg-gray-modern-900/50 px-6 py-3 text-base font-sans text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"
       >
-        <span className="font-bold">Magic Eden</span>
+        <span className="font-bold">Degen Market</span>
         <Image
-          src="/logo/magic-eden.svg"
-          alt="Magic Eden"
-          width={21}
+          src="/logo/degen-market.svg"
+          alt="Degen Market"
+          width={17}
           height={16}
           className="brightness-0 invert group-hover:brightness-0 group-hover:invert-0 transition-all"
         />
@@ -243,6 +256,7 @@ export default function MobileMenu({
             </ul>
 
             <div className="flex flex-col gap-3">
+              <GrailGroveButton onClose={onClose} />
               <MyListingsButton onMyListings={onMyListings} onClose={onClose} />
               <MobileWalletButton />
               <MarketplaceButtons />

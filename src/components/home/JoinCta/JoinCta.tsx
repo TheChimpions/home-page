@@ -30,31 +30,31 @@ export default function JoinCta() {
 
             <div className="flex flex-col gap-4 lg:items-end w-full md:w-auto">
               <a
-                href="https://www.tensor.trade/trade/the_chimpions"
+                href="https://www.orbisonsol.io/marketplace/the-chimpions"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group h-12 flex w-full font-bold lg:max-w-60 items-center justify-center gap-3 rounded-sm border border-gray-modern-800 bg-gray-modern-900/50 px-4 py-3 text-xl font-sans text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"
               >
-                <span>Tensor</span>
+                <span>Orbis</span>
                 <Image
-                  src="/logo/tensor.svg"
-                  alt="Tensor"
-                  width={35}
+                  src="/logo/orbis.svg"
+                  alt="Orbis"
+                  width={21}
                   height={16}
                   className="brightness-0 invert group-hover:brightness-0 group-hover:invert-0 transition-all"
                 />
               </a>
               <a
-                href="https://magiceden.io/creators/the_chimpions"
+                href="https://market.degen.inc/collections/the-chimpions"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group h-12 flex w-full font-bold lg:max-w-60 items-center justify-center gap-3 rounded-sm border border-gray-modern-800 bg-gray-modern-900/50 px-4 py-3 text-xl font-sans text-white transition-colors hover:bg-gold-500 hover:border-gold-500 hover:text-gray-modern-950"
               >
-                <span>Magic Eden</span>
+                <span>Degen Market</span>
                 <Image
-                  src="/logo/magic-eden.svg"
-                  alt="Magic Eden"
-                  width={25}
+                  src="/logo/degen-market.svg"
+                  alt="Degen Market"
+                  width={17}
                   height={16}
                   className="brightness-0 invert group-hover:brightness-0 group-hover:invert-0 transition-all"
                 />
