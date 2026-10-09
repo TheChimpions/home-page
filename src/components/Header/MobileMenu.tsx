@@ -61,7 +61,7 @@ function MobileWalletButton() {
 function GrailGroveButton({ onClose }: { onClose: () => void }) {
   return (
     <Link
-      href="/chimp-swap"
+      href="/grail-grove"
       onClick={onClose}
       className="group flex w-full items-center justify-center gap-2 h-12 border border-gold-500 bg-gold-500/10 px-6 text-base font-bold font-sans text-gold-500 transition-colors hover:bg-gold-500 hover:text-gray-modern-950"
     >
