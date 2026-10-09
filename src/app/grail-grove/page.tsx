@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function ChimpSwapPage() {
+export default function GrailGrovePage() {
   return (
     <div className="relative">
       <ChimpSwap />

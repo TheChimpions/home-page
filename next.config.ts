@@ -6,6 +6,12 @@ const nextConfig: NextConfig = {
     "@sparticuz/chromium-min",
     "@tensor-oss/tcomp-sdk",
   ],
+  async redirects() {
+    return [
+      // Grail Grove launched at /chimp-swap; keep shared links working.
+      { source: "/chimp-swap", destination: "/grail-grove", permanent: true },
+    ];
+  },
   images: {
     qualities: [75, 100],
     remotePatterns: [

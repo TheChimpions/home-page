@@ -20,7 +20,7 @@ const isGroup = (entry: NavEntry): entry is NavGroup => "items" in entry;
 const navigation: NavEntry[] = [
   { label: "Home", href: "/" },
   { label: "The DAO", href: "/the-dao" },
-  { label: "Grail Grove", href: "/chimp-swap" },
+  { label: "Grail Grove", href: "/grail-grove" },
   {
     label: "Community",
     items: [
