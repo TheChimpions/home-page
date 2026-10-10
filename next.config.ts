@@ -6,6 +6,16 @@ const nextConfig: NextConfig = {
     "@sparticuz/chromium-min",
     "@tensor-oss/tcomp-sdk",
   ],
+  // The swap card reads its font and background files from disk at runtime,
+  // so ship them with the function that renders it.
+  outputFileTracingIncludes: {
+    "/api/inngest": [
+      "./public/fonts/alagard.ttf",
+      "./public/fonts/PixelOperator.ttf",
+      "./public/fonts/PixelOperator-Bold.ttf",
+      "./public/assets/treehouse.png",
+    ],
+  },
   async redirects() {
     return [
       // Grail Grove launched at /chimp-swap; keep shared links working.

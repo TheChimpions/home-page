@@ -14,7 +14,9 @@
     "inngest:dev": "npx inngest-cli@latest dev",
     "test": "vitest run",
     "verify-swap": "tsx scripts/verify-swap-flow.ts",
-    "scrape-matrica": "tsx scripts/scrape-matrica-owners.ts"
+    "scrape-matrica": "tsx scripts/scrape-matrica-owners.ts",
+    "swap-card": "tsx scripts/grail-grove-swap-card.ts",
+    "register-swap-webhook": "tsx scripts/register-grail-grove-webhook.ts"
   },
   "dependencies": {
     "@coral-xyz/anchor": "^0.32.1",

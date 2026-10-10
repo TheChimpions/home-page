@@ -39,7 +39,8 @@ function getRedisCreds(): { url: string; token: string } | null {
 }
 
 let redisInstance: Redis | null = null;
-function getRedis(): Redis | null {
+/** Shared Upstash client, or null when KV isn't configured (local dev). */
+export function getRedis(): Redis | null {
   if (redisInstance) return redisInstance;
   const creds = getRedisCreds();
   if (!creds) return null;
