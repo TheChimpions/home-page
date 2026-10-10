@@ -1,6 +1,7 @@
 import { serve } from "inngest/next";
 import { inngest } from "@/inngest/client";
 import {
+  announceGrailGroveSwap,
   enrichOnDemand,
   provenanceRefresh,
   refreshEnrichmentCron,
@@ -8,5 +9,10 @@ import {
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
-  functions: [refreshEnrichmentCron, enrichOnDemand, provenanceRefresh],
+  functions: [
+    refreshEnrichmentCron,
+    enrichOnDemand,
+    provenanceRefresh,
+    announceGrailGroveSwap,
+  ],
 });
